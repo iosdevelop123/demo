@@ -32,26 +32,81 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+//        看多按钮
         buyMoreButton = (Button)findViewById(R.id.button2);
         buyMoreButton.setOnClickListener(buyMoreClick);
+//        看空按钮
+        buyLessButton = (Button)findViewById(R.id.button4);
+        buyLessButton.setOnClickListener(buyLessButtonClick);
+//        全部卖出
+        allSellButton = (Button)findViewById(R.id.button3);
+        allSellButton.setOnClickListener(allSellClick);
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
-    View.OnClickListener buyMoreClick = new View.OnClickListener() {
+
+    View.OnClickListener allSellClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Log.i("----","wwqq");
-            if (buyMoreButton.equals("看多")) {
-                Log.i("----","wwwwwww");
-                buyMoreButtonClick();
-            }
+            Log.i(">>>>>","全部卖出");
         }
     };
 
+
+//    看多按钮点击事件
+    View.OnClickListener buyMoreClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (buyMoreButton.getText().toString().equals("看多")) {
+                buyMoreButtonClick();
+            }else if (buyMoreButton.getText().toString().equals("追单")){
+                buyMoreButtonBuyOnce();
+            }else if (buyMoreButton.getText().toString().equals("反向开仓")){
+                buyMoreButtonReverse();
+            }
+        }
+    };
     private void buyMoreButtonClick() {
         Log.i(">>>>>>>>>>>>>>>","看多买入");
+        buyMoreButton.setText("追单");
+        buyLessButton.setText("反向开仓");
     }
+    private void buyMoreButtonBuyOnce() {Log.i(">>>>>", "看多追单买入");}
+    private void buyMoreButtonReverse(){
+        Log.i(">>>>>>","看多反向开仓");
+        buyMoreButton.setText("追单");
+        buyLessButton.setText("反向开仓");
+    }
+
+//  看空按钮点击事件
+    View.OnClickListener buyLessButtonClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (buyLessButton.getText().toString().equals("看空")) {
+                buyLessButtonClick();
+            }else if (buyLessButton.getText().toString().equals("追单")){
+                buyLessButtonBuyOnce();
+            }else if (buyLessButton.getText().toString().equals("反向开仓")){
+                buyLessButtonReverse();
+            }
+        }
+    };
+    private void buyLessButtonClick() {
+        Log.i(">>>>>","看空买入");
+        buyLessButton.setText("追单");
+        buyMoreButton.setText("反向开仓");
+    }
+    private void buyLessButtonBuyOnce() {
+        Log.i(">>>>>","追单买入");
+    }
+    private void  buyLessButtonReverse() {
+        Log.i(">>>>>>","看空反向开仓");
+        buyLessButton.setText("追单");
+        buyMoreButton.setText("反向开仓");
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
