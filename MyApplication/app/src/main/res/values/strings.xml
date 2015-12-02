@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">My Application</string>
+    <string name="action_settings">Settings</string>
+    <string name="name">美原油</string>
+    <string name="buyNum">委托手数</string>
+    <string name="lighting">闪电图</string>
+    <string name="buymore">看多</string>
+    <string name="buyless">看空</string>
+    <string name="allsell">全部清仓</string>
+    <string name="price">3333</string>
+    <string name="buyMorePrice">22222</string>
+    <string name="buyLessPrice">11111</string>
+    <string name="buyOnce">追单</string>
+    <string name="Reverseposition">反向开仓</string>
+</resources>
