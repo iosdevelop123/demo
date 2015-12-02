@@ -1,5 +1,6 @@
 package com.example.secretwang.myapplication;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -27,12 +28,28 @@ public class MainActivity extends AppCompatActivity {
     private Button buyLessButton;
     private Button allSellButton;
     private GoogleApiClient client;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+       Button setBtn=(Button) findViewById(R.id.setBtn);
+ //    跳转设置界面
+        setBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(MainActivity.this,SettingActivity.class);
+                startActivity(intent);
+            }
+        });
+//        跳转个人中心界面
+        Button userBtn=(Button)findViewById(R.id.usrBtn);
+        userBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(MainActivity.this,UserActivity.class);
+                startActivity(intent);
+            }
+        });
 //        看多按钮
         buyMoreButton = (Button)findViewById(R.id.button2);
         buyMoreButton.setOnClickListener(buyMoreClick);

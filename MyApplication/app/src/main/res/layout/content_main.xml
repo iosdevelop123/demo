@@ -112,4 +112,23 @@
         android:layout_centerHorizontal="true"
         android:textColor="#ebb212" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="设置"
+        android:id="@+id/setBtn"
+        android:layout_above="@+id/textView"
+        android:layout_alignBottom="@+id/buyNumTextView"
+        android:layout_alignRight="@+id/textView2"
+        android:layout_alignEnd="@+id/textView2" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="个人中心"
+        android:id="@+id/usrBtn"
+        android:layout_above="@+id/textView"
+        android:layout_alignLeft="@+id/button4"
+        android:layout_alignStart="@+id/button4" />
+
 </RelativeLayout>
