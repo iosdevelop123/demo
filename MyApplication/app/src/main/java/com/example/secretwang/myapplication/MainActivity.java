@@ -26,7 +26,6 @@ public class MainActivity extends AppCompatActivity {
     private Button buyMoreButton;
     private Button buyLessButton;
     private Button allSellButton;
-
     private GoogleApiClient client;
 
     @Override
@@ -44,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
     View.OnClickListener buyMoreClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Log.i("----","wwqqqq");
+            Log.i("----","wwqq");
             if (buyMoreButton.equals("看多")) {
                 Log.i("----","wwwwwww");
                 buyMoreButtonClick();
