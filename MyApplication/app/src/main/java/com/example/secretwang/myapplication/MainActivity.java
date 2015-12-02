@@ -32,8 +32,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
         buyMoreButton = (Button)findViewById(R.id.button2);
         buyMoreButton.setOnClickListener(buyMoreClick);
         // ATTENTION: This was auto-generated to implement the App Indexing API.
