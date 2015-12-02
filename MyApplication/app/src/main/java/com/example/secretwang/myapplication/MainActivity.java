@@ -56,22 +56,22 @@ public class MainActivity extends AppCompatActivity {
 //        看空按钮
         buyLessButton = (Button)findViewById(R.id.button4);
         buyLessButton.setOnClickListener(buyLessButtonClick);
-//        全部卖出
+//        全部卖出按钮
         allSellButton = (Button)findViewById(R.id.button3);
         allSellButton.setOnClickListener(allSellClick);
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
-
+//    全部卖出按钮点击事件
     View.OnClickListener allSellClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             Log.i(">>>>>","全部卖出");
+            buyMoreButton.setText("看多");
+            buyLessButton.setText("看空");
         }
     };
-
-
 //    看多按钮点击事件
     View.OnClickListener buyMoreClick = new View.OnClickListener() {
         @Override
