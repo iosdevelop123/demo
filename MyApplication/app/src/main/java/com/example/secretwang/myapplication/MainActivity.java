@@ -35,6 +35,7 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
        Button setBtn=(Button) findViewById(R.id.setBtn);
  //    跳转设置界面
