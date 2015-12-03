@@ -1,5 +1,6 @@
 package com.example.secretwang.myapplication;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -18,7 +20,7 @@ import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -27,9 +29,11 @@ public class MainActivity extends AppCompatActivity {
     private Button buyMoreButton;
     private Button buyLessButton;
     private Button allSellButton;
+
     private GoogleApiClient client;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
        Button setBtn=(Button) findViewById(R.id.setBtn);
@@ -37,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         setBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(MainActivity.this,SettingActivity.class);
+                Intent intent = new Intent(MainActivity.this, SettingActivity.class);
                 startActivity(intent);
             }
         });
@@ -50,6 +54,15 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        //    持仓按钮点击事件
+        Button holdButton = (Button)findViewById(R.id.button);
+        holdButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this,holdActivity.class);
+                startActivity(intent);
+            }
+        });
 //        看多按钮
         buyMoreButton = (Button)findViewById(R.id.button2);
         buyMoreButton.setOnClickListener(buyMoreClick);
@@ -59,10 +72,13 @@ public class MainActivity extends AppCompatActivity {
 //        全部卖出按钮
         allSellButton = (Button)findViewById(R.id.button3);
         allSellButton.setOnClickListener(allSellClick);
+
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
+
+
 //    全部卖出按钮点击事件
     View.OnClickListener allSellClick = new View.OnClickListener() {
         @Override
