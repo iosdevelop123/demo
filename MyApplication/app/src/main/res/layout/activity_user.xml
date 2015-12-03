@@ -26,14 +26,13 @@
             android:textSize="16dp"
             android:textColor="@android:color/white"
             android:text="返回"
-            android:layout_marginLeft="20dp"
-            android:layout_marginStart="20dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginStart="24dp"
+            android:layout_centerVertical="true"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignTop="@+id/titleText"
-            android:layout_alignBottom="@+id/titleText" />
+            android:layout_alignParentStart="true" />
         <TextView
-            android:id="@+id/titleText"
+            android:id="@+id/usertitleText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
