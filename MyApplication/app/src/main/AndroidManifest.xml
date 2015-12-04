@@ -33,7 +33,6 @@
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
 
-        <activity android:name=".SettingActivity" />
         <activity android:name=".UserActivity" />
         <activity android:name=".holdActivity" />
         <activity android:name=".historyActivity"></activity>

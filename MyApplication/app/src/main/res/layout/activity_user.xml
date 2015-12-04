@@ -17,20 +17,7 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true">
-        <Button
-            android:id="@+id/btn_back"
-            android:layout_width="40.0dip"
-            android:background="@android:color/darker_gray"
-            android:layout_height="40.0dip"
-            android:layout_gravity="center_vertical"
-            android:textSize="16dp"
-            android:textColor="@android:color/white"
-            android:text="返回"
-            android:layout_marginLeft="24dp"
-            android:layout_marginStart="24dp"
-            android:layout_centerVertical="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+
         <TextView
             android:id="@+id/usertitleText"
             android:layout_width="wrap_content"
@@ -40,6 +27,16 @@
             android:text="个人中心"
             android:textColor="@android:color/white"
             android:singleLine="true" />
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="返回"
+            android:id="@+id/btn_back"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
 
     </RelativeLayout>
 
@@ -58,6 +55,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="70dp"
-        android:background="#3672c6" />
+        android:background="@drawable/shape"
+        android:backgroundTint="#37baf2" />
 
 </RelativeLayout>
