@@ -5,10 +5,6 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +12,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -78,7 +73,7 @@ public class MainActivity extends Activity {
             }
         });
         //    持仓按钮点击事件
-        Button holdButton = (Button)findViewById(R.id.button);
+        Button holdButton = (Button)findViewById(R.id.button_hold);
         holdButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -87,13 +82,13 @@ public class MainActivity extends Activity {
             }
         });
 //        看多按钮
-        buyMoreButton = (Button)findViewById(R.id.button2);
+        buyMoreButton = (Button)findViewById(R.id.button_buyMore);
         buyMoreButton.setOnClickListener(buyMoreClick);
 //        看空按钮
-        buyLessButton = (Button)findViewById(R.id.button4);
+        buyLessButton = (Button)findViewById(R.id.button_buyLess);
         buyLessButton.setOnClickListener(buyLessButtonClick);
 //        全部卖出按钮
-        allSellButton = (Button)findViewById(R.id.button3);
+        allSellButton = (Button)findViewById(R.id.button_allSell);
         allSellButton.setOnClickListener(allSellClick);
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
