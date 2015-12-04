@@ -54,7 +54,7 @@ public class MyAdspter extends BaseAdapter {
             hold.textView_name = (TextView)contextView.findViewById(R.id.textView);
             hold.textView_buyMoreOrLess = (TextView)contextView.findViewById(R.id.textView14);
             hold.textView_buyNum = (TextView)contextView.findViewById(R.id.textView_buyNum);
-            hold.textView_counterFee = (TextView)contextView.findViewById(R.id)
+            hold.textView_counterFee = (TextView)contextView.findViewById(R.id.textView_counterFee);
             contextView.setTag(hold);
         }else {
             hold = (Hold)contextView.getTag();
