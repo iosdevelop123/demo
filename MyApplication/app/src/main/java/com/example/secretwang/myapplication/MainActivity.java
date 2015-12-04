@@ -12,16 +12,23 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static final String[] PLANETS = new String[]{"一手", "两手", "三手", "四手", "五手", "六手", "七手", "八手"};
+    private static final String[] PLANETS = new String[]{"1手", "2手", "3手", "4手",
+            };
+//    private  static final String[] GG = new String[] {"333","888","555","666"};
+//    Map map=new HashMap<String, String[]>();
+//    map.put("美原油", new String[]{"一手", "两手", "三手", "四手"});
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -38,28 +45,31 @@ public class MainActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
        Button setBtn=(Button) findViewById(R.id.setBtn);
+        final TextView shouTxt=(TextView) findViewById(R.id.shoushutextView);
  //    跳转设置界面
         setBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Intent intent = new Intent(MainActivity.this, SettingActivity.class);
-//                startActivity(intent);
                 View outerView = LayoutInflater.from(MainActivity.this).inflate(R.layout.wheel_view, null);
                 WheelView wv = (WheelView) outerView.findViewById(R.id.wheel_view_wv);
                 wv.setOffset(2);
                 wv.setItems(Arrays.asList(PLANETS));
                 wv.setSeletion(3);
+ //               wv.setOffset(2);
+ //               wv.setItems(Arrays.asList(GG));
+//                wv.setSeletion(3);
                 wv.setOnWheelViewListener(new WheelView.OnWheelViewListener() {
                     @Override
                     public void onSelected(int selectedIndex, String item) {
                         Log.d(TAG, "[Dialog]selectedIndex: " + selectedIndex + ", item: " + item);
+                        shouTxt.setText(item);
                     }
                 });
 
                 new AlertDialog.Builder(MainActivity.this)
                         .setTitle("设置您委托的产品类型和手数")
                         .setView(outerView)
-                        .setPositiveButton("OK", null)
+                        .setPositiveButton("确定", null)
                         .show();
             }
         });

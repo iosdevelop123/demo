@@ -214,12 +214,12 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="100"
-        android:id="@+id/textView11"
+        android:text="0手"
+        android:id="@+id/shoushutextView"
         android:layout_below="@+id/nametextView"
         android:layout_toRightOf="@+id/buyNumTextView"
         android:layout_toEndOf="@+id/buyNumTextView"
-        android:textColor="#ffffff" />
+        android:textColor="#edb060" />
 
     <Button
         android:layout_width="60dp"
