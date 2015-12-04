@@ -1,6 +1,7 @@
 package com.example.secretwang.myapplication;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,8 +22,11 @@ import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 
-public class MainActivity extends Activity {
+import java.util.Arrays;
 
+public class MainActivity extends Activity {
+    private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String[] PLANETS = new String[]{"一手", "两手", "三手", "四手", "五手", "六手", "七手", "八手"};
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -42,8 +47,25 @@ public class MainActivity extends Activity {
         setBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, SettingActivity.class);
-                startActivity(intent);
+//                Intent intent = new Intent(MainActivity.this, SettingActivity.class);
+//                startActivity(intent);
+                View outerView = LayoutInflater.from(MainActivity.this).inflate(R.layout.wheel_view, null);
+                WheelView wv = (WheelView) outerView.findViewById(R.id.wheel_view_wv);
+                wv.setOffset(2);
+                wv.setItems(Arrays.asList(PLANETS));
+                wv.setSeletion(3);
+                wv.setOnWheelViewListener(new WheelView.OnWheelViewListener() {
+                    @Override
+                    public void onSelected(int selectedIndex, String item) {
+                        Log.d(TAG, "[Dialog]selectedIndex: " + selectedIndex + ", item: " + item);
+                    }
+                });
+
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("设置您委托的产品类型和手数")
+                        .setView(outerView)
+                        .setPositiveButton("OK", null)
+                        .show();
             }
         });
 //        跳转个人中心界面

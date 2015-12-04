@@ -42,7 +42,7 @@
         android:layout_below="@+id/passWord"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="58dp"
-        android:background="#347bf5"
-        />
+        android:background="@drawable/shape"
+        android:backgroundTint="#35b8f5" />
 
 </RelativeLayout>
