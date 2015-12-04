@@ -28,7 +28,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/price"
-        android:id="@+id/textView"
+        android:id="@+id/textView_priceText"
         android:textColor="#ddc261"
         android:textSize="@dimen/abc_action_button_min_width_material"
         android:layout_below="@+id/buyNumTextView"
@@ -40,15 +40,15 @@
         android:text="@string/buyNum"
         android:id="@+id/buyNumTextView"
         android:layout_below="@+id/nametextView"
-        android:layout_alignLeft="@+id/button3"
-        android:layout_alignStart="@+id/button3"
+        android:layout_alignLeft="@+id/button_allSell"
+        android:layout_alignStart="@+id/button_allSell"
         android:textColor="#ffffff" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/buymore"
-        android:id="@+id/button2"
+        android:id="@+id/button_buyMore"
         android:background="@drawable/shape"
         android:backgroundTint="@color/colorAccent"
         android:textColor="#ffffff"
@@ -62,8 +62,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/allsell"
-        android:id="@+id/button3"
-        android:layout_alignTop="@+id/button2"
+        android:id="@+id/button_allSell"
+        android:layout_alignTop="@+id/button_buyMore"
         android:layout_centerHorizontal="true"
         android:textColor="#000000"
         android:background="@drawable/shape"
@@ -74,12 +74,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/buyless"
-        android:id="@+id/button4"
+        android:id="@+id/button_buyLess"
         android:background="@drawable/shape"
         android:backgroundTint="#2897f9"
         android:textColor="#ffffff"
         android:textSize="20dp"
-        android:layout_alignTop="@+id/button3"
+        android:layout_alignTop="@+id/button_allSell"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
@@ -90,7 +90,7 @@
         android:id="@+id/textView2"
         android:layout_marginLeft="23dp"
         android:layout_marginStart="23dp"
-        android:layout_above="@+id/button2"
+        android:layout_above="@+id/button_buyMore"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
@@ -99,9 +99,9 @@
         android:layout_height="wrap_content"
         android:text="@string/buyLessPrice"
         android:id="@+id/textView3"
-        android:layout_above="@+id/button4"
-        android:layout_alignLeft="@+id/button4"
-        android:layout_alignStart="@+id/button4"
+        android:layout_above="@+id/button_buyLess"
+        android:layout_alignLeft="@+id/button_buyLess"
+        android:layout_alignStart="@+id/button_buyLess"
         android:layout_marginLeft="23dp"
         android:layout_marginStart="23dp" />
 
@@ -110,7 +110,7 @@
         android:layout_height="wrap_content"
         android:text="@string/lighting"
         android:id="@+id/textView4"
-        android:layout_below="@+id/textView"
+        android:layout_below="@+id/textView_priceText"
         android:layout_centerHorizontal="true"
         android:textColor="#ebb212" />
 
@@ -120,7 +120,7 @@
         android:layout_height="wrap_content"
         android:text="设置"
         android:id="@+id/setBtn"
-        android:layout_above="@+id/textView"
+        android:layout_above="@+id/textView_priceText"
         android:layout_alignBottom="@+id/buyNumTextView"
         android:layout_alignRight="@+id/textView2"
         android:layout_alignEnd="@+id/textView2" />
@@ -130,9 +130,9 @@
         android:layout_height="wrap_content"
         android:text="个人中心"
         android:id="@+id/usrBtn"
-        android:layout_above="@+id/textView"
-        android:layout_alignLeft="@+id/button4"
-        android:layout_alignStart="@+id/button4" />
+        android:layout_above="@+id/textView_priceText"
+        android:layout_alignLeft="@+id/button_buyLess"
+        android:layout_alignStart="@+id/button_buyLess" />
 
     <SurfaceView
         android:layout_width="wrap_content"
@@ -196,8 +196,8 @@
         android:text="$"
         android:id="@+id/textView9"
         android:layout_alignParentBottom="true"
-        android:layout_alignRight="@+id/button4"
-        android:layout_alignEnd="@+id/button4"
+        android:layout_alignRight="@+id/button_buyLess"
+        android:layout_alignEnd="@+id/button_buyLess"
         android:textSize="10dp"
         android:textColor="#b8b6b6" />
 
@@ -225,8 +225,8 @@
         android:layout_width="60dp"
         android:layout_height="30dp"
         android:text="持仓"
-        android:id="@+id/button"
-        android:layout_alignTop="@+id/textView"
+        android:id="@+id/button_hold"
+        android:layout_alignTop="@+id/textView_priceText"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:background="@drawable/shape"
