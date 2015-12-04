@@ -1,11 +1,16 @@
 package com.example.secretwang.myapplication;
 
 import android.app.Activity;
+import android.app.Notification;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.nfc.Tag;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -23,6 +28,7 @@ import java.util.Objects;
 public class holdActivity extends Activity {
     private Button historyButton;
     private ListView listView = null;
+    private ArrayList list = null;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -36,9 +42,8 @@ public class holdActivity extends Activity {
         setContentView(R.layout.activity_hold);
 //        持仓
         listView = (ListView) findViewById(R.id.listView_holdList);
-//        listView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, strs));
         List<Map<String, Object>> list = getData();
-        listView.setAdapter(new MyAdspter(this, list));
+        listView.setAdapter(new HoldAdspter(this, list));
 
 //        历史纪录Button
         historyButton = (Button) findViewById(R.id.button_history);
@@ -53,25 +58,31 @@ public class holdActivity extends Activity {
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
-
+//    AdapterView.OnItemClickListener itemClickLis = new AdapterView.OnItemClickListener() {
+//        @Override
+//        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//            list.remove(position);
+//            Log.d("position" + position, "id" + id);
+//            Log.i(">>>>>", "sssss");
+//            listView.notify();
+//        }
+//    };
 
     public List<Map<String,Object>> getData(){
         List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
-        for (int i = 0;i < 50;i++){
+        for (int i = 0;i < 10;i++){
             Map<String,Object> map = new HashMap<String, Object>();
-            map.put("textView_name","美原油");
+            map.put("textView_name","美原油"+i);
             map.put("textView_buyMoreOrLess","看多");
+            map.put("textView_buyNum","2222");
+            map.put("textView_counterFee","-800");
+            map.put("textView_price","+999999");
+            map.put("textView_openPrice","22222");
+            map.put("textView_closePrice","33333");
             list.add(map);
         }
         return list;
     }
-
-
-
-
-
-
-
 
     @Override
     public void onStart() {
