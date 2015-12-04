@@ -45,11 +45,11 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:text="2000"
-                android:id="@+id/textView15"
+                android:id="@+id/textView_buyNum"
                 android:textColor="#ff0000"
-                android:layout_alignBottom="@+id/textView"
-                android:layout_toLeftOf="@+id/textView18"
-                android:layout_toStartOf="@+id/textView18" />
+                android:layout_above="@+id/textView14"
+                android:layout_toLeftOf="@+id/textView_counterFee"
+                android:layout_toStartOf="@+id/textView_counterFee" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -58,9 +58,9 @@
                 android:text="手"
                 android:id="@+id/textView16"
                 android:textColor="#ff0000"
-                android:layout_alignTop="@+id/textView15"
-                android:layout_toRightOf="@+id/textView15"
-                android:layout_toEndOf="@+id/textView15" />
+                android:layout_above="@+id/textView14"
+                android:layout_toRightOf="@+id/textView_buyNum"
+                android:layout_toEndOf="@+id/textView_buyNum" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -77,7 +77,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="-80"
-                android:id="@+id/textView18"
+                android:id="@+id/textView_counterFee"
                 android:textSize="10dp"
                 android:textColor="#f7af43"
                 android:layout_alignTop="@+id/textView17"
@@ -129,7 +129,8 @@
                 android:id="@+id/textView21"
                 android:textSize="10dp"
                 android:textColor="#828282"
-                android:layout_alignTop="@+id/textView18"
+                android:layout_alignBaseline="@+id/textView_counterFee"
+                android:layout_alignBottom="@+id/textView_counterFee"
                 android:layout_toLeftOf="@+id/button"
                 android:layout_toStartOf="@+id/button" />
 
@@ -152,7 +153,7 @@
                 android:id="@+id/textView23"
                 android:textColor="#7f7e7e"
                 android:textSize="10dp"
-                android:layout_alignTop="@+id/textView21"
+                android:layout_alignBottom="@+id/textView14"
                 android:layout_toLeftOf="@+id/textView22"
                 android:layout_toStartOf="@+id/textView22" />
 

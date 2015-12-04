@@ -25,6 +25,8 @@ public class MyAdspter extends BaseAdapter {
     public final class Hold {
         public TextView textView_name;
         public TextView textView_buyMoreOrLess;
+        public TextView textView_buyNum;
+        public TextView textView_counterFee;
     }
     @Override
     public int getCount() {
@@ -51,12 +53,15 @@ public class MyAdspter extends BaseAdapter {
             contextView = layoutInflater.inflate(R.layout.list, null);
             hold.textView_name = (TextView)contextView.findViewById(R.id.textView);
             hold.textView_buyMoreOrLess = (TextView)contextView.findViewById(R.id.textView14);
+            hold.textView_buyNum = (TextView)contextView.findViewById(R.id.textView_buyNum);
+            hold.textView_counterFee = (TextView)contextView.findViewById(R.id)
             contextView.setTag(hold);
         }else {
             hold = (Hold)contextView.getTag();
         }
         hold.textView_name.setText((String)data.get(position).get("textView_name"));
         hold.textView_buyMoreOrLess.setText((String)data.get(position).get("textView_buyMoreOrLess"));
+        hold.textView_buyNum.setText((String)data.get(position).get("textView_buyNum"));
         return contextView;
     }
 }
