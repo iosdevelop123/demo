@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:text="@string/name"
         android:id="@+id/nametextView"
-        android:textColor="#e94964"
+        android:textColor="#f0af47"
         android:textSize="@dimen/abc_dialog_padding_material"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
