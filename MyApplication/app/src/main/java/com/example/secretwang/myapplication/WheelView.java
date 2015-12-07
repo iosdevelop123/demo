@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 public class WheelView extends ScrollView {
     public static final String TAG = WheelView.class.getSimpleName();
@@ -141,8 +142,6 @@ public class WheelView extends ScrollView {
 
 
                     }
-
-
                 } else {
                     initialY = getScrollY();
                     WheelView.this.postDelayed(scrollerTask, newCheck);
@@ -170,12 +169,11 @@ public class WheelView extends ScrollView {
         for (String item : items) {
             views.addView(createView(item));
         }
-
         refreshItemView(0);
+
     }
 
     int itemHeight = 0;
-
     private TextView createView(String item) {
         TextView tv = new TextView(context);
         tv.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
