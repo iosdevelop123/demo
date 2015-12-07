@@ -2,6 +2,7 @@ package com.example.secretwang.myapplication;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ClipData;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -32,7 +33,10 @@ public class MainActivity extends Activity {
     private Button buyMoreButton;
     private Button buyLessButton;
     private Button allSellButton;
-
+    private WheelView wv;
+    private WheelView wv2;
+    private  int number;
+    private  int category;
     private GoogleApiClient client;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,26 +52,28 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 View outerView = LayoutInflater.from(MainActivity.this).inflate(R.layout.wheel_view, null);
-                WheelView wv = (WheelView) outerView.findViewById(R.id.wheel_view_wv);
+                wv = (WheelView) outerView.findViewById(R.id.wheel_view_wv);
                 wv.setOffset(2);
                 wv.setItems(Arrays.asList(shoushu));
-                wv.setSeletion(0);
+                wv.setSeletion(number);
                 wv.setOnWheelViewListener(new WheelView.OnWheelViewListener() {
                     @Override
                     public void onSelected(int selectedIndex, String item) {
                         Log.d(TAG, "[Dialog]selectedIndex: " + selectedIndex + ", item: " + item);
                         shouTxt.setText(item);
+                        number=selectedIndex-2;
                     }
                 });
-                WheelView wv2 = (WheelView) outerView.findViewById(R.id.wheel_view_wv2);
+                wv2 = (WheelView) outerView.findViewById(R.id.wheel_view_wv2);
                 wv2.setOffset(2);
                 wv2.setItems(Arrays.asList(xiangmu));
-                wv2.setSeletion(0);
+                wv2.setSeletion(category);
                 wv2.setOnWheelViewListener(new WheelView.OnWheelViewListener() {
                     @Override
-                    public void onSelected(int selectedIndex, String item) {
-                        Log.d(TAG, "[Dialog]selectedIndex: " + selectedIndex + ", item: " + item);
-                        nametextView.setText(item);
+                    public void onSelected(int selectedIndex, String item1) {
+                        Log.d(TAG, "[Dialog]selectedIndex: " + selectedIndex + ", item: " + item1);
+                        nametextView.setText(item1);
+                        category=selectedIndex-2;
                     }
                 });
                 new AlertDialog.Builder(MainActivity.this)
