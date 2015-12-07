@@ -3,6 +3,7 @@ package com.example.secretwang.myapplication;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,15 +25,10 @@ import java.util.Map;
 
 public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static final String[] PLANETS = new String[]{"1手", "2手", "3手", "4手",
-            };
-//    private  static final String[] GG = new String[] {"333","888","555","666"};
-//    Map map=new HashMap<String, String[]>();
-//    map.put("美原油", new String[]{"一手", "两手", "三手", "四手"});
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
+    private static final String[] shoushu = new String[]{"1手", "2手", "3手", "4手",
+           "5手","6手","7手","8手","9手","10手","11手","12手","13手","14手","15手","16手","17手","18手","19手","20手" };
+    private  static  final  String[] xiangmu = new String[] {"美原油","恒生指数"};
+
     private Button buyMoreButton;
     private Button buyLessButton;
     private Button allSellButton;
@@ -46,6 +42,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
        Button setBtn=(Button) findViewById(R.id.setBtn);
         final TextView shouTxt=(TextView) findViewById(R.id.shoushutextView);
+        final TextView nametextView=(TextView) findViewById(R.id.nametextView);
  //    跳转设置界面
         setBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -53,11 +50,8 @@ public class MainActivity extends Activity {
                 View outerView = LayoutInflater.from(MainActivity.this).inflate(R.layout.wheel_view, null);
                 WheelView wv = (WheelView) outerView.findViewById(R.id.wheel_view_wv);
                 wv.setOffset(2);
-                wv.setItems(Arrays.asList(PLANETS));
-                wv.setSeletion(3);
- //               wv.setOffset(2);
- //               wv.setItems(Arrays.asList(GG));
-//                wv.setSeletion(3);
+                wv.setItems(Arrays.asList(shoushu));
+                wv.setSeletion(0);
                 wv.setOnWheelViewListener(new WheelView.OnWheelViewListener() {
                     @Override
                     public void onSelected(int selectedIndex, String item) {
@@ -65,7 +59,17 @@ public class MainActivity extends Activity {
                         shouTxt.setText(item);
                     }
                 });
-
+                WheelView wv2 = (WheelView) outerView.findViewById(R.id.wheel_view_wv2);
+                wv2.setOffset(2);
+                wv2.setItems(Arrays.asList(xiangmu));
+                wv2.setSeletion(0);
+                wv2.setOnWheelViewListener(new WheelView.OnWheelViewListener() {
+                    @Override
+                    public void onSelected(int selectedIndex, String item) {
+                        Log.d(TAG, "[Dialog]selectedIndex: " + selectedIndex + ", item: " + item);
+                        nametextView.setText(item);
+                    }
+                });
                 new AlertDialog.Builder(MainActivity.this)
                         .setTitle("设置您委托的产品类型和手数")
                         .setView(outerView)
