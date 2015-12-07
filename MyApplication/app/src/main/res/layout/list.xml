@@ -88,7 +88,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="平仓"
-                android:id="@+id/button"
+                android:id="@+id/button_sell"
                 android:layout_alignTop="@+id/textView16"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
@@ -105,15 +105,15 @@
                 android:id="@+id/textView19"
                 android:textColor="#8d8c8c"
                 android:textSize="18dp"
-                android:layout_toLeftOf="@+id/button"
-                android:layout_toStartOf="@+id/button"
-                android:layout_alignTop="@+id/button" />
+                android:layout_toLeftOf="@+id/button_sell"
+                android:layout_toStartOf="@+id/button_sell"
+                android:layout_alignTop="@+id/button_sell" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="+100000"
-                android:id="@+id/textView20"
+                android:id="@+id/textView_price"
                 android:layout_toLeftOf="@+id/textView19"
                 android:layout_toStartOf="@+id/textView19"
                 android:textColor="#ff0000"
@@ -126,13 +126,13 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:text="22222"
-                android:id="@+id/textView21"
+                android:id="@+id/textView_closePrice"
                 android:textSize="10dp"
                 android:textColor="#828282"
                 android:layout_alignBaseline="@+id/textView_counterFee"
                 android:layout_alignBottom="@+id/textView_counterFee"
-                android:layout_toLeftOf="@+id/button"
-                android:layout_toStartOf="@+id/button" />
+                android:layout_toLeftOf="@+id/button_sell"
+                android:layout_toStartOf="@+id/button_sell" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -141,16 +141,16 @@
                 android:text="->"
                 android:id="@+id/textView22"
                 android:textColor="#797979"
-                android:layout_alignBottom="@+id/textView21"
-                android:layout_toLeftOf="@+id/textView21"
-                android:layout_toStartOf="@+id/textView21" />
+                android:layout_alignBottom="@+id/textView_closePrice"
+                android:layout_toLeftOf="@+id/textView_closePrice"
+                android:layout_toStartOf="@+id/textView_closePrice" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:text="23333"
-                android:id="@+id/textView23"
+                android:id="@+id/textView_openPrice"
                 android:textColor="#7f7e7e"
                 android:textSize="10dp"
                 android:layout_alignBottom="@+id/textView14"

@@ -1,10 +1,13 @@
 package com.example.secretwang.myapplication;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -13,11 +16,11 @@ import java.util.Map;
 /**
  * Created by Secret Wang on 04/12/2015.
  */
-public class MyAdspter extends BaseAdapter {
+public class HoldAdspter extends BaseAdapter {
     private List<Map<String,Object>> data;
     private LayoutInflater layoutInflater;
     private Context context;
-    protected MyAdspter(Context context, List<Map<String, Object>> data){
+    protected HoldAdspter(Context context, List<Map<String, Object>> data){
         this.context = context;
         this.data = data;
         this.layoutInflater = layoutInflater.from(context);
@@ -27,6 +30,11 @@ public class MyAdspter extends BaseAdapter {
         public TextView textView_buyMoreOrLess;
         public TextView textView_buyNum;
         public TextView textView_counterFee;
+        public TextView textView_price;
+        public TextView textView_openPrice;
+        public TextView textView_closePrice;
+        public Button button_sell;
+        public Number orderNum;
     }
     @Override
     public int getCount() {
@@ -48,6 +56,7 @@ public class MyAdspter extends BaseAdapter {
       }
     @Override public View getView(int position,View contextView,ViewGroup parent){
          Hold hold = null;
+
         if (contextView == null){
             hold = new Hold();
             contextView = layoutInflater.inflate(R.layout.list, null);
@@ -55,6 +64,11 @@ public class MyAdspter extends BaseAdapter {
             hold.textView_buyMoreOrLess = (TextView)contextView.findViewById(R.id.textView14);
             hold.textView_buyNum = (TextView)contextView.findViewById(R.id.textView_buyNum);
             hold.textView_counterFee = (TextView)contextView.findViewById(R.id.textView_counterFee);
+            hold.textView_price = (TextView)contextView.findViewById(R.id.textView_price);
+            hold.textView_openPrice = (TextView) contextView.findViewById(R.id.textView_openPrice);
+            hold.textView_closePrice = (TextView) contextView.findViewById(R.id.textView_closePrice);
+            hold.button_sell = (Button)contextView.findViewById(R.id.button_sell);
+//            hold.button_sell.setOnClickListener(sellButtonClick);
             contextView.setTag(hold);
         }else {
             hold = (Hold)contextView.getTag();
@@ -62,6 +76,18 @@ public class MyAdspter extends BaseAdapter {
         hold.textView_name.setText((String)data.get(position).get("textView_name"));
         hold.textView_buyMoreOrLess.setText((String)data.get(position).get("textView_buyMoreOrLess"));
         hold.textView_buyNum.setText((String)data.get(position).get("textView_buyNum"));
+        hold.textView_counterFee.setText((String)data.get(position).get("textView_counterFee"));
+        hold.textView_price.setText((String)data.get(position).get("textView_price"));
+        hold.textView_openPrice.setText((String)data.get(position).get("textView_openPrice"));
+        hold.textView_closePrice.setText((String)data.get(position).get("textView_closePrice"));
         return contextView;
     }
+    View.OnClickListener sellButtonClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            v.findViewById(R.id.button_sell);
+
+        }
+    };
+
 }
