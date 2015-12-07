@@ -23,7 +23,7 @@ public class HoldAdspter extends BaseAdapter {
     protected HoldAdspter(Context context, List<Map<String, Object>> data){
         this.context = context;
         this.data = data;
-        this.layoutInflater = layoutInflater.from(context);
+        this.layoutInflater = LayoutInflater.from(context);
     }
     public final class Hold {
         public TextView textView_name;
@@ -54,12 +54,12 @@ public class HoldAdspter extends BaseAdapter {
       public long getItemId(int position) {
           return position;
       }
+
     @Override public View getView(int position,View contextView,ViewGroup parent){
          Hold hold = null;
-
         if (contextView == null){
             hold = new Hold();
-            contextView = layoutInflater.inflate(R.layout.list, null);
+            contextView = layoutInflater.inflate(R.layout.list,null);
             hold.textView_name = (TextView)contextView.findViewById(R.id.textView);
             hold.textView_buyMoreOrLess = (TextView)contextView.findViewById(R.id.textView14);
             hold.textView_buyNum = (TextView)contextView.findViewById(R.id.textView_buyNum);

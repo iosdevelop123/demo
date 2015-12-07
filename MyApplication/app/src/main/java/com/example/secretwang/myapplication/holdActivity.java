@@ -28,7 +28,6 @@ import java.util.Objects;
 public class holdActivity extends Activity {
     private Button historyButton;
     private ListView listView = null;
-    private ArrayList list = null;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
