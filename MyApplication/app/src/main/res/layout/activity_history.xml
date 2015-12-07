@@ -22,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="历史纪录"
+        android:text="@string/historyHold"
         android:id="@+id/textView31"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
