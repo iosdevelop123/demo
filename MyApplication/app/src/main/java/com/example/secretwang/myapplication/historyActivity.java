@@ -40,6 +40,7 @@ public class historyActivity extends Activity {
             map.put("MoreOrLessText","看多");
             map.put("shoNumText","22手");
             map.put("feesText","手续费-800");
+            map.put("DataText","2015-12-12");
             map.put("openTimeText","12:12");
             map.put("CloseTimeText","12:15");
             map.put("priceText","+999999");

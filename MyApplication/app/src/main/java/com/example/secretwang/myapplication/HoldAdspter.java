@@ -85,15 +85,15 @@ public class HoldAdspter extends BaseAdapter {
 
 //        判断是看多还是看空，显示背景颜色
         if (hold.textView_buyMoreOrLess.getText().toString().equals("看多")) {
-            hold.textView_buyMoreOrLess.setBackgroundColor(Color.parseColor("#CD0000"));
+            hold.textView_buyMoreOrLess.setBackgroundColor(Color.parseColor("#7c0000"));
         }else {
-            hold.textView_buyMoreOrLess.setBackgroundColor(Color.parseColor("#4169E1"));
+            hold.textView_buyMoreOrLess.setBackgroundColor(Color.parseColor("#333399"));
         }
 //        根据盈利判断字体颜色。
         if (Integer.valueOf(hold.textView_price.getText().toString()).intValue()>=0){
-            hold.textView_price.setTextColor(Color.parseColor("#DC143C"));
+            hold.textView_price.setTextColor(Color.parseColor("#ff4320"));
         }else {
-            hold.textView_price.setTextColor(Color.parseColor("#1E90FF"));
+            hold.textView_price.setTextColor(Color.parseColor("#0000cc"));
         }
 
         return contextView;

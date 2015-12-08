@@ -8,7 +8,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.secretwang.myapplication.historyActivity"
-    android:background="#000000">
+    android:background="#030014">
 
     <ListView
         android:layout_width="wrap_content"

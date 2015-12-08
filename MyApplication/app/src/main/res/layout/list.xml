@@ -8,7 +8,7 @@
     <LinearLayout android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:background="#000000"
+        android:background="#030014"
         android:weightSum="1">
 
         <RelativeLayout
@@ -22,7 +22,7 @@
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="@string/name"
                 android:id="@+id/textView"
-                android:textColor="#0047fa" />
+                android:textColor="#0069d5" />
 
             <TextView
                 android:layout_width="30dp"
@@ -36,7 +36,7 @@
                 android:layout_alignLeft="@+id/textView"
                 android:layout_alignStart="@+id/textView"
                 android:layout_marginTop="13dp"
-                android:background="#ff0000"
+                android:background="#7c0000"
                 android:textSize="13dp"
                 android:textAlignment="center" />
 
@@ -89,17 +89,17 @@
                 android:layout_toEndOf="@+id/textView17" />
 
             <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="60dp"
+                android:layout_height="40dp"
                 android:text="平仓"
                 android:id="@+id/button_sell"
-                android:layout_alignTop="@+id/textView16"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"
-                android:textColor="#ffffff"
-                android:textSize="22dp"
+                android:textColor="#000000"
+                android:textSize="18dp"
                 android:background="@drawable/shape"
-                android:backgroundTint="#ffb031" />
+                android:backgroundTint="#eac281"
+                android:layout_alignTop="@+id/textView19"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -133,10 +133,11 @@
                 android:id="@+id/textView_closePrice"
                 android:textSize="12dp"
                 android:textColor="#828282"
-                android:layout_alignBaseline="@+id/textView_counterFee"
-                android:layout_alignBottom="@+id/textView_counterFee"
+                android:layout_alignTop="@+id/textView_openPrice"
                 android:layout_toLeftOf="@+id/button_sell"
-                android:layout_toStartOf="@+id/button_sell" />
+                android:layout_toStartOf="@+id/button_sell"
+                android:layout_marginRight="9dp"
+                android:layout_marginEnd="9dp" />
 
             <TextView
                 android:layout_width="wrap_content"

@@ -21,7 +21,7 @@
                 android:id="@+id/textView11"
                 android:layout_marginTop="10dp"
                 android:layout_marginLeft="10dp"
-                android:textColor="#0043fb"
+                android:textColor="#0069d5"
                 android:textSize="18dp" />
 
             <TextView
@@ -46,7 +46,7 @@
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:text="22手"
                 android:id="@+id/textView18"
-                android:textColor="#b40303"
+                android:textColor="#ff0000"
                 android:layout_alignBottom="@+id/textView11"
                 android:layout_toRightOf="@+id/textView11"
                 android:layout_toEndOf="@+id/textView11"
@@ -73,9 +73,9 @@
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:text="2015-12-07"
                 android:id="@+id/textView21"
-                android:layout_alignTop="@+id/textView11"
-                android:layout_centerHorizontal="true"
-                android:textColor="#5e5e5e" />
+                android:textColor="#737373"
+                android:layout_alignTop="@+id/textView18"
+                android:layout_centerHorizontal="true" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -132,7 +132,7 @@
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:text="999999"
                 android:id="@+id/textView27"
-                android:textColor="#9a0000"
+                android:textColor="#ff0000"
                 android:textSize="20dp"
                 android:layout_above="@+id/textView15"
                 android:layout_toLeftOf="@+id/textView26"
