@@ -124,7 +124,7 @@
                 android:layout_marginRight="10dp"
                 android:layout_marginEnd="10dp"
                 android:textColor="#707070"
-                android:textSize="8dp" />
+                android:textSize="10dp" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -133,8 +133,8 @@
                 android:text="999999"
                 android:id="@+id/textView27"
                 android:textColor="#9a0000"
-                android:layout_alignBaseline="@+id/textView26"
-                android:layout_alignBottom="@+id/textView26"
+                android:textSize="20dp"
+                android:layout_above="@+id/textView15"
                 android:layout_toLeftOf="@+id/textView26"
                 android:layout_toStartOf="@+id/textView26" />
 
@@ -148,7 +148,7 @@
                 android:layout_alignRight="@+id/textView27"
                 android:layout_alignEnd="@+id/textView27"
                 android:textColor="#7e7e7e"
-                android:textSize="8dp" />
+                android:textSize="10dp" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -159,7 +159,7 @@
                 android:layout_alignTop="@+id/textView28"
                 android:layout_toLeftOf="@+id/textView28"
                 android:layout_toStartOf="@+id/textView28"
-                android:textSize="8dp"
+                android:textSize="10dp"
                 android:textColor="#686868" />
 
             <TextView
@@ -171,7 +171,7 @@
                 android:layout_alignTop="@+id/textView29"
                 android:layout_toLeftOf="@+id/textView29"
                 android:layout_toStartOf="@+id/textView29"
-                android:textSize="8dp"
+                android:textSize="10dp"
                 android:textColor="#636363" />
         </RelativeLayout>
     </LinearLayout>
