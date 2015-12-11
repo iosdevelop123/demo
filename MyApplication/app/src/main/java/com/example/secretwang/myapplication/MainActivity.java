@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.style.BackgroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,6 +56,7 @@ public class MainActivity extends Activity {
                 wv = (WheelView) outerView.findViewById(R.id.wheel_view_wv);
                 wv.setOffset(2);
                 wv.setItems(Arrays.asList(shoushu));
+ //     保存上次选择的手数
                 wv.setSeletion(number);
                 wv.setOnWheelViewListener(new WheelView.OnWheelViewListener() {
                     @Override

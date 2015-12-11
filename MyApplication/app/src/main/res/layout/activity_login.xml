@@ -9,6 +9,27 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.secretwang.myapplication.LoginActivity">
 
+    <!--<RelativeLayout-->
+        <!--android:id="@+id/top_relative"-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:background="#4331e8"-->
+        <!--android:layout_height="50.0dip"-->
+        <!--android:layout_alignParentLeft="true"-->
+        <!--android:layout_alignParentStart="true"-->
+        <!--android:layout_alignParentTop="true">-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/usertitleText"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_centerInParent="true"-->
+            <!--android:textSize="18dp"-->
+            <!--android:text="登录"-->
+            <!--android:textColor="@android:color/white"-->
+            <!--android:singleLine="true" />-->
+
+    <!--</RelativeLayout>-->
+
     <EditText
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -35,14 +56,14 @@
         android:layout_marginTop="34dp" />
 
     <Button
-        android:layout_width="280dip"
+        android:layout_width="250dip"
         android:layout_height="50dip"
         android:text="登录"
         android:id="@+id/login"
-        android:layout_below="@+id/passWord"
-        android:layout_centerHorizontal="true"
         android:layout_marginTop="58dp"
         android:background="@drawable/shape"
-        android:backgroundTint="#35b8f5" />
+        android:backgroundTint="#4331e8"
+        android:layout_below="@+id/passWord"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

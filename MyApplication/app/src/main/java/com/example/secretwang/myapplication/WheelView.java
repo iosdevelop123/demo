@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -17,7 +18,6 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -274,7 +274,7 @@ public class WheelView extends ScrollView {
                 return;
             }
             if (position == i) {
-                itemView.setTextColor(Color.parseColor("#0288ce"));
+                itemView.setTextColor(Color.parseColor("#4331e8"));
             } else {
                 itemView.setTextColor(Color.parseColor("#bbbbbb"));
             }
@@ -299,15 +299,18 @@ public class WheelView extends ScrollView {
     private int scrollDirection = -1;
     private static final int SCROLL_DIRECTION_UP = 0;
     private static final int SCROLL_DIRECTION_DOWN = 1;
-
     Paint paint;
     int viewWidth;
 
-    @Override
-    public void setBackgroundDrawable(Drawable background) {
+ //   @Override
+
+    public void setBackground(Drawable background) {
 
         if (viewWidth == 0) {
-            viewWidth = ((Activity) context).getWindowManager().getDefaultDisplay().getWidth();
+            Point size = new Point();
+//       获取屏幕的大小
+            ((Activity) context).getWindowManager().getDefaultDisplay().getSize(size);
+            viewWidth=size.x;
             Log.d(TAG, "viewWidth: " + viewWidth);
         }
 
@@ -341,8 +344,8 @@ public class WheelView extends ScrollView {
         };
 
 
-        super.setBackgroundDrawable(background);
-
+        //super.setBackgroundDrawable(background);
+        super.setBackground(background);
     }
 
     @Override
@@ -350,7 +353,8 @@ public class WheelView extends ScrollView {
         super.onSizeChanged(w, h, oldw, oldh);
         Log.d(TAG, "w: " + w + ", h: " + h + ", oldw: " + oldw + ", oldh: " + oldh);
         viewWidth = w;
-        setBackgroundDrawable(null);
+ //       setBackgroundDrawable(null);
+        setBackground(null);
     }
 
     /**
