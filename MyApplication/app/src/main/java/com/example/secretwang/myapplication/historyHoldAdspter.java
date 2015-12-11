@@ -1,6 +1,7 @@
 package com.example.secretwang.myapplication;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -85,6 +86,12 @@ public class historyHoldAdspter extends BaseAdapter {
         historyHold.priceText.setText((String)data.get(position).get("priceText"));
         historyHold.openPriceText.setText((String)data.get(position).get("openPriceText"));
         historyHold.closePriceText.setText((String)data.get(position).get("closePriceText"));
+        if (historyHold.MoreOrLessText.getText().toString().equals("看多")){
+            historyHold.MoreOrLessText.setBackgroundColor(Color.parseColor("#820101"));
+        }else {
+            historyHold.MoreOrLessText.setBackgroundColor(Color.parseColor("#0000cc"));
+        }
+
         return convertView;
     }
 

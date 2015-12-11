@@ -1,6 +1,7 @@
 package com.example.secretwang.myapplication;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -73,6 +74,7 @@ public class HoldAdspter extends BaseAdapter {
         }else {
             hold = (Hold)contextView.getTag();
         }
+//        得到数据
         hold.textView_name.setText((String)data.get(position).get("textView_name"));
         hold.textView_buyMoreOrLess.setText((String)data.get(position).get("textView_buyMoreOrLess"));
         hold.textView_buyNum.setText((String)data.get(position).get("textView_buyNum"));
@@ -80,6 +82,20 @@ public class HoldAdspter extends BaseAdapter {
         hold.textView_price.setText((String)data.get(position).get("textView_price"));
         hold.textView_openPrice.setText((String)data.get(position).get("textView_openPrice"));
         hold.textView_closePrice.setText((String)data.get(position).get("textView_closePrice"));
+
+//        判断是看多还是看空，显示背景颜色
+        if (hold.textView_buyMoreOrLess.getText().toString().equals("看多")) {
+            hold.textView_buyMoreOrLess.setBackgroundColor(Color.parseColor("#7c0000"));
+        }else {
+            hold.textView_buyMoreOrLess.setBackgroundColor(Color.parseColor("#333399"));
+        }
+//        根据盈利判断字体颜色。
+        if (Integer.valueOf(hold.textView_price.getText().toString()).intValue()>=0){
+            hold.textView_price.setTextColor(Color.parseColor("#ff4320"));
+        }else {
+            hold.textView_price.setTextColor(Color.parseColor("#0000cc"));
+        }
+
         return contextView;
     }
     View.OnClickListener sellButtonClick = new View.OnClickListener() {

@@ -72,10 +72,16 @@ public class holdActivity extends Activity {
         for (int i = 0;i < 10;i++){
             Map<String,Object> map = new HashMap<String, Object>();
             map.put("textView_name","美原油"+i);
-            map.put("textView_buyMoreOrLess","看多");
+
             map.put("textView_buyNum","2222");
             map.put("textView_counterFee","-800");
-            map.put("textView_price","+999999");
+            if (i%2==0){
+                map.put("textView_buyMoreOrLess","看多");
+                map.put("textView_price","-999999");
+            }else{
+                map.put("textView_price", "+999999");
+                map.put("textView_buyMoreOrLess","看空");
+            }
             map.put("textView_openPrice","22222");
             map.put("textView_closePrice","33333");
             list.add(map);

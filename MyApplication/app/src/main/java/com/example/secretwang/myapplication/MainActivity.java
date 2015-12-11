@@ -15,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.google.android.gms.appindexing.Action;
@@ -45,7 +46,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
-       Button setBtn=(Button) findViewById(R.id.setBtn);
+       ImageButton setBtn=(ImageButton) findViewById(R.id.setBtn);
         final TextView shouTxt=(TextView) findViewById(R.id.shoushutextView);
         final TextView nametextView=(TextView) findViewById(R.id.nametextView);
  //    跳转设置界面
@@ -86,7 +87,7 @@ public class MainActivity extends Activity {
             }
         });
 //        跳转个人中心界面
-        Button userBtn=(Button)findViewById(R.id.usrBtn);
+        ImageButton userBtn=(ImageButton)findViewById(R.id.usrBtn);
         userBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

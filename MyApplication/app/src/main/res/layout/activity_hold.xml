@@ -8,7 +8,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.secretwang.myapplication.holdActivity"
-    android:background="#000000">
+    android:background="#030014">
 
     <ListView
         android:layout_width="wrap_content"
@@ -25,7 +25,7 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="盈亏(不计手续费)"
         android:id="@+id/textView13"
-        android:textColor="#e2a01e"
+        android:textColor="#eac281"
         android:layout_marginTop="25dp"
         android:textSize="25dp"
         android:layout_alignParentTop="true"
@@ -50,7 +50,7 @@
         android:text="@string/historyHold"
         android:id="@+id/button_history"
         android:background="@drawable/shape"
-        android:backgroundTint="#ffc848"
+        android:backgroundTint="#eac281"
         android:layout_below="@+id/textView12"
         android:layout_alignRight="@+id/listView_holdList"
         android:layout_alignEnd="@+id/listView_holdList"
