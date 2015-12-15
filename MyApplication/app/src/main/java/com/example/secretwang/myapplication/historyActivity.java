@@ -1,11 +1,16 @@
 package com.example.secretwang.myapplication;
 
 import android.app.Activity;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.Window;
 import android.widget.ListView;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,13 +29,41 @@ public class historyActivity extends Activity {
         listView = (ListView)findViewById(R.id.listView_historyHold);
         List<Map<String,Object>> list = getData();
         listView.setAdapter(new historyHoldAdspter(this, list));
-    }
 
-//    @Override
-//       public boolean onCreateOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.menu.menu_main, menu);
-//                return true;
-//           }
+        new Thread(runnable).start();
+    }
+        Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message message){
+            super.handleMessage(message);
+            Bundle bundle = message.getData();
+            String string = bundle.getString("value");
+            Log.i("", string);
+        }
+    };
+
+    Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            String url = "http://139.196.32.138:10011/WebService.asmx";
+            String method = "TransformData";
+            String str_json = "{" +
+                    "\"TaskGuid\":\"ab8495db-3a4a-4f70-bb81-8518f60ec8bf\"," +
+                    "\"DataType\":\"ClientCloseTrades\"," +
+                    "\"LoginAccount\":\"1317\"," +
+                    "\"StartTime\":\"1448961616\"," +
+                    "\"EndTime\":\"1449134416\"" +
+                    "}";
+            request request = new request();
+            String string = request.getResult(url, method, str_json);
+            System.out.println(string);
+            Message message = new Message();
+            Bundle bundle = new Bundle();
+            bundle.putString("value",string);
+            message.setData(bundle);
+            handler.sendMessage(message);
+        }
+    };
 
     public List<Map<String,Object>> getData() {
         List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
