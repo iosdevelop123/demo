@@ -313,7 +313,6 @@ public class WheelView extends ScrollView {
             viewWidth=size.x;
             Log.d(TAG, "viewWidth: " + viewWidth);
         }
-
         if (null == paint) {
             paint = new Paint();
             paint.setColor(Color.parseColor("#83cde6"));
