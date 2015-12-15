@@ -14,7 +14,7 @@ public class UserActivity extends Activity {
     private Button button_back = null;
     private Button button_exit = null;
     private  static final String[] strs = new String[] {
-            "可用余额","昵称","修改密码","手势密码"
+            "可用余额","昵称","修改密码"
     };//定义一个String数组用来显示ListView的内容
     private ListView lv;
     @Override

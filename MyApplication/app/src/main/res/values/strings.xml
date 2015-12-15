@@ -4,8 +4,8 @@
     <string name="name">美原油</string>
     <string name="buyNum">委托手数:</string>
     <string name="lighting">闪电图</string>
-    <string name="buymore">看多</string>
-    <string name="buyless">看空</string>
+    <string name="buymore">看  多</string>
+    <string name="buyless">看  空</string>
     <string name="allsell">全部清仓</string>
     <string name="price">3333</string>
     <string name="buyMorePrice">22222</string>
