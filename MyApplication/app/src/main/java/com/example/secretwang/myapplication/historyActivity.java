@@ -11,6 +11,7 @@ import android.view.Window;
 import android.widget.ListView;
 
 import org.json.JSONObject;
+import org.ksoap2.serialization.SoapObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,11 +56,12 @@ public class historyActivity extends Activity {
                     "\"EndTime\":\"1449134416\"" +
                     "}";
             request request = new request();
-            String string = request.getResult(url, method, str_json);
-            System.out.println(string);
+            SoapObject string = request.getResult(url, method, str_json);
+            String jsonRequest = string.getProperty(0).toString();
+            System.out.println(jsonRequest);
             Message message = new Message();
             Bundle bundle = new Bundle();
-            bundle.putString("value",string);
+            bundle.putString("value",string.toString());
             message.setData(bundle);
             handler.sendMessage(message);
         }

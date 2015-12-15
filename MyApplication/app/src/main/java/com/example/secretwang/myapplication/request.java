@@ -41,7 +41,7 @@ public class request {
 //        }
 //    };
 
-    public String getResult(String url,String method,String parpm) {
+    public SoapObject getResult(String url,String method,String parpm) {
         String string = "";
 
         String nameSpace = "http://tempuri.org/";
@@ -60,15 +60,15 @@ public class request {
         envelope.bodyOut = soapObject;
         envelope.dotNet = true;
         envelope.setOutputSoapObject(soapObject);
-
+        SoapObject soapObject1 = new SoapObject();
         try {
             httpTransportSE.call(soapAction,envelope);
-            SoapObject soapObject1 = (SoapObject)envelope.bodyIn;
-            string = soapObject1.toString();
+            soapObject1 = (SoapObject)envelope.bodyIn;
+//            string = soapObject1.toString();
         }catch (Exception e){
             e.printStackTrace();
         }
 
-        return string;
+        return soapObject1;
     }
 }
