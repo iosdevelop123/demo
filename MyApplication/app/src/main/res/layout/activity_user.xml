@@ -56,6 +56,6 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="70dp"
         android:background="@drawable/shape"
-        android:backgroundTint="#37baf2" />
+        android:backgroundTint="#4331e8" />
 
 </RelativeLayout>

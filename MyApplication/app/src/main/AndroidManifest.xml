@@ -37,5 +37,6 @@
         <activity android:name=".holdActivity" />
         <activity android:name=".historyActivity"></activity>
     </application>
-
+    <span style="font-size:16px;">
+    <uses-permission android:name="android.permission.INTERNET"/></span>
 </manifest>
