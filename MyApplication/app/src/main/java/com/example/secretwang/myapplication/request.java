@@ -41,12 +41,12 @@ public class request {
 //        }
 //    };
 
-    public SoapObject getResult(String url,String method,String parpm) {
+    public SoapObject getResult(String method,String parpm) {
         String string = "";
 
         String nameSpace = "http://tempuri.org/";
         String methodName = method;
-        String requestUrl = url;
+        String requestUrl = "http://139.196.32.138:10011/WebService.asmx";
         String soapAction = nameSpace + methodName;
 
         HttpTransportSE httpTransportSE = new HttpTransportSE(requestUrl);
@@ -64,7 +64,7 @@ public class request {
         try {
             httpTransportSE.call(soapAction,envelope);
             soapObject1 = (SoapObject)envelope.bodyIn;
-//            string = soapObject1.toString();
+//            string = soapObject1.getProperty(0).toString();
         }catch (Exception e){
             e.printStackTrace();
         }

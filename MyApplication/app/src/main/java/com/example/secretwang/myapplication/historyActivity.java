@@ -10,18 +10,23 @@ import android.view.Menu;
 import android.view.Window;
 import android.widget.ListView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.ksoap2.serialization.SoapObject;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+
 
 public class historyActivity extends Activity {
 
     private ListView listView = null;
+    private ArrayList arrayList = new ArrayList();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,7 +35,6 @@ public class historyActivity extends Activity {
         listView = (ListView)findViewById(R.id.listView_historyHold);
         List<Map<String,Object>> list = getData();
         listView.setAdapter(new historyHoldAdspter(this, list));
-
         new Thread(runnable).start();
     }
         Handler handler = new Handler() {
@@ -46,7 +50,6 @@ public class historyActivity extends Activity {
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            String url = "http://139.196.32.138:10011/WebService.asmx";
             String method = "TransformData";
             String str_json = "{" +
                     "\"TaskGuid\":\"ab8495db-3a4a-4f70-bb81-8518f60ec8bf\"," +
@@ -56,23 +59,44 @@ public class historyActivity extends Activity {
                     "\"EndTime\":\"1449134416\"" +
                     "}";
             request request = new request();
-            SoapObject string = request.getResult(url, method, str_json);
-            String jsonRequest = string.getProperty(0).toString();
-            System.out.println(jsonRequest);
+            SoapObject requestResult = request.getResult(method, str_json);
+            data(requestResult);
             Message message = new Message();
             Bundle bundle = new Bundle();
-            bundle.putString("value",string.toString());
+            bundle.putString("value",requestResult.toString());
             message.setData(bundle);
             handler.sendMessage(message);
         }
     };
+    private List<Map<String,Object>> data(SoapObject soapObject){
+        List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
+        String string = soapObject.getProperty(0).toString();
+        try {
+            JSONArray jsonArray = new JSONArray(string);
+            for (int i=0;i<jsonArray.length();i++){
+                Map<String,Object> map = new HashMap<String,Object>();
+                JSONObject myjson = jsonArray.getJSONObject(i);
+                String TypeName = myjson.getString("TypeName");
+                map.put("MoreOrLessText","看" + TypeName);
+                
+                arrayList.add(0,TypeName);
+                list.add(map);
+            }
+
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+
+        System.out.println(string);
+        return list;
+    }
 
     public List<Map<String,Object>> getData() {
         List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
-        for (int i = 0;i<10;i++){
+        for (int i = 0;i<arrayList.size();i++){
             Map<String,Object> map = new HashMap<String, Object>();
             map.put("nameText","恒生指数");
-            map.put("MoreOrLessText","看多");
+            map.put("MoreOrLessText","看" + arrayList.get(i));
             map.put("shoNumText","22手");
             map.put("feesText","手续费-800");
             map.put("DataText","2015-12-12");
