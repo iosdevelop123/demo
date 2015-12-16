@@ -55,7 +55,6 @@ public class LoginActivity extends Activity {
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            String url = "http://139.196.32.138:10011/WebService.asmx";
             String method = "TransformData";
             String str_json = "{" +
                     "\"TaskGuid\":\"ab8495db-3a4a-4f70-bb81-8518f60ec8bf\"," +
@@ -64,7 +63,7 @@ public class LoginActivity extends Activity {
                     "\"Password\":\""+passWord.getText().toString()+"\"," +
                     "}";
             request request = new request();
-            SoapObject string = request.getResult(url, method, str_json);
+            SoapObject string = request.getResult(method, str_json);
             String jsonRequest = string.getProperty(0).toString();
             Log.e(">>>>>>>>>>",jsonRequest);
             if (jsonRequest.equals("True")){
