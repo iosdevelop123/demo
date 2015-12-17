@@ -13,4 +13,5 @@
     <string name="buyOnce">追单</string>
     <string name="Reverseposition">反向开仓</string>
     <string name="historyHold">历史记录</string>
+    <string name="pulldown">下拉更新</string>
 </resources>
