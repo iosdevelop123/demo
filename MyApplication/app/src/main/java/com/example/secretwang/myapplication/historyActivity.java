@@ -9,11 +9,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.Window;
 import android.widget.ListView;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.ksoap2.serialization.SoapObject;
+import java.lang.reflect.Array;
+
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -99,6 +100,7 @@ public class historyActivity extends Activity {
             for (int i=0;i<jsonArray.length();i++){
                 Map<String,Object> map = new HashMap<String, Object>();
                 JSONObject myjson = jsonArray.getJSONObject(i);
+
                 map.put("TypeName",myjson.getString("TypeName"));
                 map.put("Symbol", myjson.getString("Symbol"));
                 map.put("Volume", myjson.getString("Volume"));
