@@ -15,27 +15,24 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.ksoap2.serialization.SoapObject;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 
+
 public class historyActivity extends Activity {
 
     private ListView listView = null;
-    private ArrayList arrayList = new ArrayList();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
 //        requestWindowFeature(Window.FEATURE_NO_TITLE);
         listView = (ListView)findViewById(R.id.listView_historyHold);
-        List<Map<String,Object>> list = getData();
-        listView.setAdapter(new historyHoldAdspter(this, list));
         new Thread(runnable).start();
+
     }
         Handler handler = new Handler() {
         @Override
@@ -43,7 +40,28 @@ public class historyActivity extends Activity {
             super.handleMessage(message);
             Bundle bundle = message.getData();
             String string = bundle.getString("value");
-            Log.i("", string);
+            try {
+                List<Map<String,Object>> listMap = new ArrayList<>();
+                JSONArray jsonArray = new JSONArray(string);
+                for (int i=0;i<jsonArray.length();i++){
+                    Map<String,Object> map = new HashMap<String, Object>();
+                    JSONObject resultStr = jsonArray.getJSONObject(i);
+                    map.put("nameText", resultStr.getString("Symbol"));
+                    map.put("MoreOrLessText", "看" + resultStr.getString("TypeName"));
+                    map.put("shoNumText",resultStr.getString("Volume") + "手");
+                    map.put("feesText", "手续费" + resultStr.getString("Commission"));
+                    map.put("DataText", resultStr.getString("CloseTime"));
+                    map.put("openTimeText" ,resultStr.getString("openTimeHour") + ":" +resultStr.getString("openTimeMin") );
+                    map.put("CloseTimeText",resultStr.getString("closeTimeHour") + ":" + resultStr.getString("closeTimeMin"));
+                    map.put("priceText",resultStr.getString("Profit"));
+                    map.put("openPriceText",resultStr.getString("OpenPrice"));
+                    map.put("closePriceText",resultStr.getString("ClosePrice"));
+                    listMap.add(0, map);
+                }
+                listView.setAdapter(new historyHoldAdspter(getApplicationContext(), listMap));
+            }catch (JSONException e){
+                e.printStackTrace();
+            }
         }
     };
 
@@ -51,61 +69,55 @@ public class historyActivity extends Activity {
         @Override
         public void run() {
             String method = "TransformData";
-            String str_json = "{" +
-                    "\"TaskGuid\":\"ab8495db-3a4a-4f70-bb81-8518f60ec8bf\"," +
-                    "\"DataType\":\"ClientCloseTrades\"," +
-                    "\"LoginAccount\":\"1317\"," +
-                    "\"StartTime\":\"1448961616\"," +
-                    "\"EndTime\":\"1449134416\"" +
-                    "}";
+            JSONObject parma = new JSONObject();
+            try {
+                parma.put("TaskGuid","ab8495db-3a4a-4f70-bb81-8518f60ec8bf");
+                parma.put("DataType","ClientCloseTrades");
+                parma.put("LoginAccount","1317");
+                parma.put("StartTime","1448961616");
+                parma.put("EndTime","1449134416");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            String str_json = parma.toString();
             request request = new request();
             SoapObject requestResult = request.getResult(method, str_json);
-            data(requestResult);
+            List list = data(requestResult);
             Message message = new Message();
             Bundle bundle = new Bundle();
-            bundle.putString("value",requestResult.toString());
+            bundle.putString("value",list.toString());
             message.setData(bundle);
             handler.sendMessage(message);
         }
     };
-    private List<Map<String,Object>> data(SoapObject soapObject){
-        List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
+    private List data(SoapObject soapObject){
+        List list = new ArrayList<>();
         String string = soapObject.getProperty(0).toString();
         try {
             JSONArray jsonArray = new JSONArray(string);
             for (int i=0;i<jsonArray.length();i++){
-                Map<String,Object> map = new HashMap<String,Object>();
+                Map<String,Object> map = new HashMap<String, Object>();
                 JSONObject myjson = jsonArray.getJSONObject(i);
-                String TypeName = myjson.getString("TypeName");
-                map.put("MoreOrLessText","看" + TypeName);
-                
-                arrayList.add(0,TypeName);
+                map.put("TypeName",myjson.getString("TypeName"));
+                map.put("Symbol", myjson.getString("Symbol"));
+                map.put("Volume", myjson.getString("Volume"));
+                map.put("Commission", myjson.getString("Commission"));
+//                截取卖出时间字符串
+                String closeTime = myjson.getString("CloseTime");
+                map.put("CloseTime", closeTime.substring(0, 10));
+                map.put("closeTimeHour",closeTime.substring(11,13));
+                map.put("closeTimeMin",closeTime.substring(14,16));
+//                截取买入时间字符串
+                String openTime = myjson.getString("OpenTimeMRSF");
+                map.put("openTimeHour", openTime.substring(6,8));
+                map.put("openTimeMin",openTime.substring(9,11));
+                map.put("Profit",myjson.getString("Profit"));
+                map.put("OpenPrice",myjson.getString("OpenPrice"));
+                map.put("ClosePrice",myjson.getString("ClosePrice"));
                 list.add(map);
             }
-
         }catch (JSONException e){
             e.printStackTrace();
-        }
-
-        System.out.println(string);
-        return list;
-    }
-
-    public List<Map<String,Object>> getData() {
-        List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
-        for (int i = 0;i<arrayList.size();i++){
-            Map<String,Object> map = new HashMap<String, Object>();
-            map.put("nameText","恒生指数");
-            map.put("MoreOrLessText","看" + arrayList.get(i));
-            map.put("shoNumText","22手");
-            map.put("feesText","手续费-800");
-            map.put("DataText","2015-12-12");
-            map.put("openTimeText","12:12");
-            map.put("CloseTimeText","12:15");
-            map.put("priceText","+999999");
-            map.put("openPriceText","22222");
-            map.put("closePriceText","33333");
-            list.add(map);
         }
         return list;
     }

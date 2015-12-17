@@ -2,6 +2,7 @@ package com.example.secretwang.myapplication;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,8 @@ public class historyHoldAdspter extends BaseAdapter {
         this.data = data;
         this.layoutInflater = LayoutInflater.from(context);
     }
+
+
 
     public final class HistoryHold {
         public TextView nameText;
@@ -90,6 +93,11 @@ public class historyHoldAdspter extends BaseAdapter {
             historyHold.MoreOrLessText.setBackgroundColor(Color.parseColor("#820101"));
         }else {
             historyHold.MoreOrLessText.setBackgroundColor(Color.parseColor("#0000cc"));
+        }
+        if (historyHold.priceText.getText().toString().startsWith("-")){
+            historyHold.priceText.setTextColor(Color.parseColor("#0069d5"));
+        }else {
+            historyHold.priceText.setTextColor(Color.parseColor("#ff0000"));
         }
 
         return convertView;
