@@ -32,7 +32,6 @@ public class historyActivity extends Activity {
 //        requestWindowFeature(Window.FEATURE_NO_TITLE);
         listView = (ListView)findViewById(R.id.listView_historyHold);
         new Thread(runnable).start();
-
     }
         Handler handler = new Handler() {
         @Override
@@ -69,13 +68,15 @@ public class historyActivity extends Activity {
         @Override
         public void run() {
             String method = "TransformData";
+            int timeLong = (int) (System.currentTimeMillis()/1000+60*60*24);
+            int starTime = (int) (System.currentTimeMillis()/1000-60*60*24*2);
             JSONObject parma = new JSONObject();
             try {
                 parma.put("TaskGuid","ab8495db-3a4a-4f70-bb81-8518f60ec8bf");
                 parma.put("DataType","ClientCloseTrades");
                 parma.put("LoginAccount","1317");
-                parma.put("StartTime","1448961616");
-                parma.put("EndTime","1449134416");
+                parma.put("StartTime",starTime);
+                parma.put("EndTime",timeLong);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
