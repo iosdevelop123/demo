@@ -3,11 +3,8 @@ package com.example.secretwang.myapplication;
 import android.app.Activity;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
-import android.view.Window;
+
 import android.widget.ListView;
 import org.json.JSONArray;
 import org.json.JSONException;
