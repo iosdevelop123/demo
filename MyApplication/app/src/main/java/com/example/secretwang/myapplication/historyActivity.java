@@ -9,12 +9,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.Window;
 import android.widget.ListView;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.ksoap2.serialization.SoapObject;
-
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -78,7 +76,6 @@ public class historyActivity extends Activity {
                 JSONObject myjson = jsonArray.getJSONObject(i);
                 String TypeName = myjson.getString("TypeName");
                 map.put("MoreOrLessText","看" + TypeName);
-                
                 arrayList.add(0,TypeName);
                 list.add(map);
             }
