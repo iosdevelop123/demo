@@ -17,11 +17,9 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
-
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,21 +38,36 @@ public class MainActivity extends Activity {
     private  int number;
     private  int category;
     private GoogleApiClient client;
+    private ImageButton settingBtn;
+    private  TextView shouTxt;
+    private  TextView nametextView;
+    private  ImageButton userBtn;
+    private  Button holdButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
-
         createButton();
-        SetView();
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
     private void createButton() {
-        //        看多按钮
+        //手数和品种
+        shouTxt=(TextView) findViewById(R.id.shoushutextView);
+        nametextView=(TextView) findViewById(R.id.nametextView);
+        //设置按钮
+        settingBtn=(ImageButton) findViewById(R.id.setBtn);
+        settingBtn.setOnClickListener(settingBtnClick);
+        //个人中心按钮
+        userBtn=(ImageButton)findViewById(R.id.usrBtn);
+        userBtn.setOnClickListener(userBtnClick);
+        //持仓按钮
+        holdButton = (Button)findViewById(R.id.button_hold);
+        holdButton.setOnClickListener(holdButtonClick);
+        // 看多按钮
         buyMoreButton = (Button)findViewById(R.id.button_buyMore);
         buyMoreButton.setOnClickListener(buyMoreClick);
 //        看空按钮
@@ -63,14 +76,30 @@ public class MainActivity extends Activity {
 //        全部卖出按钮
         allSellButton = (Button)findViewById(R.id.button_allSell);
         allSellButton.setOnClickListener(allSellClick);
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
-    private void SetView() {
-        ImageButton setBtn=(ImageButton) findViewById(R.id.setBtn);
-        final TextView shouTxt=(TextView) findViewById(R.id.shoushutextView);
-        final TextView nametextView=(TextView) findViewById(R.id.nametextView);
+    //    持仓按钮点击事件
+    View.OnClickListener holdButtonClick =(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(MainActivity.this,holdActivity.class);
+            startActivity(intent);
+        }
+    });
+
+    //        跳转个人中心界面
+    View.OnClickListener userBtnClick=(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent=new Intent(MainActivity.this,UserActivity.class);
+            startActivity(intent);
+        }
+    });
         //    跳转设置界面
-        setBtn.setOnClickListener(new View.OnClickListener() {
+     View.OnClickListener settingBtnClick =(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 View outerView = LayoutInflater.from(MainActivity.this).inflate(R.layout.wheel_view, null);
@@ -106,25 +135,6 @@ public class MainActivity extends Activity {
                         .show();
             }
         });
-//        跳转个人中心界面
-        ImageButton userBtn=(ImageButton)findViewById(R.id.usrBtn);
-        userBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent=new Intent(MainActivity.this,UserActivity.class);
-                startActivity(intent);
-            }
-        });
-        //    持仓按钮点击事件
-        Button holdButton = (Button)findViewById(R.id.button_hold);
-        holdButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this,holdActivity.class);
-                startActivity(intent);
-            }
-        });
-    }
 
 //    全部卖出按钮点击事件
     View.OnClickListener allSellClick = new View.OnClickListener() {
