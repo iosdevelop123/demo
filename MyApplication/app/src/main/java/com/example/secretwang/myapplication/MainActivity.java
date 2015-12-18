@@ -46,10 +46,30 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
-       ImageButton setBtn=(ImageButton) findViewById(R.id.setBtn);
+
+        createButton();
+        SetView();
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+    }
+    private void createButton() {
+        //        看多按钮
+        buyMoreButton = (Button)findViewById(R.id.button_buyMore);
+        buyMoreButton.setOnClickListener(buyMoreClick);
+//        看空按钮
+        buyLessButton = (Button)findViewById(R.id.button_buyLess);
+        buyLessButton.setOnClickListener(buyLessButtonClick);
+//        全部卖出按钮
+        allSellButton = (Button)findViewById(R.id.button_allSell);
+        allSellButton.setOnClickListener(allSellClick);
+    }
+
+    private void SetView() {
+        ImageButton setBtn=(ImageButton) findViewById(R.id.setBtn);
         final TextView shouTxt=(TextView) findViewById(R.id.shoushutextView);
         final TextView nametextView=(TextView) findViewById(R.id.nametextView);
- //    跳转设置界面
+        //    跳转设置界面
         setBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -57,7 +77,7 @@ public class MainActivity extends Activity {
                 wv = (WheelView) outerView.findViewById(R.id.wheel_view_wv);
                 wv.setOffset(2);
                 wv.setItems(Arrays.asList(shoushu));
- //     保存上次选择的手数
+                //     保存上次选择的手数
                 wv.setSeletion(number);
                 wv.setOnWheelViewListener(new WheelView.OnWheelViewListener() {
                     @Override
@@ -104,21 +124,7 @@ public class MainActivity extends Activity {
                 startActivity(intent);
             }
         });
-//        看多按钮
-        buyMoreButton = (Button)findViewById(R.id.button_buyMore);
-        buyMoreButton.setOnClickListener(buyMoreClick);
-//        看空按钮
-        buyLessButton = (Button)findViewById(R.id.button_buyLess);
-        buyLessButton.setOnClickListener(buyLessButtonClick);
-//        全部卖出按钮
-        allSellButton = (Button)findViewById(R.id.button_allSell);
-        allSellButton.setOnClickListener(allSellClick);
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
-
 
 //    全部卖出按钮点击事件
     View.OnClickListener allSellClick = new View.OnClickListener() {

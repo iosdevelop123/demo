@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.nfc.Tag;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -18,6 +20,11 @@ import android.widget.ListView;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.ksoap2.serialization.SoapObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,20 +46,8 @@ public class holdActivity extends Activity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_hold);
-//        持仓
-        listView = (ListView) findViewById(R.id.listView_holdList);
-        List<Map<String, Object>> list = getData();
-        listView.setAdapter(new HoldAdspter(this, list));
-
-//        历史纪录Button
-        historyButton = (Button) findViewById(R.id.button_history);
-        historyButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(holdActivity.this, historyActivity.class);
-                startActivity(intent);
-            }
-        });
+        new Thread(runnable).start();
+        createUI();
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
@@ -67,26 +62,117 @@ public class holdActivity extends Activity {
 //        }
 //    };
 
-    public List<Map<String,Object>> getData(){
-        List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
-        for (int i = 0;i < 10;i++){
-            Map<String,Object> map = new HashMap<String, Object>();
-            map.put("textView_name","美原油"+i);
-            map.put("textView_buyNum","2222");
-            map.put("textView_counterFee","-800");
-            if (i%2==0){
-                map.put("textView_buyMoreOrLess","看多");
-                map.put("textView_price","-999999");
-            }else{
-                map.put("textView_price", "+999999");
-                map.put("textView_buyMoreOrLess","看空");
+    private void createUI() {
+        //        持仓
+        listView = (ListView) findViewById(R.id.listView_holdList);
+
+//        历史纪录Button
+        historyButton = (Button) findViewById(R.id.button_history);
+        historyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(holdActivity.this, historyActivity.class);
+                startActivity(intent);
             }
-            map.put("textView_openPrice","22222");
-            map.put("textView_closePrice","33333");
-            list.add(map);
+        });
+//        List list = getData();
+//        listView.setAdapter(new HoldAdspter(getApplicationContext(),list));
+    }
+
+    Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message message) {
+            super.handleMessage(message);
+            Bundle bundle = message.getData();
+            String string = bundle.getString("key");
+            try {
+                JSONArray jsonArray = new JSONArray(string);
+                List<Map<String,Object>> list = new ArrayList<>();
+                for (int i=0;i<jsonArray.length();i++) {
+                    Map<String,Object> map = new HashMap<>();
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    map.put("textView_name",jsonObject.getString("Symbol"));
+                    map.put("textView_buyNum",jsonObject.getString("Volume"));
+                    map.put("textView_counterFee",jsonObject.getString("Commission"));
+                    map.put("textView_buyMoreOrLess",jsonObject.getString("TypeName"));
+                    map.put("textView_price",jsonObject.getString("Profit"));
+                    map.put("textView_openPrice",jsonObject.getString("OpenPrice"));
+                    map.put("textView_closePrice",jsonObject.getString("ClosePrice"));
+                    list.add(map);
+                }
+                listView.setAdapter(new HoldAdspter(getApplicationContext(),list));
+            }catch (JSONException e){
+                e.printStackTrace();
+            }
+        }
+    };
+
+    Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            String method = "TransformData";
+            JSONObject parma = new JSONObject();
+            try {
+                parma.put("TaskGuid","ab8495db-3a4a-4f70-bb81-8518f60ec8bf");
+                parma.put("DriverID","1234567890");
+                parma.put("DataType","ClientOpenTrades");
+                parma.put("LoginAccount","1317");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            String str_json = parma.toString();
+            request request = new request();
+            SoapObject soapObject = request.getResult(method,str_json);
+            List list = data(soapObject);
+//            List<Map<String,Object>> list = getData();
+//            listView.setAdapter(new HoldAdspter(getApplicationContext(),list));
+            Message message = new Message();
+            Bundle bundle = new Bundle();
+            bundle.putString("key",list.toString());
+            message.setData(bundle);
+            handler.sendMessage(message);
+        }
+    };
+
+    private List data(SoapObject soapObject) {
+        List list = new ArrayList();
+        String string = soapObject.getProperty(0).toString();
+        try {
+            JSONArray jsonArray = new  JSONArray(string);
+            for (int i = 0;i<jsonArray.length();i++){
+                Map<String,Object> map = new HashMap<String, Object>();
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                map.put("Symbol",jsonObject.getString("Symbol"));
+                map.put("Volume",jsonObject.getString("Volume"));
+                map.put("Commission",jsonObject.getString("Commission"));
+                map.put("TypeName","看" + jsonObject.getString("TypeName"));
+                map.put("Profit",jsonObject.getString("Profit"));
+                map.put("OpenPrice",jsonObject.getString("OpenPrice"));
+                map.put("ClosePrice",jsonObject.getString("ClosePrice"));
+                list.add(map);
+                System.out.println(jsonObject);
+            }
+        }catch (JSONException e){
+            e.printStackTrace();
         }
         return list;
     }
+
+//    public List<Map<String,Object>> getData(){
+//        List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
+//        for (int i = 0;i < 10;i++){
+//            Map<String,Object> map = new HashMap<String, Object>();
+//            map.put("textView_name","美原油"+i);
+//            map.put("textView_buyNum","2222");
+//            map.put("textView_counterFee","-800");
+//            map.put("textView_buyMoreOrLess","看多");
+//            map.put("textView_price","-999999");
+//            map.put("textView_openPrice","22222");
+//            map.put("textView_closePrice","33333");
+//            list.add(map);
+//        }
+//        return list;
+//    }
 
     @Override
     public void onStart() {
