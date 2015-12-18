@@ -168,6 +168,16 @@
                 android:layout_toLeftOf="@+id/textView22"
                 android:layout_toStartOf="@+id/textView22" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="New Text"
+                android:id="@+id/OrderNumber"
+                android:layout_alignBottom="@+id/textView_counterFee"
+                android:layout_toRightOf="@+id/textView_counterFee"
+                android:layout_toEndOf="@+id/textView_counterFee"
+                android:textColor="#030014" />
+
         </RelativeLayout>
 
     </LinearLayout>

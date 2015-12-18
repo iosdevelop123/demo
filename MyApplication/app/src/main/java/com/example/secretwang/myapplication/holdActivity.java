@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Notification;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.nfc.Tag;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -35,6 +37,7 @@ import java.util.Objects;
 public class holdActivity extends Activity {
     private Button historyButton;
     private ListView listView = null;
+    private TextView priceTextView = null;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -65,7 +68,7 @@ public class holdActivity extends Activity {
     private void createUI() {
         //        持仓
         listView = (ListView) findViewById(R.id.listView_holdList);
-
+        priceTextView = (TextView) findViewById(R.id.textView12);
 //        历史纪录Button
         historyButton = (Button) findViewById(R.id.button_history);
         historyButton.setOnClickListener(new View.OnClickListener() {
@@ -85,6 +88,7 @@ public class holdActivity extends Activity {
             super.handleMessage(message);
             Bundle bundle = message.getData();
             String string = bundle.getString("key");
+            int price = 0;
             try {
                 JSONArray jsonArray = new JSONArray(string);
                 List<Map<String,Object>> list = new ArrayList<>();
@@ -98,8 +102,16 @@ public class holdActivity extends Activity {
                     map.put("textView_price",jsonObject.getString("Profit"));
                     map.put("textView_openPrice",jsonObject.getString("OpenPrice"));
                     map.put("textView_closePrice",jsonObject.getString("ClosePrice"));
+                    map.put("textView_OrderNumber",jsonObject.getString("OrderNumber"));
+                    price += jsonObject.getInt("Profit");
                     list.add(map);
                 }
+                if (price < 0){
+                    priceTextView.setTextColor(Color.parseColor("#0069d5"));
+                }else {
+                    priceTextView.setTextColor(Color.parseColor("#fe0000"));
+                }
+                priceTextView.setText(String.valueOf(price));
                 listView.setAdapter(new HoldAdspter(getApplicationContext(),list));
             }catch (JSONException e){
                 e.printStackTrace();
@@ -124,8 +136,6 @@ public class holdActivity extends Activity {
             request request = new request();
             SoapObject soapObject = request.getResult(method,str_json);
             List list = data(soapObject);
-//            List<Map<String,Object>> list = getData();
-//            listView.setAdapter(new HoldAdspter(getApplicationContext(),list));
             Message message = new Message();
             Bundle bundle = new Bundle();
             bundle.putString("key",list.toString());
@@ -137,6 +147,7 @@ public class holdActivity extends Activity {
     private List data(SoapObject soapObject) {
         List list = new ArrayList();
         String string = soapObject.getProperty(0).toString();
+
         try {
             JSONArray jsonArray = new  JSONArray(string);
             for (int i = 0;i<jsonArray.length();i++){
@@ -149,6 +160,7 @@ public class holdActivity extends Activity {
                 map.put("Profit",jsonObject.getString("Profit"));
                 map.put("OpenPrice",jsonObject.getString("OpenPrice"));
                 map.put("ClosePrice",jsonObject.getString("ClosePrice"));
+                map.put("OrderNumber",jsonObject.getString("OrderNumber"));
                 list.add(map);
                 System.out.println(jsonObject);
             }

@@ -173,6 +173,7 @@
                 android:layout_toStartOf="@+id/textView29"
                 android:textSize="10dp"
                 android:textColor="#636363" />
+
         </RelativeLayout>
     </LinearLayout>
 </LinearLayout>

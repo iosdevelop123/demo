@@ -35,7 +35,7 @@ public class HoldAdspter extends BaseAdapter {
         public TextView textView_openPrice;
         public TextView textView_closePrice;
         public Button button_sell;
-        public Number orderNum;
+        public TextView textView_OrderNumber;
     }
     @Override
     public int getCount() {
@@ -69,7 +69,8 @@ public class HoldAdspter extends BaseAdapter {
             hold.textView_openPrice = (TextView) contextView.findViewById(R.id.textView_openPrice);
             hold.textView_closePrice = (TextView) contextView.findViewById(R.id.textView_closePrice);
             hold.button_sell = (Button)contextView.findViewById(R.id.button_sell);
-//            hold.button_sell.setOnClickListener(sellButtonClick);
+            hold.button_sell.setOnClickListener(sellButtonClick);
+            hold.textView_OrderNumber = (TextView) contextView.findViewById(R.id.OrderNumber);
             contextView.setTag(hold);
         }else {
             hold = (Hold)contextView.getTag();
@@ -82,7 +83,7 @@ public class HoldAdspter extends BaseAdapter {
         hold.textView_price.setText((String)data.get(position).get("textView_price"));
         hold.textView_openPrice.setText((String)data.get(position).get("textView_openPrice"));
         hold.textView_closePrice.setText((String)data.get(position).get("textView_closePrice"));
-
+        hold.textView_OrderNumber.setText((String)data.get(position).get("textView_OrderNumber"));
 //        判断是看多还是看空，显示背景颜色
         if (hold.textView_buyMoreOrLess.getText().toString().equals("看多")) {
             hold.textView_buyMoreOrLess.setBackgroundColor(Color.parseColor("#7c0000"));
@@ -93,16 +94,15 @@ public class HoldAdspter extends BaseAdapter {
         if (!hold.textView_price.getText().toString().startsWith("-")){
             hold.textView_price.setTextColor(Color.parseColor("#ff4320"));
         }else {
-            hold.textView_price.setTextColor(Color.parseColor("#0000cc"));
+            hold.textView_price.setTextColor(Color.parseColor("#0069d5"));
         }
-
         return contextView;
     }
     View.OnClickListener sellButtonClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             v.findViewById(R.id.button_sell);
-
+            System.out.println(v);
         }
     };
 
