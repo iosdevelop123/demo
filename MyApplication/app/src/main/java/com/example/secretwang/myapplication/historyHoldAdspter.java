@@ -99,7 +99,6 @@ public class historyHoldAdspter extends BaseAdapter {
         }else {
             historyHold.priceText.setTextColor(Color.parseColor("#ff0000"));
         }
-
         return convertView;
     }
 
