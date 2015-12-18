@@ -72,7 +72,7 @@ public class MainActivity extends Activity {
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
-        new Thread(runnable).start();
+        new Thread(latestPriceRunnable).start();
     }
     private void createButton() {
         //手数和品种
@@ -103,7 +103,7 @@ public class MainActivity extends Activity {
         PriceTxt = (TextView)findViewById(R.id.textView_priceText);
     }
     //
-    Handler handler = new Handler() {
+    Handler latestPriceHandler = new Handler() {
         @Override
         public void handleMessage(Message message){
             super.handleMessage(message);
@@ -119,7 +119,7 @@ public class MainActivity extends Activity {
             PriceTxt.setText(CLF6Price);
         }
     };
-    Runnable runnable = new Runnable() {
+    Runnable latestPriceRunnable = new Runnable() {
         @Override
         public void run() {
            while (true) {
@@ -143,7 +143,7 @@ public class MainActivity extends Activity {
                    Bundle bundle = new Bundle();
                    bundle.putString("value", jsonRequest);
                    message.setData(bundle);
-                   handler.sendMessage(message);
+                   latestPriceHandler.sendMessage(message);
                } catch (Exception e) {
                    e.printStackTrace();
                }
