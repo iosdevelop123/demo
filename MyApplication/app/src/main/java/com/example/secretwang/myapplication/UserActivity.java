@@ -24,15 +24,15 @@ import java.util.HashMap;
 public class UserActivity extends Activity {
     private Button btn_exit ;
     private ListView lv;
-    private String Balance ;
-    private SimpleAdapter adapter;
-    String[] from={"item1","item2"};  //这里是ListView显示内容每一列的列名
+    private String Balance;
+    String[] from={"item0","item1","item2"};  //这里是ListView显示内容每一列的列名
     //这里是ListView显示每一列对应的list_item中控件的id
-    int[] to={R.id.user_item1, R.id.user_item2};
+    int[] to={R.id.user_item0,R.id.user_item1, R.id.user_item2};
+    Object[] userItem0={R.drawable.keyongyue,R.drawable.gerenxinxi,R.drawable.shoushi};
     String[] userItem1={"可用余额","昵称","修改密码"}; //这里第一列所要显示的项目
     String[] userItem2={"0.00","nickname",">"};  //第二列
-    ArrayList<HashMap<String,String>> list=null;
-    HashMap<String,String> map=null;
+    ArrayList<HashMap<String,Object>> list=null;
+    HashMap<String,Object> map=null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,18 +44,19 @@ public class UserActivity extends Activity {
   }
     public void loadUI(){
         //创建ArrayList对象；
-        list=new ArrayList<HashMap<String,String>>();
+        list=new ArrayList<HashMap<String,Object>>();
         //将数据存放进ArrayList对象中，数据安排的结构是，ListView的一行数据对应一个HashMap对象，
         //HashMap对象，以列名作为键，以该列的值作为Value，将各列信息添加进map中，然后再把每一列对应
         //的map对象添加到ArrayList中
         for(int i=0; i<3; i++){
-            map=new HashMap<String,String>();       //为避免产生空指针异常，有几列就创建几个map对象
+            map=new HashMap<String,Object>();
+            map.put("item0", userItem0[i]);
             map.put("item1", userItem1[i]);
             map.put("item2", userItem2[i]);
             list.add(map);
         }
         //创建一个SimpleAdapter对象
-        adapter=new SimpleAdapter(this,list,R.layout.list_user,from,to);
+        SimpleAdapter adapter=new SimpleAdapter(UserActivity.this,list,R.layout.list_user,from,to);
         //调用ListActivity的setListAdapter方法，为ListView设置适配器
         lv=(ListView) findViewById(R.id.userlistView);
         lv.setAdapter(adapter);
@@ -84,11 +85,25 @@ public class UserActivity extends Activity {
             super.handleMessage(message);
             Bundle bundle = message.getData();
             String string = bundle.getString("value");
-            //  Log.e(">>>>>>>>>>", string);
+             // Log.e(">>>>>>>>>>", string);
             try {
+                //将解析的字符串转换成json对象
                 JSONObject jsonObject=new JSONObject(string);
-                Balance=jsonObject.getString("Balance");
-                Log.e("=============",Balance);
+                String money=jsonObject.getString("Balance");
+                Balance = money + "$";
+               // Log.e("=============",Balance);
+                String[] userItem3={Balance,"nickname",">"};
+                list=new ArrayList<HashMap<String,Object>>();
+                for(int i=0; i<3; i++) {
+                    map = new HashMap<String, Object>();
+                    map.put("item0", userItem0[i]);
+                    map.put("item1", userItem1[i]);
+                    map.put("item2", userItem3[i]);
+                    list.add(map);
+                }
+                //创建一个SimpleAdapter对象
+                SimpleAdapter adapter=new SimpleAdapter(UserActivity.this,list,R.layout.list_user,from,to);
+                lv.setAdapter(adapter);
             }catch (JSONException e){
                 e.printStackTrace();
             }
