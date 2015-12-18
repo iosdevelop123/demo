@@ -40,70 +40,28 @@ public class MainActivity extends Activity {
     private  int number;
     private  int category;
     private GoogleApiClient client;
+    private ImageButton settingBtn;
+    private  TextView shouTxt;
+    private  TextView nametextView;
+    private  ImageButton userBtn;
+    private  Button holdButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
-       ImageButton setBtn=(ImageButton) findViewById(R.id.setBtn);
-        final TextView shouTxt=(TextView) findViewById(R.id.shoushutextView);
-        final TextView nametextView=(TextView) findViewById(R.id.nametextView);
- //    跳转设置界面
-        setBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                View outerView = LayoutInflater.from(MainActivity.this).inflate(R.layout.wheel_view, null);
-                wv = (WheelView) outerView.findViewById(R.id.wheel_view_wv);
-                wv.setOffset(2);
-                wv.setItems(Arrays.asList(shoushu));
- //     保存上次选择的手数
-                wv.setSeletion(number);
-                wv.setOnWheelViewListener(new WheelView.OnWheelViewListener() {
-                    @Override
-                    public void onSelected(int selectedIndex, String item) {
-                        Log.d(TAG, "[Dialog]selectedIndex: " + selectedIndex + ", item: " + item);
-                        shouTxt.setText(item);
-                        number=selectedIndex-2;
-                    }
-                });
-                wv2 = (WheelView) outerView.findViewById(R.id.wheel_view_wv2);
-                wv2.setOffset(2);
-                wv2.setItems(Arrays.asList(xiangmu));
-                wv2.setSeletion(category);
-                wv2.setOnWheelViewListener(new WheelView.OnWheelViewListener() {
-                    @Override
-                    public void onSelected(int selectedIndex, String item1) {
-                        Log.d(TAG, "[Dialog]selectedIndex: " + selectedIndex + ", item: " + item1);
-                        nametextView.setText(item1);
-                        category=selectedIndex-2;
-                    }
-                });
-                new AlertDialog.Builder(MainActivity.this)
-                        .setTitle("设置您委托的产品类型和手数")
-                        .setView(outerView)
-                        .setPositiveButton("确定", null)
-                        .show();
-            }
-        });
-//        跳转个人中心界面
-        ImageButton userBtn=(ImageButton)findViewById(R.id.usrBtn);
-        userBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent=new Intent(MainActivity.this,UserActivity.class);
-                startActivity(intent);
-            }
-        });
-        //    持仓按钮点击事件
-        Button holdButton = (Button)findViewById(R.id.button_hold);
-        holdButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this,holdActivity.class);
-                startActivity(intent);
-            }
-        });
+        shouTxt=(TextView) findViewById(R.id.shoushutextView);
+        nametextView=(TextView) findViewById(R.id.nametextView);
+        //设置按钮
+        settingBtn=(ImageButton) findViewById(R.id.setBtn);
+        settingBtn.setOnClickListener(setBtnClick);
+        //个人中心按钮
+        userBtn=(ImageButton)findViewById(R.id.usrBtn);
+        userBtn.setOnClickListener(userBtnClick);
+        //持仓按钮
+        holdButton = (Button)findViewById(R.id.button_hold);
+        holdButton.setOnClickListener(holdButtonClick);
 //        看多按钮
         buyMoreButton = (Button)findViewById(R.id.button_buyMore);
         buyMoreButton.setOnClickListener(buyMoreClick);
@@ -119,6 +77,61 @@ public class MainActivity extends Activity {
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
+    //    持仓按钮点击事件
+    View.OnClickListener holdButtonClick =(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(MainActivity.this,holdActivity.class);
+            startActivity(intent);
+        }
+    });
+
+    //        跳转个人中心界面
+    View.OnClickListener userBtnClick=(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent=new Intent(MainActivity.this,UserActivity.class);
+            startActivity(intent);
+        }
+    });
+
+    //    跳转设置界面
+    View.OnClickListener setBtnClick =(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            View outerView = LayoutInflater.from(MainActivity.this).inflate(R.layout.wheel_view, null);
+            wv = (WheelView) outerView.findViewById(R.id.wheel_view_wv);
+            wv.setOffset(2);
+            wv.setItems(Arrays.asList(shoushu));
+            //     保存上次选择的手数
+            wv.setSeletion(number);
+            wv.setOnWheelViewListener(new WheelView.OnWheelViewListener() {
+                @Override
+                public void onSelected(int selectedIndex, String item) {
+                    Log.d(TAG, "[Dialog]selectedIndex: " + selectedIndex + ", item: " + item);
+                    shouTxt.setText(item);
+                    number=selectedIndex-2;
+                }
+            });
+            wv2 = (WheelView) outerView.findViewById(R.id.wheel_view_wv2);
+            wv2.setOffset(2);
+            wv2.setItems(Arrays.asList(xiangmu));
+            wv2.setSeletion(category);
+            wv2.setOnWheelViewListener(new WheelView.OnWheelViewListener() {
+                @Override
+                public void onSelected(int selectedIndex, String item1) {
+                    Log.d(TAG, "[Dialog]selectedIndex: " + selectedIndex + ", item: " + item1);
+                    nametextView.setText(item1);
+                    category=selectedIndex-2;
+                }
+            });
+            new AlertDialog.Builder(MainActivity.this)
+                    .setTitle("设置您委托的产品类型和手数")
+                    .setView(outerView)
+                    .setPositiveButton("确定", null)
+                    .show();
+        }
+    });
 
 //    全部卖出按钮点击事件
     View.OnClickListener allSellClick = new View.OnClickListener() {
