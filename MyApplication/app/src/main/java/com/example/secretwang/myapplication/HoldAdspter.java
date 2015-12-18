@@ -90,7 +90,7 @@ public class HoldAdspter extends BaseAdapter {
             hold.textView_buyMoreOrLess.setBackgroundColor(Color.parseColor("#333399"));
         }
 //        根据盈利判断字体颜色。
-        if (Integer.valueOf(hold.textView_price.getText().toString()).intValue()>=0){
+        if (!hold.textView_price.getText().toString().startsWith("-")){
             hold.textView_price.setTextColor(Color.parseColor("#ff4320"));
         }else {
             hold.textView_price.setTextColor(Color.parseColor("#0000cc"));

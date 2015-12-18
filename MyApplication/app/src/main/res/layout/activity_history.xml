@@ -13,6 +13,8 @@
         android:id="@+id/listView_historyHold"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:divider="#ffffff"
+        android:dividerHeight="1dp"
         android:layout_below="@+id/textView31" />
 
     <TextView
