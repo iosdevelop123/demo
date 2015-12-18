@@ -100,12 +100,12 @@ public class MainActivity extends Activity {
             super.handleMessage(message);
             Bundle bundle = message.getData();
             String string = bundle.getString("value");
-            Log.v("++++++++++++", string);
+           // Log.v("++++++++++++", string);
             String[] strArray = null;
             strArray = string.split(",");
             String CLF6Price=strArray[2].toString();
            // String HKZ5Price=strArray[5].toString();
-            Log.v("------------",CLF6Price);
+           // Log.v("------------",CLF6Price);
            /// Log.v("------------", HKZ5Price);
             PriceTxt.setText(CLF6Price);
         }
