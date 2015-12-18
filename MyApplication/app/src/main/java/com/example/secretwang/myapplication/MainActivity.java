@@ -278,12 +278,45 @@ public class MainActivity extends Activity {
             }
         }
     };
+//    看多买入
     private void buyMoreButtonClick() {
         Log.i(">>>>>>>>>>>>>>>","看多买入");
+
         buyMoreButton.setText("追单");
         buyLessButton.setText("反向开仓");
     }
+    Runnable kanduoRunnable = new Runnable() {
+        @Override
+        public void run() {
+            String SetData = "SetData";
+            JSONObject parma = new JSONObject();
+            try {
+                parma.put("TaskGuid",TaskGuid);
+                parma.put("DataType","OpenBuy-New");
+                parma.put("LoginAccount","1317");
+                parma.put("Symbol","CLF6");
+                parma.put("Volume","1");
+                parma.put("StopLoss","0");
+                parma.put("TakeProfit","0");
+                parma.put("Comment","Android");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            request request = new request();
+            SoapObject soapObject = request.getResult(SetData, parma.toString());
+
+        }
+    };
+    private List getBuyMoreList(SoapObject soapObject){
+        List list = new ArrayList();
+        return list;
+    }
+
+
+//    看多追单
     private void buyMoreButtonBuyOnce() {Log.i(">>>>>", "看多追单买入");}
+
+//    看多反向开仓
     private void buyMoreButtonReverse(){
         Log.i(">>>>>>","看多反向开仓");
         buyMoreButton.setText("追单");
