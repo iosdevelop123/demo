@@ -7,7 +7,10 @@ import android.content.Intent;
 
 import android.net.Uri;
 import android.os.Bundle;
-
+import android.os.Handler;
+import android.os.Message;
+import android.print.PrintAttributes;
+import android.text.style.BackgroundColorSpan;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -23,17 +26,18 @@ import android.widget.Toast;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.ksoap2.serialization.SoapObject;
-
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-
 
 public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -54,6 +58,7 @@ public class MainActivity extends Activity {
     private  TextView nametextView;
     private  ImageButton userBtn;
     private  Button holdButton;
+    private TextView PriceTxt;
 
     public List orderNumbersList = new ArrayList();//订单编号数组
 
@@ -67,6 +72,7 @@ public class MainActivity extends Activity {
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+        new Thread(latestPriceRunnable).start();
     }
     private void createButton() {
         //手数和品种
@@ -93,8 +99,57 @@ public class MainActivity extends Activity {
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+        //最新行情数据
+        PriceTxt = (TextView)findViewById(R.id.textView_priceText);
     }
-
+    //
+    Handler latestPriceHandler = new Handler() {
+        @Override
+        public void handleMessage(Message message){
+            super.handleMessage(message);
+            Bundle bundle = message.getData();
+            String string = bundle.getString("value");
+           // Log.v("++++++++++++", string);
+            String[] strArray = null;
+            strArray = string.split(",");
+            String CLF6Price=strArray[2].toString();
+           // String HKZ5Price=strArray[5].toString();
+           // Log.v("------------",CLF6Price);
+           /// Log.v("------------", HKZ5Price);
+            PriceTxt.setText(CLF6Price);
+        }
+    };
+    Runnable latestPriceRunnable = new Runnable() {
+        @Override
+        public void run() {
+           while (true) {
+               String method = "TransformData";
+               JSONObject parma = new JSONObject();
+               try {
+                   parma.put("TaskGuid", "ab8495db-3a4a-4f70-bb81-8518f60ec8bf");
+                   parma.put("DataType", "MT4Data");
+                   parma.put("DriverID", "1234567890");
+                   parma.put("Type", "CLF6,HKZ5");
+               } catch (JSONException e) {
+                   e.printStackTrace();
+               }
+               String str_json = parma.toString();
+               request request = new request();
+               SoapObject string = request.getResult(method, str_json);
+               String jsonRequest = string.getProperty(0).toString();
+               try {
+                   Thread.sleep(1000);// 线程暂停1秒，单位毫秒
+                   Message message = new Message();
+                   Bundle bundle = new Bundle();
+                   bundle.putString("value", jsonRequest);
+                   message.setData(bundle);
+                   latestPriceHandler.sendMessage(message);
+               } catch (Exception e) {
+                   e.printStackTrace();
+               }
+           }
+        }
+    };
     //    持仓按钮点击事件
     View.OnClickListener holdButtonClick =(new View.OnClickListener() {
         @Override
