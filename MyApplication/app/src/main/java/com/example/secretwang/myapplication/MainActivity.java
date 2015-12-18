@@ -2,34 +2,45 @@ package com.example.secretwang.myapplication;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ClipData;
+
 import android.content.Intent;
-import android.graphics.Color;
+
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.style.BackgroundColorSpan;
+
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
+
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.ksoap2.serialization.SoapObject;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+
 
 public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String[] shoushu = new String[]{"1手", "2手", "3手", "4手",
            "5手","6手","7手","8手","9手","10手","11手","12手","13手","14手","15手","16手","17手","18手","19手","20手" };
     private  static  final  String[] xiangmu = new String[] {"美原油","恒生指数"};
-
+    private static String TaskGuid = "ab8495db-3a4a-4f70-bb81-8518f60ec8bf";
     private Button buyMoreButton;
     private Button buyLessButton;
     private Button allSellButton;
@@ -43,6 +54,9 @@ public class MainActivity extends Activity {
     private  TextView nametextView;
     private  ImageButton userBtn;
     private  Button holdButton;
+
+    public List orderNumbersList = new ArrayList();//订单编号数组
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -140,11 +154,117 @@ public class MainActivity extends Activity {
     View.OnClickListener allSellClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Log.i(">>>>>","全部卖出");
-            buyMoreButton.setText("看多");
-            buyLessButton.setText("看空");
+            Log.i(">>>>>", "全部卖出");
+            new Thread(orderNumbersRunnable).start();
         }
     };
+//    解析订单编号
+    Handler orderHandler = new Handler(){
+    @Override
+    public void handleMessage(Message message) {
+        super.handleMessage(message);
+        Bundle bundle = message.getData();
+        String string = bundle.getString("orderNumber");
+        if (string.equals("null")){
+            Toast.makeText(MainActivity.this, "没有订单", Toast.LENGTH_SHORT).show();
+        }else {
+            new Thread(allSellRunnable).start();
+        }
+    }
+};
+    Runnable orderNumbersRunnable = new Runnable() {
+        @Override
+        public void run() {
+            String TransformData = "TransformData";
+            JSONObject zaicang = new JSONObject();
+            try {
+                zaicang.put("TaskGuid",TaskGuid);
+                zaicang.put("DataType","ClientOpenTrades");
+                zaicang.put("LoginAccount","1317");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            request request = new request();
+            SoapObject soapObject = request.getResult(TransformData, zaicang.toString());
+            orderNumbersList = getOrderNumberS(soapObject);
+            Message message = new Message();
+            Bundle bundle = new Bundle();
+            if (orderNumbersList.size() == 0){
+                bundle.putString("orderNumber","null");
+            }else {
+                bundle.putString("orderNumber", orderNumbersList.toString());
+            }
+            message.setData(bundle);
+            orderHandler.sendMessage(message);
+        }
+    };
+    //    得到订单编号数组
+    private List getOrderNumberS(SoapObject soapObject){
+        List list = new ArrayList();
+        String s = soapObject.getProperty(0).toString();
+        if (s.equals("[]")){}else {
+            try {
+                JSONArray jsonArray = new JSONArray(s);
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    String OrderNumber = jsonObject.getString("OrderNumber");
+                    list.add(OrderNumber);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return list;
+    }
+
+    Handler sellHandler = new Handler(){
+        @Override
+        public void handleMessage(Message message){
+            super.handleMessage(message);
+            Bundle bundle = message.getData();
+            String string = bundle.getString("sellKey");
+            if (string.equals("True")){
+                buyMoreButton.setText("看多");
+                buyLessButton.setText("看空");
+                Toast.makeText(MainActivity.this, "卖出成功", Toast.LENGTH_SHORT).show();
+            }else {
+                Toast.makeText(MainActivity.this, "卖出失败", Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
+//    全部卖出数据请求
+    Runnable allSellRunnable = new Runnable() {
+        @Override
+        public void run() {
+            String SetData = "SetData";
+            JSONObject allSellParma = new JSONObject();
+            String s = "";
+                for (int i = 0; i < orderNumbersList.size(); i++) {
+                    s += "," + orderNumbersList.get(i);
+                }
+                try {
+                    allSellParma.put("TaskGuid", TaskGuid);
+                    allSellParma.put("DataType", "CloseOrderS");
+                    allSellParma.put("OrderNumberS", s.substring(1));
+                    allSellParma.put("LoginAccount", "1317");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                request request = new request();
+                SoapObject soapObject = request.getResult(SetData, allSellParma.toString());
+                Message message =new Message();
+                Bundle bundle = new Bundle();
+                if (soapObject.getProperty(0).toString().equals("True")){
+                    bundle.putString("sellKey","True");
+                }else {
+                    bundle.putString("sellKey","Fals");
+                }
+                message.setData(bundle);
+                sellHandler.sendMessage(message);
+            }
+    };
+
+
 //    看多按钮点击事件
     View.OnClickListener buyMoreClick = new View.OnClickListener() {
         @Override
@@ -197,33 +317,9 @@ public class MainActivity extends Activity {
         buyMoreButton.setText("反向开仓");
     }
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
 //    @Override
 //    public void onStart() {
 //        super.onStart();
-//
 //        // ATTENTION: This was auto-generated to implement the App Indexing API.
 //        // See https://g.co/AppIndexing/AndroidStudio for more information.
 //        client.connect();
