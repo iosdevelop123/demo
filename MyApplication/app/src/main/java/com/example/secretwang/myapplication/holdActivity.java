@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Notification;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.nfc.Tag;
@@ -38,6 +39,7 @@ public class holdActivity extends Activity {
     private Button historyButton;
     private ListView listView = null;
     private TextView priceTextView = null;
+    private String loginStr;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -49,6 +51,8 @@ public class holdActivity extends Activity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_hold);
+        SharedPreferences sharedPreferences =getSharedPreferences("userInfo",MODE_PRIVATE);
+        loginStr = sharedPreferences.getString("login","");
         new Thread(runnable).start();
         createUI();
         // ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -64,7 +68,6 @@ public class holdActivity extends Activity {
 //            listView.notify();
 //        }
 //    };
-
     private void createUI() {
         //        持仓
         listView = (ListView) findViewById(R.id.listView_holdList);
@@ -78,8 +81,6 @@ public class holdActivity extends Activity {
                 startActivity(intent);
             }
         });
-//        List list = getData();
-//        listView.setAdapter(new HoldAdspter(getApplicationContext(),list));
     }
 
     Handler handler = new Handler(){
@@ -128,7 +129,7 @@ public class holdActivity extends Activity {
                 parma.put("TaskGuid","ab8495db-3a4a-4f70-bb81-8518f60ec8bf");
                 parma.put("DriverID","1234567890");
                 parma.put("DataType","ClientOpenTrades");
-                parma.put("LoginAccount","1317");
+                parma.put("LoginAccount",loginStr);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -143,11 +144,9 @@ public class holdActivity extends Activity {
             handler.sendMessage(message);
         }
     };
-
     private List data(SoapObject soapObject) {
         List list = new ArrayList();
         String string = soapObject.getProperty(0).toString();
-
         try {
             JSONArray jsonArray = new  JSONArray(string);
             for (int i = 0;i<jsonArray.length();i++){
@@ -169,60 +168,43 @@ public class holdActivity extends Activity {
         }
         return list;
     }
-
-//    public List<Map<String,Object>> getData(){
-//        List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
-//        for (int i = 0;i < 10;i++){
-//            Map<String,Object> map = new HashMap<String, Object>();
-//            map.put("textView_name","美原油"+i);
-//            map.put("textView_buyNum","2222");
-//            map.put("textView_counterFee","-800");
-//            map.put("textView_buyMoreOrLess","看多");
-//            map.put("textView_price","-999999");
-//            map.put("textView_openPrice","22222");
-//            map.put("textView_closePrice","33333");
-//            list.add(map);
-//        }
-//        return list;
+//    @Override
+//    public void onStart() {
+//        super.onStart();
+//
+//        // ATTENTION: This was auto-generated to implement the App Indexing API.
+//        // See https://g.co/AppIndexing/AndroidStudio for more information.
+//        client.connect();
+//        Action viewAction = Action.newAction(
+//                Action.TYPE_VIEW, // TODO: choose an action type.
+//                "hold Page", // TODO: Define a title for the content shown.
+//                // TODO: If you have web page content that matches this app activity's content,
+//                // make sure this auto-generated web page URL is correct.
+//                // Otherwise, set the URL to null.
+//                Uri.parse("http://host/path"),
+//                // TODO: Make sure this auto-generated app deep link URI is correct.
+//                Uri.parse("android-app://com.example.secretwang.myapplication/http/host/path")
+//        );
+//        AppIndex.AppIndexApi.start(client, viewAction);
 //    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.connect();
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "hold Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page URL is correct.
-                // Otherwise, set the URL to null.
-                Uri.parse("http://host/path"),
-                // TODO: Make sure this auto-generated app deep link URI is correct.
-                Uri.parse("android-app://com.example.secretwang.myapplication/http/host/path")
-        );
-        AppIndex.AppIndexApi.start(client, viewAction);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "hold Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page URL is correct.
-                // Otherwise, set the URL to null.
-                Uri.parse("http://host/path"),
-                // TODO: Make sure this auto-generated app deep link URI is correct.
-                Uri.parse("android-app://com.example.secretwang.myapplication/http/host/path")
-        );
-        AppIndex.AppIndexApi.end(client, viewAction);
-        client.disconnect();
-    }
+//
+//    @Override
+//    public void onStop() {
+//        super.onStop();
+//
+//        // ATTENTION: This was auto-generated to implement the App Indexing API.
+//        // See https://g.co/AppIndexing/AndroidStudio for more information.
+//        Action viewAction = Action.newAction(
+//                Action.TYPE_VIEW, // TODO: choose an action type.
+//                "hold Page", // TODO: Define a title for the content shown.
+//                // TODO: If you have web page content that matches this app activity's content,
+//                // make sure this auto-generated web page URL is correct.
+//                // Otherwise, set the URL to null.
+//                Uri.parse("http://host/path"),
+//                // TODO: Make sure this auto-generated app deep link URI is correct.
+//                Uri.parse("android-app://com.example.secretwang.myapplication/http/host/path")
+//        );
+//        AppIndex.AppIndexApi.end(client, viewAction);
+//        client.disconnect();
+//    }
 }

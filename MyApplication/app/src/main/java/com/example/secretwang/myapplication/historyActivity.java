@@ -1,6 +1,7 @@
 package com.example.secretwang.myapplication;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Bundle;
@@ -23,12 +24,16 @@ import java.util.Map;
 public class historyActivity extends Activity {
 
     private ListView listView = null;
+    private String loginStr;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
 //        requestWindowFeature(Window.FEATURE_NO_TITLE);
         listView = (ListView)findViewById(R.id.listView_historyHold);
+
+        SharedPreferences sharedPreferences = getSharedPreferences("userInfo",MODE_PRIVATE);
+        loginStr = sharedPreferences.getString("login","");
         new Thread(runnable).start();
     }
         Handler handler = new Handler() {
@@ -72,7 +77,7 @@ public class historyActivity extends Activity {
             try {
                 parma.put("TaskGuid","ab8495db-3a4a-4f70-bb81-8518f60ec8bf");
                 parma.put("DataType","ClientCloseTrades");
-                parma.put("LoginAccount","1317");
+                parma.put("LoginAccount",loginStr);
                 parma.put("StartTime",starTime);
                 parma.put("EndTime",timeLong);
             } catch (JSONException e) {

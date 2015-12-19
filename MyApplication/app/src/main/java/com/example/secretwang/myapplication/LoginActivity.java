@@ -3,8 +3,10 @@ package com.example.secretwang.myapplication;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -39,6 +41,7 @@ public class LoginActivity extends Activity {
                     new Thread(runnable).start();
                 }
             });
+
         }
     Handler handler = new Handler() {
         @Override
@@ -47,7 +50,11 @@ public class LoginActivity extends Activity {
             Bundle bundle = message.getData();
             String string = bundle.getString("value");
             if (string.equals("True")){
-                Toast.makeText(LoginActivity.this,"登录成功",Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
+                SharedPreferences setting = getSharedPreferences("userInfo", MODE_PRIVATE);
+                SharedPreferences.Editor editor = setting.edit();
+                editor.putString("login",userName.getText().toString());
+                editor.commit();
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 startActivity(intent);
             }

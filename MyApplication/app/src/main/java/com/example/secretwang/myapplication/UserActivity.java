@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -25,6 +26,8 @@ public class UserActivity extends Activity {
     private Button btn_exit ;
     private ListView lv;
     private String Balance;
+    private String loginStr;
+
     String[] from={"item0","item1","item2"};  //这里是ListView显示内容每一列的列名
     //这里是ListView显示每一列对应的list_item中控件的id
     int[] to={R.id.user_item0,R.id.user_item1, R.id.user_item2};
@@ -37,6 +40,8 @@ public class UserActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user);
+        SharedPreferences sharedPreferences = getSharedPreferences("userInfo",MODE_PRIVATE);
+        loginStr = sharedPreferences.getString("login","");
         //加载视图
         loadUI();
         //开启线程
@@ -117,7 +122,7 @@ public class UserActivity extends Activity {
             try{
                 param.put("TaskGuid","ab8495db-3a4a-4f70-bb81-8518f60ec8bf");
                 param.put("DataType","ClientRecord");
-                param.put("LoginAccount","1317");
+                param.put("LoginAccount",loginStr);
             }catch (JSONException e){
                 e.printStackTrace();
             }

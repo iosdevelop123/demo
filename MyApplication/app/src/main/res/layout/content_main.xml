@@ -164,7 +164,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="1手"
+        android:text="1"
         android:id="@+id/shoushutextView"
         android:layout_below="@+id/nametextView"
         android:layout_toRightOf="@+id/buyNumTextView"

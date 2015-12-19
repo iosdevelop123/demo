@@ -3,8 +3,10 @@ package com.example.secretwang.myapplication;
 import android.app.Activity;
 import android.app.AlertDialog;
 
+import android.content.Context;
 import android.content.Intent;
 
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -41,9 +43,9 @@ import java.util.List;
 
 public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static final String[] shoushu = new String[]{"1手", "2手", "3手", "4手",
-           "5手","6手","7手","8手","9手","10手","11手","12手","13手","14手","15手","16手","17手","18手","19手","20手" };
-    private  static  final  String[] xiangmu = new String[] {"美原油","恒生指数"};
+    private static final String[] shoushu = new String[]{"1", "2", "3", "4",
+           "5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20" };
+    private  static  final  String[] xiangmu = new String[] {"CLF6","HKZ5"};
     private static String TaskGuid = "ab8495db-3a4a-4f70-bb81-8518f60ec8bf";
     private Button buyMoreButton;
     private Button buyLessButton;
@@ -60,8 +62,14 @@ public class MainActivity extends Activity {
     private  Button holdButton;
     private TextView PriceTxt;
 
-    public List orderNumbersList = new ArrayList();//订单编号数组
 
+    public List orderNumbersList = new ArrayList();//订单编号数组
+    private List SymbolList = new ArrayList();
+    private String loginStr;
+    private String BUYMORE = "看多";
+    private String BUYLESS = "看空";
+    private String BUYONCE = "追单";
+    private String FANXIANG = "反向开仓";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -69,11 +77,86 @@ public class MainActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
         createButton();
+        SharedPreferences sharedPreferences = getSharedPreferences("userInfo", MODE_PRIVATE);
+        loginStr = sharedPreferences.getString("login", "");
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
         new Thread(latestPriceRunnable).start();
+        new Thread(zaicangRunnable).start();//进入主界面根据在仓订单刷新按钮名字
     }
+    Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message message){
+            super.handleMessage(message);
+            Bundle bundle = message.getData();
+            String string = bundle.getString("zaicangkey");
+            try {
+                JSONArray jsonArray = new JSONArray(string);
+                for (int i=0;i<jsonArray.length();i++){
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    String sym = jsonObject.getString("Symbol");
+                    if (sym.equals("CLF6")){
+                        String type =jsonObject.getString("TypeName");
+                        if (type.equals("多")){
+                            buyMoreButton.setText(BUYONCE);
+                            buyLessButton.setText(FANXIANG);
+                        }else {
+                            buyLessButton.setText(BUYONCE);
+                            buyMoreButton.setText(FANXIANG);
+                        }
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+    };
+    Runnable zaicangRunnable = new Runnable() {
+        @Override
+        public void run() {
+            String method = "TransformData";
+            JSONObject parma = new JSONObject();
+            try {
+                parma.put("DriverID","1234567890");
+                parma.put("TaskGuid",TaskGuid);
+                parma.put("DataType","ClientOpenTrades");
+                parma.put("LoginAccount",loginStr);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            request request = new request();
+            SoapObject soapObject = request.getResult(method, parma.toString());
+            List list = getZaicangDingDan(soapObject);
+            Message message = new Message();
+            Bundle bundle = new Bundle();
+            bundle.putString("zaicangkey",list.toString());
+            message.setData(bundle);
+            handler.sendMessage(message);
+        }
+    };
+    private List getZaicangDingDan(SoapObject soapObject){
+        List list = new ArrayList();
+        String s = soapObject.getProperty(0).toString();
+        if (s.equals("[]")){}else{
+            try {
+                JSONArray jsonArray = new JSONArray(s);
+                for (int i=0;i<jsonArray.length();i++){
+                    Map<String,Object> map = new HashMap<>();
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    map.put("Symbol",jsonObject.getString("Symbol"));
+                    map.put("TypeName",jsonObject.getString("TypeName"));
+                    list.add(map);
+                }
+            }catch (JSONException e){
+                e.printStackTrace();
+            }
+        }
+        return list;
+    }
+
+
     private void createButton() {
         //手数和品种
         shouTxt=(TextView) findViewById(R.id.shoushutextView);
@@ -101,6 +184,19 @@ public class MainActivity extends Activity {
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
         //最新行情数据
         PriceTxt = (TextView)findViewById(R.id.textView_priceText);
+        System.out.println(nametextView.getText().toString());
+    }
+//    设置按钮允许点击
+    private void buttonCanClick(){
+        allSellButton.setClickable(true);
+        buyLessButton.setClickable(true);
+        buyMoreButton.setClickable(true);
+    }
+//    设置按钮不允许被点击
+    private void buttonCanNotClick() {
+        allSellButton.setClickable(false);
+        buyLessButton.setClickable(false);
+        buyMoreButton.setClickable(false);
     }
     //
     Handler latestPriceHandler = new Handler() {
@@ -126,7 +222,7 @@ public class MainActivity extends Activity {
                String method = "TransformData";
                JSONObject parma = new JSONObject();
                try {
-                   parma.put("TaskGuid", "ab8495db-3a4a-4f70-bb81-8518f60ec8bf");
+                   parma.put("TaskGuid", TaskGuid);
                    parma.put("DataType", "MT4Data");
                    parma.put("DriverID", "1234567890");
                    parma.put("Type", "CLF6,HKZ5");
@@ -210,6 +306,7 @@ public class MainActivity extends Activity {
         @Override
         public void onClick(View v) {
             Log.i(">>>>>", "全部卖出");
+            buttonCanNotClick();
             new Thread(orderNumbersRunnable).start();
         }
     };
@@ -222,6 +319,9 @@ public class MainActivity extends Activity {
         String string = bundle.getString("orderNumber");
         if (string.equals("null")){
             Toast.makeText(MainActivity.this, "没有订单", Toast.LENGTH_SHORT).show();
+            buyMoreButton.setText(BUYMORE);
+            buyLessButton.setText(BUYLESS);
+            buttonCanClick();
         }else {
             new Thread(allSellRunnable).start();
         }
@@ -233,9 +333,10 @@ public class MainActivity extends Activity {
             String TransformData = "TransformData";
             JSONObject zaicang = new JSONObject();
             try {
+                zaicang.put("DriverID","1234567890");
                 zaicang.put("TaskGuid",TaskGuid);
                 zaicang.put("DataType","ClientOpenTrades");
-                zaicang.put("LoginAccount","1317");
+                zaicang.put("LoginAccount",loginStr);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -245,7 +346,7 @@ public class MainActivity extends Activity {
             Message message = new Message();
             Bundle bundle = new Bundle();
             if (orderNumbersList.size() == 0){
-                bundle.putString("orderNumber","null");
+                bundle.putString("orderNumber", "null");
             }else {
                 bundle.putString("orderNumber", orderNumbersList.toString());
             }
@@ -263,6 +364,8 @@ public class MainActivity extends Activity {
                 for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
                     String OrderNumber = jsonObject.getString("OrderNumber");
+//                    String Symbol = jsonObject.getString("Symbol");
+//                    SymbolList.add(Symbol);
                     list.add(OrderNumber);
                 }
             } catch (JSONException e) {
@@ -279,12 +382,14 @@ public class MainActivity extends Activity {
             Bundle bundle = message.getData();
             String string = bundle.getString("sellKey");
             if (string.equals("True")){
-                buyMoreButton.setText("看多");
-                buyLessButton.setText("看空");
+                buyMoreButton.setText(BUYMORE);
+                buyLessButton.setText(BUYLESS);
                 Toast.makeText(MainActivity.this, "卖出成功", Toast.LENGTH_SHORT).show();
+
             }else {
                 Toast.makeText(MainActivity.this, "卖出失败", Toast.LENGTH_SHORT).show();
             }
+            buttonCanClick();
         }
     };
 //    全部卖出数据请求
@@ -301,7 +406,7 @@ public class MainActivity extends Activity {
                     allSellParma.put("TaskGuid", TaskGuid);
                     allSellParma.put("DataType", "CloseOrderS");
                     allSellParma.put("OrderNumberS", s.substring(1));
-                    allSellParma.put("LoginAccount", "1317");
+                    allSellParma.put("LoginAccount", loginStr);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -324,22 +429,45 @@ public class MainActivity extends Activity {
     View.OnClickListener buyMoreClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (buyMoreButton.getText().toString().equals("看多")) {
+            if (buyMoreButton.getText().toString().equals(BUYMORE)) {
                 buyMoreButtonClick();
-            }else if (buyMoreButton.getText().toString().equals("追单")){
-                buyMoreButtonBuyOnce();
-            }else if (buyMoreButton.getText().toString().equals("反向开仓")){
+            }else if (buyMoreButton.getText().toString().equals(BUYONCE)){
+                buyMoreButtonClick();
+            }else if (buyMoreButton.getText().toString().equals(FANXIANG)){
                 buyMoreButtonReverse();
             }
         }
     };
 //    看多买入
     private void buyMoreButtonClick() {
-        Log.i(">>>>>>>>>>>>>>>","看多买入");
-
-        buyMoreButton.setText("追单");
-        buyLessButton.setText("反向开仓");
+        Log.i(">>>>>>>>>>>>>>>", "看多买入");
+        new Thread(kanduoRunnable).start();
+        buttonCanNotClick();
     }
+//    根据返回，判断是否买入成功
+    Handler buyMoreHandler = new Handler(){
+        @Override
+        public void handleMessage(Message message){
+            super.handleMessage(message);
+            Bundle bundle = message.getData();
+            String string = bundle.getString("buyMore");
+            if (string.startsWith("{\"Comment\"")) {
+                buyMoreButton.setText(BUYONCE);
+                buyLessButton.setText(FANXIANG);
+                buttonCanClick();
+                Toast.makeText(MainActivity.this,"买入成功",Toast.LENGTH_SHORT).show();
+            }else {
+                try {
+                    JSONObject jsonObject = new JSONObject(string);
+                    Toast.makeText(MainActivity.this,jsonObject.getString("ErrMessage"),Toast.LENGTH_SHORT).show();
+                    buttonCanClick();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    };
+//    看多数据请求
     Runnable kanduoRunnable = new Runnable() {
         @Override
         public void run() {
@@ -348,9 +476,9 @@ public class MainActivity extends Activity {
             try {
                 parma.put("TaskGuid",TaskGuid);
                 parma.put("DataType","OpenBuy-New");
-                parma.put("LoginAccount","1317");
-                parma.put("Symbol","CLF6");
-                parma.put("Volume","1");
+                parma.put("LoginAccount",loginStr);
+                parma.put("Symbol",nametextView.getText().toString());
+                parma.put("Volume",shouTxt.getText().toString());
                 parma.put("StopLoss","0");
                 parma.put("TakeProfit","0");
                 parma.put("Comment","Android");
@@ -359,50 +487,44 @@ public class MainActivity extends Activity {
             }
             request request = new request();
             SoapObject soapObject = request.getResult(SetData, parma.toString());
-
+            Message message = new Message();
+            Bundle bundle = new Bundle();
+            bundle.putString("buyMore", soapObject.getProperty(0).toString());
+            message.setData(bundle);
+            buyMoreHandler.sendMessage(message);
         }
     };
-    private List getBuyMoreList(SoapObject soapObject){
-        List list = new ArrayList();
-        return list;
-    }
-
-
-//    看多追单
-    private void buyMoreButtonBuyOnce() {Log.i(">>>>>", "看多追单买入");}
-
 //    看多反向开仓
     private void buyMoreButtonReverse(){
         Log.i(">>>>>>","看多反向开仓");
-        buyMoreButton.setText("追单");
-        buyLessButton.setText("反向开仓");
+        buyMoreButton.setText(BUYONCE);
+        buyLessButton.setText(FANXIANG);
     }
-
 //  看空按钮点击事件
     View.OnClickListener buyLessButtonClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (buyLessButton.getText().toString().equals("看空")) {
+            if (buyLessButton.getText().toString().equals(BUYLESS)) {
                 buyLessButtonClick();
-            }else if (buyLessButton.getText().toString().equals("追单")){
+            }else if (buyLessButton.getText().toString().equals(BUYONCE)){
                 buyLessButtonBuyOnce();
-            }else if (buyLessButton.getText().toString().equals("反向开仓")){
+            }else if (buyLessButton.getText().toString().equals(FANXIANG)){
                 buyLessButtonReverse();
             }
         }
     };
     private void buyLessButtonClick() {
         Log.i(">>>>>","看空买入");
-        buyLessButton.setText("追单");
-        buyMoreButton.setText("反向开仓");
+        buyLessButton.setText(BUYONCE);
+        buyMoreButton.setText(FANXIANG);
     }
     private void buyLessButtonBuyOnce() {
         Log.i(">>>>>","追单买入");
     }
     private void  buyLessButtonReverse() {
         Log.i(">>>>>>","看空反向开仓");
-        buyLessButton.setText("追单");
-        buyMoreButton.setText("反向开仓");
+        buyLessButton.setText(BUYONCE);
+        buyMoreButton.setText(FANXIANG);
     }
 
 //    @Override
