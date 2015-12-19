@@ -178,8 +178,8 @@
         android:id="@+id/button_hold"
         android:backgroundTint="#eac281"
         android:layout_alignParentTop="true"
-        android:layout_alignRight="@+id/textView_priceText"
-        android:layout_alignEnd="@+id/textView_priceText" />
+        android:layout_toRightOf="@+id/button"
+        android:layout_toEndOf="@+id/button" />
     
     <ImageButton
         android:layout_width="wrap_content"
