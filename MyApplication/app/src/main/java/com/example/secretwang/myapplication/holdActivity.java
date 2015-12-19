@@ -2,6 +2,7 @@ package com.example.secretwang.myapplication;
 
 import android.app.Activity;
 import android.app.Notification;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -40,6 +41,7 @@ public class holdActivity extends Activity {
     private ListView listView = null;
     private TextView priceTextView = null;
     private String loginStr;
+    private ProgressDialog progressDialog;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -53,6 +55,8 @@ public class holdActivity extends Activity {
         setContentView(R.layout.activity_hold);
         SharedPreferences sharedPreferences =getSharedPreferences("userInfo",MODE_PRIVATE);
         loginStr = sharedPreferences.getString("login","");
+        //开启网络请求进度条
+        progressDialog = ProgressDialog.show(holdActivity.this, "","正在加载,请稍候！");
         new Thread(runnable).start();
         createUI();
         // ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -117,6 +121,7 @@ public class holdActivity extends Activity {
             }catch (JSONException e){
                 e.printStackTrace();
             }
+            progressDialog.dismiss(); //关闭进度条
         }
     };
 

@@ -209,9 +209,9 @@ public class MainActivity extends Activity {
             String[] strArray = null;
             strArray = string.split(",");
             String CLF6Price=strArray[2].toString();
-           // String HKZ5Price=strArray[5].toString();
+            String HKZ5Price=strArray[5].toString();
            // Log.v("------------",CLF6Price);
-           /// Log.v("------------", HKZ5Price);
+           // Log.v("------------", HKZ5Price);
             PriceTxt.setText(CLF6Price);
         }
     };
@@ -229,11 +229,11 @@ public class MainActivity extends Activity {
                } catch (JSONException e) {
                    e.printStackTrace();
                }
-               String str_json = parma.toString();
-               request request = new request();
-               SoapObject string = request.getResult(method, str_json);
-               String jsonRequest = string.getProperty(0).toString();
                try {
+                   String str_json = parma.toString();
+                   request request = new request();
+                   SoapObject string = request.getResult(method, str_json);
+                   String jsonRequest = string.getProperty(0).toString();
                    Thread.sleep(1000);// 线程暂停1秒，单位毫秒
                    Message message = new Message();
                    Bundle bundle = new Bundle();

@@ -2,6 +2,7 @@ package com.example.secretwang.myapplication;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -28,6 +29,7 @@ public class UserActivity extends Activity {
     private String Balance;
     private String loginStr;
 
+    private ProgressDialog progressDialog;
     String[] from={"item0","item1","item2"};  //这里是ListView显示内容每一列的列名
     //这里是ListView显示每一列对应的list_item中控件的id
     int[] to={R.id.user_item0,R.id.user_item1, R.id.user_item2};
@@ -83,6 +85,7 @@ public class UserActivity extends Activity {
                         .show();
             }
         });
+        progressDialog = ProgressDialog.show(UserActivity.this, "", "正在加载,请稍候！");
     }
     Handler handler = new Handler() {
         @Override
@@ -107,11 +110,12 @@ public class UserActivity extends Activity {
                     list.add(map);
                 }
                 //创建一个SimpleAdapter对象
-                SimpleAdapter adapter=new SimpleAdapter(UserActivity.this,list,R.layout.list_user,from,to);
+                SimpleAdapter adapter=new SimpleAdapter(UserActivity.this,list,R.layout.list_user, from,to);
                 lv.setAdapter(adapter);
             }catch (JSONException e){
                 e.printStackTrace();
             }
+            progressDialog.dismiss(); //关闭进度条
             }
     };
     Runnable runnable = new Runnable() {
@@ -126,15 +130,19 @@ public class UserActivity extends Activity {
             }catch (JSONException e){
                 e.printStackTrace();
             }
-            String str_json=param.toString();
-            request request = new request();
-            SoapObject string = request.getResult(method, str_json);
-            String jsonRequest = string.getProperty(0).toString();
-            Message message = new Message();
-            Bundle bundle = new Bundle();
-            bundle.putString("value",jsonRequest);
-            message.setData(bundle);
-            handler.sendMessage(message);
+            try{
+                String str_json=param.toString();
+                request request = new request();
+                SoapObject string = request.getResult(method, str_json);
+                String jsonRequest = string.getProperty(0).toString();
+                Message message = new Message();
+                Bundle bundle = new Bundle();
+                bundle.putString("value",jsonRequest);
+                message.setData(bundle);
+                handler.sendMessage(message);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
     };
 }
