@@ -2,6 +2,7 @@ package com.example.secretwang.myapplication;
 
 import android.app.Activity;
 import android.app.Notification;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -38,6 +39,7 @@ public class holdActivity extends Activity {
     private Button historyButton;
     private ListView listView = null;
     private TextView priceTextView = null;
+    private ProgressDialog progressDialog;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -49,6 +51,8 @@ public class holdActivity extends Activity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_hold);
+        //开启网络请求进度条
+        progressDialog = ProgressDialog.show(holdActivity.this, "","正在加载,请稍候！");
         new Thread(runnable).start();
         createUI();
         // ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -116,6 +120,7 @@ public class holdActivity extends Activity {
             }catch (JSONException e){
                 e.printStackTrace();
             }
+            progressDialog.dismiss(); //关闭进度条
         }
     };
 

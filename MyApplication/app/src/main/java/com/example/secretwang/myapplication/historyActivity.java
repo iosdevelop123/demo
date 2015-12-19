@@ -1,6 +1,7 @@
 package com.example.secretwang.myapplication;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Bundle;
@@ -11,8 +12,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.ksoap2.serialization.SoapObject;
 import java.lang.reflect.Array;
-
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +22,7 @@ import java.util.Map;
 public class historyActivity extends Activity {
 
     private ListView listView = null;
+    private ProgressDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,6 +30,8 @@ public class historyActivity extends Activity {
 //        requestWindowFeature(Window.FEATURE_NO_TITLE);
         listView = (ListView)findViewById(R.id.listView_historyHold);
         new Thread(runnable).start();
+        //开启网络请求进度条
+        progressDialog = ProgressDialog.show(historyActivity.this, "","正在加载,请稍候！");
     }
         Handler handler = new Handler() {
         @Override
@@ -59,6 +61,7 @@ public class historyActivity extends Activity {
             }catch (JSONException e){
                 e.printStackTrace();
             }
+            progressDialog.dismiss(); //关闭进度条
         }
     };
 

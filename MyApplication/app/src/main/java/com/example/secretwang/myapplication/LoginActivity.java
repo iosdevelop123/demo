@@ -3,10 +3,12 @@ package com.example.secretwang.myapplication;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.shapes.Shape;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -24,6 +26,7 @@ public class LoginActivity extends Activity {
     private TextView userName;
     private TextView passWord;
     private Button btn;
+    private ProgressDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +40,11 @@ public class LoginActivity extends Activity {
                 public void onClick(View v) {
                     //开启线程
                     new Thread(runnable).start();
+                    btn.setClickable(false);
+                    btn.setText("登陆中...");
+                    btn.setBackgroundResource(R.drawable.shape);
+                    //开启网络请求进度条
+                    progressDialog = ProgressDialog.show(LoginActivity.this, "","正在加载,请稍候！");
                 }
             });
         }
@@ -46,6 +54,7 @@ public class LoginActivity extends Activity {
             super.handleMessage(message);
             Bundle bundle = message.getData();
             String string = bundle.getString("value");
+            progressDialog.dismiss(); //关闭进度条
             if (string.equals("True")){
                 Toast.makeText(LoginActivity.this,"登录成功",Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
@@ -57,6 +66,9 @@ public class LoginActivity extends Activity {
             if (string.equals("{\"ErrMessage\":\"用户名或密码错误\"}")){
                 Toast.makeText(LoginActivity.this,"用户名或密码错误",Toast.LENGTH_SHORT).show();
             }
+            btn.setText("登录");
+            btn.setClickable(true);
+            btn.setBackgroundResource(R.drawable.shape);
         }
     };
     Runnable runnable = new Runnable() {
@@ -72,16 +84,19 @@ public class LoginActivity extends Activity {
             }catch (JSONException e){
                 e.printStackTrace();
             }
-            String str_json=param.toString();
-            request request = new request();
-            SoapObject string = request.getResult(method, str_json);
-            String jsonRequest = string.getProperty(0).toString();
-          //  Log.e(">>>>>>>>>>",jsonRequest);
-            Message message = new Message();
-            Bundle bundle = new Bundle();
-            bundle.putString("value",jsonRequest);
-            message.setData(bundle);
-            handler.sendMessage(message);
+            try{
+                String str_json=param.toString();
+                request request = new request();
+                SoapObject string = request.getResult(method, str_json);
+                String jsonRequest = string.getProperty(0).toString();
+                Message message = new Message();
+                Bundle bundle = new Bundle();
+                bundle.putString("value", jsonRequest);
+                message.setData(bundle);
+                handler.sendMessage(message);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
     };
 }
