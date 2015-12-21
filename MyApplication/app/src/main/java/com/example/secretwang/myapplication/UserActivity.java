@@ -17,6 +17,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.Toast;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.ksoap2.serialization.SoapObject;
@@ -96,7 +98,7 @@ public class UserActivity extends Activity {
             super.handleMessage(message);
             Bundle bundle = message.getData();
             String string = bundle.getString("value");
-             Log.e(">>>>>>>>>>exit", string);
+             //Log.e(">>>>>>>>>>exit", string);
         }
     };
     Runnable exitRunnable = new Runnable() {
@@ -134,6 +136,9 @@ public class UserActivity extends Activity {
             Bundle bundle = message.getData();
             String string = bundle.getString("value");
              // Log.e(">>>>>>>>>>", string);
+             if (string.equals("连接超时")){
+                 Toast.makeText(UserActivity.this, "请求超时,请重新点击查询", Toast.LENGTH_SHORT).show();
+             }
             try {
                 //将解析的字符串转换成json对象
                 JSONObject jsonObject=new JSONObject(string);
