@@ -18,7 +18,6 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.ksoap2.serialization.SoapObject;
@@ -86,6 +85,7 @@ public class UserActivity extends Activity {
                             }
                         })
                         .setNegativeButton("取消", null)
+                        .setCancelable(false)
                         .show();
             }
         });

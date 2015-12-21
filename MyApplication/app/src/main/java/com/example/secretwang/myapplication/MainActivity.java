@@ -219,10 +219,15 @@ public class MainActivity extends Activity {
             String[] strArray = null;
             strArray = string.split(",");
             String CLF6Price=strArray[2].toString();
-           // String HKZ5Price=strArray[5].toString();
+            String HKZ5Price=strArray[5].toString();
            // Log.v("------------",CLF6Price);
            // Log.v("------------", HKZ5Price);
-            PriceTxt.setText(CLF6Price);
+            if (nametextView.getText().toString().equals("CLG6")){
+                PriceTxt.setText(CLF6Price);
+            }else {
+                PriceTxt.setText(HKZ5Price);
+            }
+
         }
     };
     Runnable latestPriceRunnable = new Runnable() {
@@ -307,6 +312,7 @@ public class MainActivity extends Activity {
                         .setTitle("设置您委托的产品类型和手数")
                         .setView(outerView)
                         .setPositiveButton("确定", null)
+                        .setCancelable(false)
                         .show();
             }
         });
