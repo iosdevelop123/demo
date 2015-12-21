@@ -95,7 +95,7 @@ public class holdActivity extends Activity {
             Bundle bundle = message.getData();
             String string = bundle.getString("key");
             if (string.equals("[]")){
-                Toast.makeText(holdActivity.this,"连接超时",Toast.LENGTH_SHORT).show();
+                Toast.makeText(holdActivity.this,"没有订单",Toast.LENGTH_SHORT).show();
             }else {
                 int price = 0;
                 try {
@@ -166,8 +166,8 @@ public class holdActivity extends Activity {
                     Map<String, Object> map = new HashMap<String, Object>();
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
                     map.put("Symbol", jsonObject.getString("Symbol"));
-                    map.put("Volume", jsonObject.getString("Volume"));
-                    map.put("Commission", jsonObject.getString("Commission"));
+                    map.put("Volume", jsonObject.getInt("Volume"));
+                    map.put("Commission", jsonObject.getInt("Commission"));
                     map.put("TypeName", "看" + jsonObject.getString("TypeName"));
                     map.put("Profit", jsonObject.getString("Profit"));
                     map.put("OpenPrice", jsonObject.getString("OpenPrice"));
