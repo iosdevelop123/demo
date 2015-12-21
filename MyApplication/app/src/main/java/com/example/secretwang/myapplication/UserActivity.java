@@ -77,6 +77,8 @@ public class UserActivity extends Activity {
                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                //退出登录请求服务器
+                                new Thread(exitRunnable).start();
                                 Intent intent = new Intent(UserActivity.this, LoginActivity.class);
                                 startActivity(intent);
                             }
@@ -87,6 +89,44 @@ public class UserActivity extends Activity {
         });
         progressDialog = ProgressDialog.show(UserActivity.this, "", "正在加载,请稍候！");
     }
+    //退出登录请求
+    Handler exitHandler = new Handler() {
+        @Override
+        public void handleMessage(Message message){
+            super.handleMessage(message);
+            Bundle bundle = message.getData();
+            String string = bundle.getString("value");
+             Log.e(">>>>>>>>>>exit", string);
+        }
+    };
+    Runnable exitRunnable = new Runnable() {
+        @Override
+        public void run() {
+            String method = "SetData";
+            JSONObject param = new JSONObject();
+            try{
+                param.put("TaskGuid","ab8495db-3a4a-4f70-bb81-8518f60ec8bf");
+                param.put("DataType","DriverLoginOut");
+                param.put("LoginAccount","123456789");
+            }catch (JSONException e){
+                e.printStackTrace();
+            }
+            try{
+                String str_json=param.toString();
+                request request = new request();
+                SoapObject string = request.getResult(method, str_json);
+                String jsonRequest = string.getProperty(0).toString();
+                Message message = new Message();
+                Bundle bundle = new Bundle();
+                bundle.putString("value",jsonRequest);
+                message.setData(bundle);
+                exitHandler.sendMessage(message);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    };
+    //请求可用余额
     Handler handler = new Handler() {
         @Override
         public void handleMessage(Message message){

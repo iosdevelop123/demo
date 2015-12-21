@@ -1,17 +1,13 @@
 package com.example.secretwang.myapplication;
-
-
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
 import org.ksoap2.transport.Transport;
-
 import java.net.URL;
 import java.util.Date;
 
