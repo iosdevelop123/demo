@@ -19,31 +19,7 @@ import java.util.Date;
  * Created by Secret Wang on 2015/12/15.
  */
 public class request {
-
-//    Handler handler = new Handler() {
-//        @Override
-//        public void handleMessage(Message message){
-//            super.handleMessage(message);
-//            Bundle bundle = message.getData();
-//            String string = bundle.getString("value");
-//            Log.i("",string);
-//        }
-//    };
-//
-//    Runnable runnable = new Runnable() {
-//        @Override
-//        public void run() {
-//            Message message = new Message();
-//            Bundle bundle = new Bundle();
-//            bundle.putString("value","请求结果");
-//            message.setData(bundle);
-//            handler.sendMessage(message);
-//        }
-//    };
-
     public SoapObject getResult(String method,String parpm) {
-        String string = "";
-
         String nameSpace = "http://tempuri.org/";
         String methodName = method;
         String requestUrl = "http://139.196.32.138:10011/WebService.asmx";
@@ -64,7 +40,6 @@ public class request {
         try {
             httpTransportSE.call(soapAction,envelope);
             soapObject1 = (SoapObject)envelope.bodyIn;
-//            string = soapObject1.getProperty(0).toString();
         }catch (Exception e){
             e.printStackTrace();
         }

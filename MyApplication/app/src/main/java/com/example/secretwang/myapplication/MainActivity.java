@@ -45,7 +45,7 @@ public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String[] shoushu = new String[]{"1", "2", "3", "4",
            "5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20" };
-    private  static  final  String[] xiangmu = new String[] {"CLF6","HKZ5"};
+    private  static  final  String[] xiangmu = new String[] {"CLG6","HKZ5"};
     private static String TaskGuid = "ab8495db-3a4a-4f70-bb81-8518f60ec8bf";
     private Button buyMoreButton;
     private Button buyLessButton;
@@ -96,7 +96,7 @@ public class MainActivity extends Activity {
                 for (int i=0;i<jsonArray.length();i++){
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
                     String sym = jsonObject.getString("Symbol");
-                    if (sym.equals("CLF6")){
+                    if (sym.equals("CLG6")){
                         String type =jsonObject.getString("TypeName");
                         if (type.equals("多")){
                             buyMoreButton.setText(BUYONCE);
@@ -225,7 +225,7 @@ public class MainActivity extends Activity {
                    parma.put("TaskGuid", TaskGuid);
                    parma.put("DataType", "MT4Data");
                    parma.put("DriverID", "1234567890");
-                   parma.put("Type", "CLF6,HKZ5");
+                   parma.put("Type", "CLG6,HKZ5");
                } catch (JSONException e) {
                    e.printStackTrace();
                }
@@ -374,7 +374,6 @@ public class MainActivity extends Activity {
         }
         return list;
     }
-
     Handler sellHandler = new Handler(){
         @Override
         public void handleMessage(Message message){

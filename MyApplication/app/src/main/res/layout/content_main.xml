@@ -39,10 +39,10 @@
         android:layout_height="wrap_content"
         android:text="@string/buyNum"
         android:id="@+id/buyNumTextView"
+        android:textColor="#ffffff"
         android:layout_below="@+id/nametextView"
-        android:layout_alignLeft="@+id/button_allSell"
-        android:layout_alignStart="@+id/button_allSell"
-        android:textColor="#ffffff" />
+        android:layout_alignRight="@+id/textView4"
+        android:layout_alignEnd="@+id/textView4" />
 
     <Button
         android:layout_width="wrap_content"
