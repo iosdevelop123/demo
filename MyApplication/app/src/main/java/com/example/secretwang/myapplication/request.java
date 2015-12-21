@@ -1,17 +1,13 @@
 package com.example.secretwang.myapplication;
-
-
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
 import org.ksoap2.transport.Transport;
-
 import java.net.URL;
 import java.util.Date;
 
@@ -43,6 +39,14 @@ public class request {
         }catch (Exception e){
             e.printStackTrace();
         }
+        String string = soapObject1.toString();
+        System.out.println(string);
+        if (string.equals("{}"))
+        {
+            soapObject1.addProperty("ErrMessage","连接超时");
+            return soapObject1;
+        }else {
         return soapObject1;
+        }
     }
 }
