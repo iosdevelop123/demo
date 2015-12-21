@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 
 import android.content.SharedPreferences;
@@ -67,7 +68,7 @@ public class MainActivity extends Activity {
 
 
 
-    private String kanduofanxianggoumaishoushu;
+    private String fanxianggoumaishoushu;
     private String kanduoOrkankong;
     private static String OpenSell_New = "OpenSell-New";
     private static String OpenBuy_New = "OpenBuy-New";
@@ -311,13 +312,81 @@ public class MainActivity extends Activity {
                 new AlertDialog.Builder(MainActivity.this)
                         .setTitle("设置您委托的产品类型和手数")
                         .setView(outerView)
-                        .setPositiveButton("确定", null)
                         .setCancelable(false)
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                new Thread(genjuzaicangdingdangaibianmairuanniumingziRunnable).start();
+                            }
+                        })
                         .show();
             }
         });
 
-
+    Runnable genjuzaicangdingdangaibianmairuanniumingziRunnable = new Runnable() {
+        @Override
+        public void run() {
+            String TransformData = "TransformData";
+            JSONObject zaicang = new JSONObject();
+            try {
+                zaicang.put("DriverID","1234567890");
+                zaicang.put("TaskGuid",TaskGuid);
+                zaicang.put("DataType","ClientOpenTrades");
+                zaicang.put("LoginAccount",loginStr);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            request request = new request();
+            SoapObject soapObject = request.getResult(TransformData, zaicang.toString());
+            String duokong = genjuzaicangChangeButton(soapObject);
+            Message message = new Message();
+            Bundle bundle = new Bundle();
+            bundle.putString("duokong",duokong);
+            message.setData(bundle);
+            duokongHandler.sendMessage(message);
+        }
+    };
+    private String genjuzaicangChangeButton(SoapObject soapObject){
+        String s = soapObject.getProperty(0).toString();
+        String duoOrkong = "";
+        if (s.equals("[]")){
+            buyLessButton.setText(BUYLESS);
+            buyMoreButton.setText(BUYMORE);
+        }else {
+            try {
+                JSONArray jsonArray = new JSONArray(s);
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    String name = jsonObject.getString("Symbol");
+                    if (name.equals(nametextView.getText().toString())){
+                        duoOrkong = jsonObject.getString("TypeName");
+                        break;
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return duoOrkong;
+    }
+    Handler duokongHandler = new Handler(){
+        @Override
+        public void handleMessage(Message message) {
+            super.handleMessage(message);
+            Bundle bundle = message.getData();
+            String s = bundle.getString("duokong");
+            if (s.equals("")){
+                buyLessButton.setText(BUYLESS);
+                buyMoreButton.setText(BUYMORE);
+            }else if (s.equals("空")){
+                buyMoreButton.setText(FANXIANG);
+                buyLessButton.setText(BUYLESS);
+            }else {
+                buyMoreButton.setText(BUYONCE);
+                buyLessButton.setText(FANXIANG);
+            }
+        }
+    };
 
 
 
@@ -489,17 +558,16 @@ public class MainActivity extends Activity {
             if (string.startsWith("{\"Comment\"")) {
                 buyMoreButton.setText(BUYONCE);
                 buyLessButton.setText(FANXIANG);
-                buttonCanClick();
                 Toast.makeText(MainActivity.this,"买入成功",Toast.LENGTH_SHORT).show();
             }else {
                 try {
                     JSONObject jsonObject = new JSONObject(string);
                     Toast.makeText(MainActivity.this,jsonObject.getString("ErrMessage"),Toast.LENGTH_SHORT).show();
-                    buttonCanClick();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
+            buttonCanClick();
         }
     };
 //    看多数据请求
@@ -532,16 +600,17 @@ public class MainActivity extends Activity {
 
 
 
-
-
-
 //    看多反向开仓
     private void buyMoreButtonReverse(){
         Log.i(">>>>>>","看多反向开仓");
         kanduoOrkankong = OpenBuy_New;
-        new Thread(kanduofanxiangOrderNumRunnable).start();
+        new Thread(fanxiangOrderNumRunnable).start();
     }
-    Handler kanduofanxiangOrderNumHandler = new Handler(){
+
+
+
+
+    Handler fanxiangOrderNumHandler = new Handler(){
         @Override
         public void handleMessage(Message message) {
             super.handleMessage(message);
@@ -556,14 +625,14 @@ public class MainActivity extends Activity {
                     String order = jsonObject.getString("order");
                     SymbolNumberSList.add(order);
                 }
-                kanduofanxianggoumaishoushu = String.valueOf(shoushu);
+                fanxianggoumaishoushu = String.valueOf(shoushu);
                 new Thread(kanduoallSellRunnable).start();
             }catch (JSONException e){
                 e.printStackTrace();
             }
         }
     };
-    Runnable kanduofanxiangOrderNumRunnable = new Runnable() {
+    Runnable fanxiangOrderNumRunnable = new Runnable() {
         @Override
         public void run() {
             String TransformData = "TransformData";
@@ -583,7 +652,7 @@ public class MainActivity extends Activity {
             Bundle bundle = new Bundle();
             bundle.putString("kanduofanxiangOrderNum", list.toString());
             message.setData(bundle);
-            kanduofanxiangOrderNumHandler.sendMessage(message);
+            fanxiangOrderNumHandler.sendMessage(message);
         }
     };
     private List getxiangtongdeOrderNums(SoapObject soapObject){
@@ -617,7 +686,7 @@ public class MainActivity extends Activity {
             Bundle bundle = message.getData();
             String string = bundle.getString("sellKey");
             if (string.equals("True")){
-                new Thread(kanduofanxiangmairuRunnable).start();
+                new Thread(fanxiangmairuRunnable).start();
             }else {
                 Toast.makeText(MainActivity.this, "反向开仓失败", Toast.LENGTH_SHORT).show();
             }
@@ -655,8 +724,8 @@ public class MainActivity extends Activity {
             kanduosellHandler.sendMessage(message);
         }
     };
-
-    Runnable kanduofanxiangmairuRunnable = new Runnable() {
+//  反向买入请求
+    Runnable fanxiangmairuRunnable = new Runnable() {
         @Override
         public void run() {
             String SetData = "SetData";
@@ -666,7 +735,7 @@ public class MainActivity extends Activity {
                 parma.put("DataType",kanduoOrkankong);
                 parma.put("LoginAccount",loginStr);
                 parma.put("Symbol",nametextView.getText().toString());
-                parma.put("Volume",kanduofanxianggoumaishoushu);
+                parma.put("Volume",fanxianggoumaishoushu);
                 parma.put("StopLoss","0");
                 parma.put("TakeProfit","0");
                 parma.put("Comment","Android");
@@ -679,10 +748,10 @@ public class MainActivity extends Activity {
             Bundle bundle = new Bundle();
             bundle.putString("kanduofanxiangmairu", soapObject.getProperty(0).toString());
             message.setData(bundle);
-            kanduofanxiangmairuHandler.sendMessage(message);
+            fanxiangmairuHandler.sendMessage(message);
         }
     };
-    Handler kanduofanxiangmairuHandler = new Handler(){
+    Handler fanxiangmairuHandler = new Handler(){
         @Override
         public void handleMessage(Message message) {
             super.handleMessage(message);
@@ -709,6 +778,8 @@ public class MainActivity extends Activity {
             }
         }
     };
+
+
 
 
 //  看空按钮点击事件
@@ -738,17 +809,16 @@ public class MainActivity extends Activity {
             if (string.startsWith("{\"Comment\"")) {
                 buyLessButton.setText(BUYONCE);
                 buyMoreButton.setText(FANXIANG);
-                buttonCanClick();
                 Toast.makeText(MainActivity.this,"买入成功",Toast.LENGTH_SHORT).show();
             }else {
                 try {
                     JSONObject jsonObject = new JSONObject(string);
                     Toast.makeText(MainActivity.this,jsonObject.getString("ErrMessage"),Toast.LENGTH_SHORT).show();
-                    buttonCanClick();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
+            buttonCanClick();
         }
     };
     Runnable kankongRunnable = new Runnable() {
@@ -782,9 +852,7 @@ public class MainActivity extends Activity {
     private void  buyLessButtonReverse() {
         Log.i(">>>>>>","看空反向开仓");
         kanduoOrkankong = OpenSell_New;
-        new Thread(kanduofanxiangOrderNumRunnable).start();
-//        buyLessButton.setText(BUYONCE);
-//        buyMoreButton.setText(FANXIANG);
+        new Thread(fanxiangOrderNumRunnable).start();
     }
 
 //    @Override
