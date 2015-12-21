@@ -8,7 +8,7 @@
     <RelativeLayout
             android:id="@+id/top_relative"
             android:layout_width="fill_parent"
-            android:background="#4331e8"
+            android:background="#1471dd"
             android:layout_height="50.0dip"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
@@ -43,6 +43,6 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="70dp"
         android:background="@drawable/shape"
-        android:backgroundTint="#4331e8" />
+        android:backgroundTint="#1471dd" />
 
 </RelativeLayout>

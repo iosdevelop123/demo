@@ -66,12 +66,12 @@ public class LoginActivity extends Activity {
                 editor.commit();
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 startActivity(intent);
-            }
-            if (string.equals("输入字符串的格式不正确。")){
+            }else if (string.equals("输入字符串的格式不正确。")){
                 Toast.makeText(LoginActivity.this,"用户名和密码不能为空",Toast.LENGTH_SHORT).show();
-            }
-            if (string.equals("{\"ErrMessage\":\"用户名或密码错误\"}")){
+            }else if (string.equals("{\"ErrMessage\":\"用户名或密码错误\"}")){
                 Toast.makeText(LoginActivity.this,"用户名或密码错误",Toast.LENGTH_SHORT).show();
+            }else if (string.equals("\"ErrMessage\",\"连接超时\"")){
+                Toast.makeText(LoginActivity.this,"请求超时",Toast.LENGTH_SHORT).show();
             }
             btn.setText("登录");
             btn.setClickable(true);

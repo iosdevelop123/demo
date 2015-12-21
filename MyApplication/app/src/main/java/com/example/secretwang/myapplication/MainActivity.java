@@ -209,7 +209,7 @@ public class MainActivity extends Activity {
             String[] strArray = null;
             strArray = string.split(",");
             String CLF6Price=strArray[2].toString();
-            String HKZ5Price=strArray[5].toString();
+           // String HKZ5Price=strArray[5].toString();
            // Log.v("------------",CLF6Price);
            // Log.v("------------", HKZ5Price);
             PriceTxt.setText(CLF6Price);
