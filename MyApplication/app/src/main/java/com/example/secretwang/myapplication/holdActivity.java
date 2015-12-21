@@ -20,6 +20,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -93,33 +94,37 @@ public class holdActivity extends Activity {
             super.handleMessage(message);
             Bundle bundle = message.getData();
             String string = bundle.getString("key");
-            int price = 0;
-            try {
-                JSONArray jsonArray = new JSONArray(string);
-                List<Map<String,Object>> list = new ArrayList<>();
-                for (int i=0;i<jsonArray.length();i++) {
-                    Map<String,Object> map = new HashMap<>();
-                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    map.put("textView_name",jsonObject.getString("Symbol"));
-                    map.put("textView_buyNum",jsonObject.getString("Volume"));
-                    map.put("textView_counterFee",jsonObject.getString("Commission"));
-                    map.put("textView_buyMoreOrLess",jsonObject.getString("TypeName"));
-                    map.put("textView_price",jsonObject.getString("Profit"));
-                    map.put("textView_openPrice",jsonObject.getString("OpenPrice"));
-                    map.put("textView_closePrice",jsonObject.getString("ClosePrice"));
-                    map.put("textView_OrderNumber",jsonObject.getString("OrderNumber"));
-                    price += jsonObject.getInt("Profit");
-                    list.add(map);
+            if (string.equals("[]")){
+                Toast.makeText(holdActivity.this,"连接超时",Toast.LENGTH_SHORT).show();
+            }else {
+                int price = 0;
+                try {
+                    JSONArray jsonArray = new JSONArray(string);
+                    List<Map<String, Object>> list = new ArrayList<>();
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        Map<String, Object> map = new HashMap<>();
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        map.put("textView_name", jsonObject.getString("Symbol"));
+                        map.put("textView_buyNum", jsonObject.getString("Volume"));
+                        map.put("textView_counterFee", jsonObject.getString("Commission"));
+                        map.put("textView_buyMoreOrLess", jsonObject.getString("TypeName"));
+                        map.put("textView_price", jsonObject.getString("Profit"));
+                        map.put("textView_openPrice", jsonObject.getString("OpenPrice"));
+                        map.put("textView_closePrice", jsonObject.getString("ClosePrice"));
+                        map.put("textView_OrderNumber", jsonObject.getString("OrderNumber"));
+                        price += jsonObject.getInt("Profit");
+                        list.add(map);
+                    }
+                    if (price < 0) {
+                        priceTextView.setTextColor(Color.parseColor("#0069d5"));
+                    } else {
+                        priceTextView.setTextColor(Color.parseColor("#fe0000"));
+                    }
+                    priceTextView.setText(String.valueOf(price));
+                    listView.setAdapter(new HoldAdspter(getApplicationContext(), list));
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-                if (price < 0){
-                    priceTextView.setTextColor(Color.parseColor("#0069d5"));
-                }else {
-                    priceTextView.setTextColor(Color.parseColor("#fe0000"));
-                }
-                priceTextView.setText(String.valueOf(price));
-                listView.setAdapter(new HoldAdspter(getApplicationContext(),list));
-            }catch (JSONException e){
-                e.printStackTrace();
             }
             progressDialog.dismiss(); //关闭进度条
         }
@@ -152,24 +157,27 @@ public class holdActivity extends Activity {
     private List data(SoapObject soapObject) {
         List list = new ArrayList();
         String string = soapObject.getProperty(0).toString();
-        try {
-            JSONArray jsonArray = new  JSONArray(string);
-            for (int i = 0;i<jsonArray.length();i++){
-                Map<String,Object> map = new HashMap<String, Object>();
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                map.put("Symbol",jsonObject.getString("Symbol"));
-                map.put("Volume",jsonObject.getString("Volume"));
-                map.put("Commission",jsonObject.getString("Commission"));
-                map.put("TypeName","看" + jsonObject.getString("TypeName"));
-                map.put("Profit",jsonObject.getString("Profit"));
-                map.put("OpenPrice",jsonObject.getString("OpenPrice"));
-                map.put("ClosePrice",jsonObject.getString("ClosePrice"));
-                map.put("OrderNumber",jsonObject.getString("OrderNumber"));
-                list.add(map);
-                System.out.println(jsonObject);
+        if (string.equals("连接超时")){
+
+        }else {
+            try {
+                JSONArray jsonArray = new JSONArray(string);
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    Map<String, Object> map = new HashMap<String, Object>();
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    map.put("Symbol", jsonObject.getString("Symbol"));
+                    map.put("Volume", jsonObject.getString("Volume"));
+                    map.put("Commission", jsonObject.getString("Commission"));
+                    map.put("TypeName", "看" + jsonObject.getString("TypeName"));
+                    map.put("Profit", jsonObject.getString("Profit"));
+                    map.put("OpenPrice", jsonObject.getString("OpenPrice"));
+                    map.put("ClosePrice", jsonObject.getString("ClosePrice"));
+                    map.put("OrderNumber", jsonObject.getString("OrderNumber"));
+                    list.add(map);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        }catch (JSONException e){
-            e.printStackTrace();
         }
         return list;
     }

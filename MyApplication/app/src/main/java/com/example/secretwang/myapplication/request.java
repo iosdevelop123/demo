@@ -43,7 +43,14 @@ public class request {
         }catch (Exception e){
             e.printStackTrace();
         }
-
+        String string = soapObject1.toString();
+        System.out.println(string);
+        if (string.equals("{}"))
+        {
+            soapObject1.addProperty("ErrMessage","连接超时");
+            return soapObject1;
+        }else {
         return soapObject1;
+        }
     }
 }
