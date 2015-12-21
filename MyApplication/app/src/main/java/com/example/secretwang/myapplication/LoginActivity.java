@@ -57,7 +57,7 @@ public class LoginActivity extends Activity {
             super.handleMessage(message);
             Bundle bundle = message.getData();
             String string = bundle.getString("value");
-            Log.v("66666666666",string);
+            //Log.v("66666666666",string);
             progressDialog.dismiss(); //关闭进度条
             if (string.equals("True")){
                 Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
