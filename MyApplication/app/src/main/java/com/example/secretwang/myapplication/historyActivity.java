@@ -119,8 +119,8 @@ public class historyActivity extends Activity {
 
                     map.put("TypeName", myjson.getString("TypeName"));
                     map.put("Symbol", myjson.getString("Symbol"));
-                    map.put("Volume", myjson.getString("Volume"));
-                    map.put("Commission", myjson.getString("Commission"));
+                    map.put("Volume", myjson.getInt("Volume"));
+                    map.put("Commission", myjson.getInt("Commission"));
 //                截取卖出时间字符串
                     String closeTime = myjson.getString("CloseTime");
                     map.put("CloseTime", closeTime.substring(0, 10));
