@@ -57,6 +57,7 @@ public class LoginActivity extends Activity {
             super.handleMessage(message);
             Bundle bundle = message.getData();
             String string = bundle.getString("value");
+            //Log.v("66666666666",string);
             progressDialog.dismiss(); //关闭进度条
             if (string.equals("True")){
                 Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
@@ -70,7 +71,7 @@ public class LoginActivity extends Activity {
                 Toast.makeText(LoginActivity.this,"用户名和密码不能为空",Toast.LENGTH_SHORT).show();
             }else if (string.equals("{\"ErrMessage\":\"用户名或密码错误\"}")){
                 Toast.makeText(LoginActivity.this,"用户名或密码错误",Toast.LENGTH_SHORT).show();
-            }else if (string.equals("\"ErrMessage\",\"连接超时\"")){
+            }else if (string.equals("连接超时")){
                 Toast.makeText(LoginActivity.this,"请求超时",Toast.LENGTH_SHORT).show();
             }
             btn.setText("登录");
