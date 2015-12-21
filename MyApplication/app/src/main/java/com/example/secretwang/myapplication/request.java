@@ -43,7 +43,6 @@ public class request {
         }catch (Exception e){
             e.printStackTrace();
         }
-
         return soapObject1;
     }
 }
