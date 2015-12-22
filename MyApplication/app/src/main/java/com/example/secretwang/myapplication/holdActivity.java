@@ -177,6 +177,9 @@ public class holdActivity extends Activity {
         return list;
     }
 
+
+
+//    自定义listViewItem的显示
     public class HoldAdspter extends BaseAdapter {
         private List<Map<String,Object>> data;
         private LayoutInflater layoutInflater;
