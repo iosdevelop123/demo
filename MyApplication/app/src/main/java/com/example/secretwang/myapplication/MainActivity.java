@@ -195,7 +195,7 @@ public class MainActivity extends Activity {
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
         //最新行情数据
         PriceTxt = (TextView)findViewById(R.id.textView_priceText);
-        System.out.println(nametextView.getText().toString());
+//        System.out.println(nametextView.getText().toString());
     }
 //    设置按钮允许点击
     private void buttonCanClick(){
@@ -216,19 +216,22 @@ public class MainActivity extends Activity {
             super.handleMessage(message);
             Bundle bundle = message.getData();
             String string = bundle.getString("value");
-           // Log.v("++++++++++++", string);
-            String[] strArray = null;
-            strArray = string.split(",");
-            String CLF6Price=strArray[2].toString();
-            String HKZ5Price=strArray[5].toString();
-           // Log.v("------------",CLF6Price);
-           // Log.v("------------", HKZ5Price);
-            if (nametextView.getText().toString().equals("CLG6")){
-                PriceTxt.setText(CLF6Price);
+            if (string.equals("连接超时")){
+                Log.v("++++++++++++", string);
             }else {
-                PriceTxt.setText(HKZ5Price);
+                // Log.v("++++++++++++", string);
+                String[] strArray = null;
+                strArray = string.split(",");
+                String CLF6Price = strArray[2].toString();
+                String HKZ5Price = strArray[5].toString();
+                // Log.v("------------",CLF6Price);
+                // Log.v("------------", HKZ5Price);
+                if (nametextView.getText().toString().equals("CLG6")) {
+                    PriceTxt.setText(CLF6Price);
+                } else {
+                    PriceTxt.setText(HKZ5Price);
+                }
             }
-
         }
     };
     Runnable latestPriceRunnable = new Runnable() {
@@ -316,7 +319,7 @@ public class MainActivity extends Activity {
                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                new Thread(genjuzaicangdingdangaibianmairuanniumingziRunnable).start();
+                                new Thread(genjuzaicangdingdangaibianmairuanniumingziRunnable).start();//选择商品的时候根据在仓订单里面要选择的商品的购买的情况改变按钮的名字
                             }
                         })
                         .show();
@@ -380,16 +383,13 @@ public class MainActivity extends Activity {
                 buyMoreButton.setText(BUYMORE);
             }else if (s.equals("空")){
                 buyMoreButton.setText(FANXIANG);
-                buyLessButton.setText(BUYLESS);
-            }else {
+                buyLessButton.setText(BUYONCE);
+            }else if (s.equals("多")){
                 buyMoreButton.setText(BUYONCE);
                 buyLessButton.setText(FANXIANG);
             }
         }
     };
-
-
-
 
 
 //    全部卖出按钮点击事件

@@ -13,10 +13,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -43,6 +46,7 @@ public class holdActivity extends Activity {
     private TextView priceTextView = null;
     private String loginStr;
     private ProgressDialog progressDialog;
+    private List<Map<String, Object>> list = new ArrayList<>();
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -64,15 +68,7 @@ public class holdActivity extends Activity {
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
-//    AdapterView.OnItemClickListener itemClickLis = new AdapterView.OnItemClickListener() {
-//        @Override
-//        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//            list.remove(position);
-//            Log.d("position" + position, "id" + id);
-//            Log.i(">>>>>", "sssss");
-//            listView.notify();
-//        }
-//    };
+
     private void createUI() {
         //        持仓
         listView = (ListView) findViewById(R.id.listView_holdList);
@@ -100,7 +96,7 @@ public class holdActivity extends Activity {
                 int price = 0;
                 try {
                     JSONArray jsonArray = new JSONArray(string);
-                    List<Map<String, Object>> list = new ArrayList<>();
+//                    List<Map<String, Object>> list = new ArrayList<>();
                     for (int i = 0; i < jsonArray.length(); i++) {
                         Map<String, Object> map = new HashMap<>();
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -114,6 +110,7 @@ public class holdActivity extends Activity {
                         map.put("textView_OrderNumber", jsonObject.getString("OrderNumber"));
                         price += jsonObject.getInt("Profit");
                         list.add(map);
+//                        li.add(map);
                     }
                     if (price < 0) {
                         priceTextView.setTextColor(Color.parseColor("#0069d5"));
@@ -157,9 +154,7 @@ public class holdActivity extends Activity {
     private List data(SoapObject soapObject) {
         List list = new ArrayList();
         String string = soapObject.getProperty(0).toString();
-        if (string.equals("连接超时")){
-
-        }else {
+        if (string.equals("连接超时")){}else {
             try {
                 JSONArray jsonArray = new JSONArray(string);
                 for (int i = 0; i < jsonArray.length(); i++) {
@@ -181,6 +176,149 @@ public class holdActivity extends Activity {
         }
         return list;
     }
+
+    public class HoldAdspter extends BaseAdapter {
+        private List<Map<String,Object>> data;
+        private LayoutInflater layoutInflater;
+        private Context context;
+        private String orderNum;
+        private String buyNum;
+        private int posi;
+        protected HoldAdspter(Context context, List<Map<String, Object>> data){
+            this.context = context;
+            this.data = data;
+            this.layoutInflater = LayoutInflater.from(context);
+        }
+        public final class Hold {
+            public TextView textView_name;
+            public TextView textView_buyMoreOrLess;
+            public TextView textView_buyNum;
+            public TextView textView_counterFee;
+            public TextView textView_price;
+            public TextView textView_openPrice;
+            public TextView textView_closePrice;
+            public Button button_sell;
+            public TextView textView_OrderNumber;
+        }
+        @Override
+        public int getCount() {
+            return data.size();
+        }
+        /**
+         * 获得某一位置的数据
+         */
+        @Override
+        public Object getItem(int position) {
+            return data.get(position);
+        }
+        /**
+         * 获得唯一标识
+         */
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override public View getView(final int position,View contextView,ViewGroup parent){
+            Hold hold = null;
+            if (contextView == null){
+                hold = new Hold();
+                contextView = layoutInflater.inflate(R.layout.list,null);
+                hold.textView_name = (TextView)contextView.findViewById(R.id.textView);
+                hold.textView_buyMoreOrLess = (TextView)contextView.findViewById(R.id.textView14);
+                hold.textView_buyNum = (TextView)contextView.findViewById(R.id.textView_buyNum);
+                hold.textView_counterFee = (TextView)contextView.findViewById(R.id.textView_counterFee);
+                hold.textView_price = (TextView)contextView.findViewById(R.id.textView_price);
+                hold.textView_openPrice = (TextView) contextView.findViewById(R.id.textView_openPrice);
+                hold.textView_closePrice = (TextView) contextView.findViewById(R.id.textView_closePrice);
+                hold.textView_OrderNumber = (TextView) contextView.findViewById(R.id.OrderNumber);
+                hold.button_sell = (Button)contextView.findViewById(R.id.button_sell);
+                contextView.setTag(hold);
+            }else {
+                hold = (Hold)contextView.getTag();
+            }
+//        得到数据
+            hold.textView_name.setText((String)data.get(position).get("textView_name"));
+            hold.textView_buyMoreOrLess.setText((String)data.get(position).get("textView_buyMoreOrLess"));
+            hold.textView_buyNum.setText((String)data.get(position).get("textView_buyNum"));
+            hold.textView_counterFee.setText((String)data.get(position).get("textView_counterFee"));
+            hold.textView_price.setText((String)data.get(position).get("textView_price"));
+            hold.textView_openPrice.setText((String)data.get(position).get("textView_openPrice"));
+            hold.textView_closePrice.setText((String)data.get(position).get("textView_closePrice"));
+            hold.textView_OrderNumber.setText((String)data.get(position).get("textView_OrderNumber"));
+//        判断是看多还是看空，显示背景颜色
+            if (hold.textView_buyMoreOrLess.getText().toString().equals("看多")) {
+                hold.textView_buyMoreOrLess.setBackgroundColor(Color.parseColor("#7c0000"));
+            }else {
+                hold.textView_buyMoreOrLess.setBackgroundColor(Color.parseColor("#333399"));
+            }
+//        根据盈利判断字体颜色。
+            if (!hold.textView_price.getText().toString().startsWith("-")){
+                hold.textView_price.setTextColor(Color.parseColor("#ff4320"));
+            }else {
+                hold.textView_price.setTextColor(Color.parseColor("#0069d5"));
+            }
+            final Hold finalHold = hold;
+            hold.button_sell.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showInfo(position, finalHold.textView_buyNum.getText().toString(), finalHold.textView_OrderNumber.getText().toString());
+                }
+            });
+            hold.button_sell.setTag(position);
+            return contextView;
+        }
+        public void showInfo(int position ,String buyNumStr,String string){
+            orderNum = string;
+            buyNum = buyNumStr;
+            posi = position;
+            new Thread(runnable).start();
+            progressDialog = ProgressDialog.show(holdActivity.this, "","正在加载,请稍候！");
+        }
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                String SetData = "SetData";
+                JSONObject jsonObject = new JSONObject();
+                try {
+                    jsonObject.put("DriverID","1234567890");
+                    jsonObject.put("TaskGuid","ab8495db-3a4a-4f70-bb81-8518f60ec8bf");
+                    jsonObject.put("DataType","CloseOrder");
+                    jsonObject.put("OrderNumber",orderNum);
+                    jsonObject.put("Volume",buyNum);
+//                jsonObject.put("LoginAccount","");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                request request = new request();
+                SoapObject s = request.getResult(SetData, jsonObject.toString());
+                String s1 = s.getProperty(0).toString();
+                System.out.println(s1);
+                Message message = new Message();
+                Bundle bundle = new Bundle();
+                bundle.putString("key",s1);
+                message.setData(bundle);
+                handler.sendMessage(message);
+            }
+        };
+        Handler handler = new Handler(){
+            @Override
+            public void handleMessage(Message message){
+                super.handleMessage(message);
+                Bundle bundle = message.getData();
+                String s = bundle.getString("key");
+                if (s.equals("True")){
+                    progressDialog.dismiss();
+                    list.remove(posi);
+                    listView.setAdapter(new HoldAdspter(getApplicationContext(),list));
+                }
+            }
+        };
+
+    }
+
+
+
 //    @Override
 //    public void onStart() {
 //        super.onStart();
@@ -220,4 +358,5 @@ public class holdActivity extends Activity {
 //        AppIndex.AppIndexApi.end(client, viewAction);
 //        client.disconnect();
 //    }
+
 }

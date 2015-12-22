@@ -40,7 +40,6 @@ public class request {
             e.printStackTrace();
         }
         String string = soapObject1.toString();
-        System.out.println(string);
         if (string.equals("{}"))
         {
             soapObject1.addProperty("ErrMessage","连接超时");
