@@ -25,14 +25,15 @@
         android:layout_centerHorizontal="true" />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="120dp"
         android:layout_height="wrap_content"
         android:text="@string/price"
         android:id="@+id/textView_priceText"
         android:textColor="#eac281"
-        android:textSize="@dimen/abc_action_button_min_width_material"
         android:layout_below="@+id/buyNumTextView"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:textSize="40dp"
+        android:textAlignment="center" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -41,8 +42,8 @@
         android:id="@+id/buyNumTextView"
         android:textColor="#ffffff"
         android:layout_below="@+id/nametextView"
-        android:layout_alignRight="@+id/textView4"
-        android:layout_alignEnd="@+id/textView4" />
+        android:layout_alignRight="@+id/nametextView"
+        android:layout_alignEnd="@+id/nametextView" />
 
     <Button
         android:layout_width="wrap_content"
@@ -172,7 +173,7 @@
         android:textColor="#eac281" />
 
     <Button
-        android:layout_width="55dp"
+        android:layout_width="60dp"
         android:layout_height="40dp"
         android:text="持仓"
         android:id="@+id/button_hold"
@@ -201,12 +202,13 @@
 
     <Button
         style="?android:attr/buttonStyleSmall"
-        android:layout_width="55dp"
+        android:layout_width="60dp"
         android:layout_height="40dp"
         android:text="买入"
         android:id="@+id/button"
-        android:layout_alignParentTop="true"
-        android:layout_toEndOf="@+id/textView7" />
+        android:layout_above="@+id/nametextView"
+        android:layout_alignLeft="@+id/textView_priceText"
+        android:layout_alignStart="@+id/textView_priceText" />
 
     <Button
         android:layout_width="wrap_content"

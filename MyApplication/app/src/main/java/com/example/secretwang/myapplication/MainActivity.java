@@ -195,7 +195,6 @@ public class MainActivity extends Activity {
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
         //最新行情数据
         PriceTxt = (TextView)findViewById(R.id.textView_priceText);
-//        System.out.println(nametextView.getText().toString());
     }
 //    设置按钮允许点击
     private void buttonCanClick(){
@@ -265,14 +264,30 @@ public class MainActivity extends Activity {
            }
         }
     };
+
+
+
     //    持仓按钮点击事件
     View.OnClickListener holdButtonClick =(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(MainActivity.this,holdActivity.class);
-            startActivity(intent);
+            String name = nametextView.getText().toString();
+            System.out.println(name);
+            intent.putExtra("name",name);
+            startActivityForResult(intent, 0);
         }
     });
+    @Override
+    protected void onActivityResult(int requestCode,int resultCode,Intent data){
+        String s = data.getStringExtra("change");
+        if(s.equals("true")){
+            buyLessButton.setText(BUYLESS);
+            buyMoreButton.setText(BUYMORE);
+        }
+    }
+
+
 
     //        跳转个人中心界面
     View.OnClickListener userBtnClick=(new View.OnClickListener() {
