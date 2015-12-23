@@ -96,7 +96,7 @@ public class MainActivity extends Activity {
         new Thread(HBListRunnable).start();//获取货币列表
         //new Thread(ServerTimeRunnable).start(); //获取服务器时间
     }
-    
+
 //获取货币列表
     Handler HBListhandler = new Handler(){
         @Override
