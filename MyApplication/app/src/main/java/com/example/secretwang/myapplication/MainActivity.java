@@ -13,6 +13,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.print.PrintAttributes;
+import android.provider.ContactsContract;
+import android.telephony.TelephonyManager;
 import android.text.style.BackgroundColorSpan;
 import android.os.Handler;
 import android.os.Message;
@@ -33,8 +35,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.ksoap2.serialization.SoapObject;
-
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -48,7 +50,8 @@ public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String[] shoushu = new String[]{"1", "2", "3", "4",
            "5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20" };
-    private  static  final  String[] xiangmu = new String[] {"CLG6","HKZ5"};
+    //private  static  final  String[] xiangmu = new String[] {"CLG6","HKZ5"};
+    private  List<String> hblist = new ArrayList<String>();
     private static String TaskGuid = "ab8495db-3a4a-4f70-bb81-8518f60ec8bf";
     private Button buyMoreButton;
     private Button buyLessButton;
@@ -64,10 +67,6 @@ public class MainActivity extends Activity {
     private  ImageButton userBtn;
     private  Button holdButton;
     private TextView PriceTxt;
-
-
-
-
     private String fanxianggoumaishoushu;
     private String kanduoOrkankong;
     private static String OpenSell_New = "OpenSell-New";
@@ -93,9 +92,65 @@ public class MainActivity extends Activity {
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
-        new Thread(latestPriceRunnable).start();
-
+        new Thread(latestPriceRunnable).start();//获取最新行情数据
+        new Thread(HBListRunnable).start();//获取货币列表
+        //new Thread(ServerTimeRunnable).start(); //获取服务器时间
+        TaskLog();//操作日志
     }
+ //操作日志
+    private void TaskLog(){
+        NetWorkUtils net = new NetWorkUtils();
+        int ss=net.getAPNType(MainActivity.this);
+        Log.v("ssss", String.valueOf(ss));
+        String sss=net.getIpAddress();
+        Log.v("sssss",String.valueOf(sss));
+        TelephonyManager TelephonyMgr = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
+        String szImei = TelephonyMgr.getDeviceId();
+        Log.v("ssssss",szImei);
+    }
+//获取货币列表
+    Handler HBListhandler = new Handler(){
+        @Override
+        public void handleMessage(Message message){
+            super.handleMessage(message);
+            Bundle bundle = message.getData();
+            String string = bundle.getString("HBListkey");
+            try {
+                JSONArray jsonArray = new JSONArray(string);
+                for (int i=0;i<jsonArray.length();i++){
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    String Bh = jsonObject.getString("Bh");
+                    String Name = jsonObject.getString("Name");
+                    hblist.add(Bh);
+                   // Log.v("++++++", Bh);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    };
+    Runnable HBListRunnable = new Runnable() {
+        @Override
+        public void run() {
+            String method = "TransformData";
+            JSONObject parma = new JSONObject();
+            try {
+                parma.put("TaskGuid","b4026263-704e-4e12-a64d-f79cb42962cc");
+                parma.put("DataType","HBList");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            request request = new request();
+            SoapObject string = request.getResult(method, parma.toString());
+            String jsonRequest = string.getProperty(0).toString();
+            Message message = new Message();
+            Bundle bundle = new Bundle();
+            bundle.putString("HBListkey",jsonRequest);
+            message.setData(bundle);
+            HBListhandler.sendMessage(message);
+        }
+    };
+
     Handler handler = new Handler(){
         @Override
         public void handleMessage(Message message){
@@ -215,22 +270,17 @@ public class MainActivity extends Activity {
             super.handleMessage(message);
             Bundle bundle = message.getData();
             String string = bundle.getString("value");
-            if (string.equals("连接超时")){
-                Log.v("++++++++++++", string);
-            }else {
-                // Log.v("++++++++++++", string);
-                String[] strArray = null;
-                strArray = string.split(",");
-                String CLF6Price = strArray[2].toString();
-                String HKZ5Price = strArray[5].toString();
-                // Log.v("------------",CLF6Price);
-                // Log.v("------------", HKZ5Price);
-                if (nametextView.getText().toString().equals("CLG6")) {
-                    PriceTxt.setText(CLF6Price);
-                } else {
+           // Log.v("++++++++++++", string);
+            String[] strArray = null;
+            strArray = string.split(",");
+            String CLF6Price=strArray[2].toString();
+            String HKZ5Price=strArray[5].toString();
+            String HBName=strArray[1].toString();
+            if (nametextView.getText().toString().equals(HBName)) {
+                PriceTxt.setText(CLF6Price);
+            }else{
                     PriceTxt.setText(HKZ5Price);
                 }
-            }
         }
     };
     Runnable latestPriceRunnable = new Runnable() {
@@ -317,7 +367,7 @@ public class MainActivity extends Activity {
                 });
                 wv2 = (WheelView) outerView.findViewById(R.id.wheel_view_wv2);
                 wv2.setOffset(2);
-                wv2.setItems(Arrays.asList(xiangmu));
+                wv2.setItems(hblist);
                 wv2.setSeletion(category);
                 wv2.setOnWheelViewListener(new WheelView.OnWheelViewListener() {
                     @Override

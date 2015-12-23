@@ -14,7 +14,9 @@
 14.获取货币交易时间(GetData)
 15.获取货币交易强行关闭时间(GetData)
 16.获取账户余额(TransformData)
-17.用户退出(SetData)
+17.获取自动平仓的余额(GetData)
+18.操作日志(SetData)
+19.用户退出(SetData)
 
 1.用户登录(TransformData)
 {
@@ -198,7 +200,7 @@
         ...
      ]
     获取失败返回: []
-
+    
 }
 8.看多开仓(SetData)
 {
@@ -424,7 +426,34 @@
         "Zipcode": ""
     }
 }
-17.用户退出(SetData)
+17.获取自动平仓的余额
+{
+    传入数据:
+    {
+        "TaskGuid":"b4026263-704e-4e12-a64d-f79cb42962cc",
+        "DataType":"AtuoCloseBalance"
+    }
+    获取成功返回: "461.70"
+}
+18.操作日志(SetData)
+{
+    传入数据:（看多开仓为例）
+    {
+        "DriverID":"1234567890",
+        "UserID": "任务标识",
+        "TaskGuid": "b4026263-704e-4e12-a64d-f79cb42962cc",
+        "DataType": "OptionLog",
+        "LoginAccount": "1317",
+        "Text":"IP地址:180.173.244.194,操作时间:2015/12/15 9:01:09,openBuy,交易品种:CLF6,交易手数:1,盈利上限:0,止损上限:0,返回单号:13657564"
+    }
+    ps:
+        1.看多开仓:OpenBuy  看空开仓:OpenSell 单笔平仓:CloseOrder 全部清仓:CloseOrderS
+        2.单笔平仓的"Text":"IP地址:180.173.244.194,操作时间:2015/12/15 9:01:09,CloseOrder,返回单号:13657564"
+        3.单笔平仓的"Text":"IP地址:180.173.244.194,操作时间:2015/12/15 9:01:09,CloseOrderS,返回单号:13657564,13657565,13657566..."
+    操作成功返回:"true"
+    
+}
+19.用户退出(SetData)
 {
     传入数据:
     {
