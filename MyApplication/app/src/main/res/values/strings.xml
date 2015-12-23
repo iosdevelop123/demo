@@ -7,7 +7,7 @@
     <string name="buymore">看多</string>
     <string name="buyless">看空</string>
     <string name="allsell">全部清仓</string>
-    <string name="price">33333</string>
+    <string name="price">0.00</string>
     <string name="buyMorePrice">22222</string>
     <string name="buyLessPrice">11111</string>
     <string name="buyOnce">追单</string>

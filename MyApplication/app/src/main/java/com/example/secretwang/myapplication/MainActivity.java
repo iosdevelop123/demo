@@ -123,6 +123,7 @@ public class MainActivity extends Activity {
 //        String szImei = TelephonyMgr.getDeviceId();
 //        Log.v("ssssss",szImei);
     }
+
 //获取货币列表
     Handler HBListhandler = new Handler(){
         @Override
