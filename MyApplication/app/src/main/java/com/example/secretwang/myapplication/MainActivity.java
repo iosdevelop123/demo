@@ -98,10 +98,8 @@ public class MainActivity extends Activity {
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
         timeDingshi();
         new Thread(HBListRunnable).start();//获取货币列表
-        //new Thread(ServerTimeRunnable).start(); //获取服务器时间
-        TaskLog();//操作日志
     }
-
+//定时器
     private void timeDingshi(){
         timer = new Timer();
         timer.schedule(new TimerTask() {
@@ -110,18 +108,6 @@ public class MainActivity extends Activity {
                 new Thread(latestPriceRunnable).start();//获取最新行情数据
             }
         }, 1000, 1000);
-    }
-
- //操作日志
-    private void TaskLog(){
-        NetWorkUtils net = new NetWorkUtils();
-        int ss=net.getAPNType(MainActivity.this);
-        Log.v("ssss", String.valueOf(ss));
-        String sss=net.getIpAddress();
-        Log.v("sssss",String.valueOf(sss));
-        TelephonyManager TelephonyMgr = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
-//        String szImei = TelephonyMgr.getDeviceId();
-//        Log.v("ssssss",szImei);
     }
 
 //获取货币列表
