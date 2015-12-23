@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,6 +48,8 @@ public class holdActivity extends Activity {
     private String loginStr;
     private ProgressDialog progressDialog;
     private List<Map<String, Object>> list = new ArrayList<>();
+    private String no = "true";
+    private List l = new ArrayList();
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -58,6 +61,8 @@ public class holdActivity extends Activity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_hold);
+
+
         SharedPreferences sharedPreferences =getSharedPreferences("userInfo",MODE_PRIVATE);
         loginStr = sharedPreferences.getString("login","");
         //开启网络请求进度条
@@ -110,7 +115,7 @@ public class holdActivity extends Activity {
                         map.put("textView_OrderNumber", jsonObject.getString("OrderNumber"));
                         price += jsonObject.getInt("Profit");
                         list.add(map);
-//                        li.add(map);
+                        l.add(jsonObject.getString("Symbol"));
                     }
                     if (price < 0) {
                         priceTextView.setTextColor(Color.parseColor("#0069d5"));
@@ -178,15 +183,14 @@ public class holdActivity extends Activity {
     }
 
 
-
 //    自定义listViewItem的显示
     public class HoldAdspter extends BaseAdapter {
         private List<Map<String,Object>> data;
         private LayoutInflater layoutInflater;
         private Context context;
-        private String orderNum;
-        private String buyNum;
-        private int posi;
+        private String orderNum;//买到的货币的订单号
+        private String buyNum;//买到的货币的手数
+        private int posi;//得到在listView的哪一行
         protected HoldAdspter(Context context, List<Map<String, Object>> data){
             this.context = context;
             this.data = data;
@@ -313,6 +317,7 @@ public class holdActivity extends Activity {
                 if (s.equals("True")){
                     progressDialog.dismiss();
                     list.remove(posi);
+                    l.remove(posi);
                     listView.setAdapter(new HoldAdspter(getApplicationContext(),list));
                 }
             }
@@ -321,6 +326,28 @@ public class holdActivity extends Activity {
     }
 
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+            // Do something.
+            //        返回上一个activity传值
+            Intent intent = new Intent();
+            String s = this.getIntent().getStringExtra("name");
+            Log.i("qqqqqq",s);
+            for (int i=0;i<l.size();i++){
+                if (s.equals(l.get(i))){
+
+                    no = "false";
+                    break;
+                }
+            }
+            intent.putExtra("change", no);
+            this.setResult(0, intent);
+            onBackPressed();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 
 //    @Override
 //    public void onStart() {
