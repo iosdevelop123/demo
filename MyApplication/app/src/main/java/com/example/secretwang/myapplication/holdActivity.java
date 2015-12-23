@@ -62,7 +62,6 @@ public class holdActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_hold);
 
-
         SharedPreferences sharedPreferences =getSharedPreferences("userInfo",MODE_PRIVATE);
         loginStr = sharedPreferences.getString("login","");
         //开启网络请求进度条
@@ -96,7 +95,7 @@ public class holdActivity extends Activity {
             Bundle bundle = message.getData();
             String string = bundle.getString("key");
             if (string.equals("[]")){
-                Toast.makeText(holdActivity.this,"没有订单",Toast.LENGTH_SHORT).show();
+                Toast.makeText(holdActivity.this,"没有订单,或数据请求失败",Toast.LENGTH_SHORT).show();
             }else {
                 int price = 0;
                 try {

@@ -95,21 +95,8 @@ public class MainActivity extends Activity {
         new Thread(latestPriceRunnable).start();//获取最新行情数据
         new Thread(HBListRunnable).start();//获取货币列表
         //new Thread(ServerTimeRunnable).start(); //获取服务器时间
-        TaskLog();//操作日志
     }
- //操作日志
-    private void TaskLog(){
-        NetWorkUtils net = new NetWorkUtils();
-        int ss=net.getAPNType(MainActivity.this);
-        Log.v("ssss", String.valueOf(ss));
-        String sss=net.getIpAddress();
-        Log.v("sssss",String.valueOf(sss));
-        //TelephonyManager TelephonyMgr = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
-       // String szImei = TelephonyMgr.getDeviceId();
-       // Log.v("ssssss",szImei);
-
-    }
-
+    
 //获取货币列表
     Handler HBListhandler = new Handler(){
         @Override
@@ -124,7 +111,6 @@ public class MainActivity extends Activity {
                     String Bh = jsonObject.getString("Bh");
                     String Name = jsonObject.getString("Name");
                     hblist.add(Bh);
-                   // Log.v("++++++", Bh);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -272,17 +258,19 @@ public class MainActivity extends Activity {
             super.handleMessage(message);
             Bundle bundle = message.getData();
             String string = bundle.getString("value");
-           // Log.v("++++++++++++", string);
-            String[] strArray = null;
-            strArray = string.split(",");
-            String CLF6Price=strArray[2].toString();
-            String HKZ5Price=strArray[5].toString();
-            String HBName=strArray[1].toString();
-            if (nametextView.getText().toString().equals(HBName)) {
-                PriceTxt.setText(CLF6Price);
-            }else{
+//            Log.v("++++++++++++", string);
+            if (string.equals("连接超时")){}else {
+                String[] strArray = null;
+                strArray = string.split(",");
+                String CLF6Price = strArray[2].toString();
+                String HKZ5Price = strArray[5].toString();
+                String HBName = strArray[1].toString();
+                if (nametextView.getText().toString().equals(HBName)) {
+                    PriceTxt.setText(CLF6Price);
+                } else {
                     PriceTxt.setText(HKZ5Price);
                 }
+            }
         }
     };
     Runnable latestPriceRunnable = new Runnable() {
