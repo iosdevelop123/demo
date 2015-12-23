@@ -206,7 +206,6 @@
         android:text="买入"
         android:id="@+id/button"
         android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/textView7"
         android:layout_toEndOf="@+id/textView7" />
 
     <Button

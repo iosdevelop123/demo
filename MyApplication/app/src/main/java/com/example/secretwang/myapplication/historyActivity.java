@@ -83,7 +83,7 @@ public class historyActivity extends Activity {
         public void run() {
             String method = "TransformData";
             int timeLong = (int) (System.currentTimeMillis()/1000+60*60*24);
-            int starTime = (int) (System.currentTimeMillis()/1000-60*60*24*2);
+            int starTime = (int) (System.currentTimeMillis()/1000-60*60*24*4);
             JSONObject parma = new JSONObject();
             try {
                 parma.put("TaskGuid","ab8495db-3a4a-4f70-bb81-8518f60ec8bf");

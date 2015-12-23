@@ -50,7 +50,7 @@ public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String[] shoushu = new String[]{"1", "2", "3", "4",
            "5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20" };
-    private  static  final  String[] xiangmu = new String[] {"CLG6","HKZ5"};
+    //private  static  final  String[] xiangmu = new String[] {"CLG6","HKZ5"};
     private  List<String> hblist = new ArrayList<String>();
     private static String TaskGuid = "ab8495db-3a4a-4f70-bb81-8518f60ec8bf";
     private Button buyMoreButton;
@@ -95,8 +95,9 @@ public class MainActivity extends Activity {
         new Thread(latestPriceRunnable).start();//获取最新行情数据
         new Thread(HBListRunnable).start();//获取货币列表
         //new Thread(ServerTimeRunnable).start(); //获取服务器时间
-        TaskLog();
+        TaskLog();//操作日志
     }
+ //操作日志
     private void TaskLog(){
         NetWorkUtils net = new NetWorkUtils();
         int ss=net.getAPNType(MainActivity.this);
@@ -249,6 +250,7 @@ public class MainActivity extends Activity {
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
         //最新行情数据
         PriceTxt = (TextView)findViewById(R.id.textView_priceText);
+//        System.out.println(nametextView.getText().toString());
     }
 //    设置按钮允许点击
     private void buttonCanClick(){
@@ -275,12 +277,11 @@ public class MainActivity extends Activity {
             String CLF6Price=strArray[2].toString();
             String HKZ5Price=strArray[5].toString();
             String HBName=strArray[1].toString();
-            if (nametextView.getText().toString().equals(HBName)){
+            if (nametextView.getText().toString().equals(HBName)) {
                 PriceTxt.setText(CLF6Price);
-            }else {
-                PriceTxt.setText(HKZ5Price);
-            }
-
+            }else{
+                    PriceTxt.setText(HKZ5Price);
+                }
         }
     };
     Runnable latestPriceRunnable = new Runnable() {
@@ -351,7 +352,6 @@ public class MainActivity extends Activity {
                 });
                 wv2 = (WheelView) outerView.findViewById(R.id.wheel_view_wv2);
                 wv2.setOffset(2);
-               // wv2.setItems(Arrays.asList(xiangmu));
                 wv2.setItems(hblist);
                 wv2.setSeletion(category);
                 wv2.setOnWheelViewListener(new WheelView.OnWheelViewListener() {
@@ -369,7 +369,7 @@ public class MainActivity extends Activity {
                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                new Thread(genjuzaicangdingdangaibianmairuanniumingziRunnable).start();
+                                new Thread(genjuzaicangdingdangaibianmairuanniumingziRunnable).start();//选择商品的时候根据在仓订单里面要选择的商品的购买的情况改变按钮的名字
                             }
                         })
                         .show();
@@ -433,16 +433,13 @@ public class MainActivity extends Activity {
                 buyMoreButton.setText(BUYMORE);
             }else if (s.equals("空")){
                 buyMoreButton.setText(FANXIANG);
-                buyLessButton.setText(BUYLESS);
-            }else {
+                buyLessButton.setText(BUYONCE);
+            }else if (s.equals("多")){
                 buyMoreButton.setText(BUYONCE);
                 buyLessButton.setText(FANXIANG);
             }
         }
     };
-
-
-
 
 
 //    全部卖出按钮点击事件
