@@ -209,15 +209,13 @@
         android:layout_above="@+id/nametextView"
         android:layout_alignLeft="@+id/textView_priceText"
         android:layout_alignStart="@+id/textView_priceText" />
-<<<<<<< HEAD
         android:layout_alignParentTop="true"
         android:layout_toEndOf="@+id/textView7"
         android:backgroundTint="#c1bfbf" />
-=======
         android:layout_above="@+id/nametextView"
         android:layout_alignLeft="@+id/textView_priceText"
         android:layout_alignStart="@+id/textView_priceText" />
->>>>>>> 38022f9df96444874c93cd319cf995b363f404e6
+
 
     <Button
         android:layout_width="wrap_content"

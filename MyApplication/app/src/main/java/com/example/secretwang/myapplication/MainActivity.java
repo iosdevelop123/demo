@@ -105,8 +105,8 @@ public class MainActivity extends Activity {
         String sss=net.getIpAddress();
         Log.v("sssss",String.valueOf(sss));
         TelephonyManager TelephonyMgr = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
-        String szImei = TelephonyMgr.getDeviceId();
-        Log.v("ssssss",szImei);
+//        String szImei = TelephonyMgr.getDeviceId();
+//        Log.v("ssssss",szImei);
     }
 //获取货币列表
     Handler HBListhandler = new Handler(){
@@ -269,17 +269,19 @@ public class MainActivity extends Activity {
             super.handleMessage(message);
             Bundle bundle = message.getData();
             String string = bundle.getString("value");
-           // Log.v("++++++++++++", string);
-            String[] strArray = null;
-            strArray = string.split(",");
-            String CLF6Price=strArray[2].toString();
-            String HKZ5Price=strArray[5].toString();
-            String HBName=strArray[1].toString();
-            if (nametextView.getText().toString().equals(HBName)) {
-                PriceTxt.setText(CLF6Price);
-            }else{
+//            Log.v("++++++++++++", string);
+            if (string.equals("连接超时")){}else {
+                String[] strArray = null;
+                strArray = string.split(",");
+                String CLF6Price = strArray[2].toString();
+                String HKZ5Price = strArray[5].toString();
+                String HBName = strArray[1].toString();
+                if (nametextView.getText().toString().equals(HBName)) {
+                    PriceTxt.setText(CLF6Price);
+                } else {
                     PriceTxt.setText(HKZ5Price);
                 }
+            }
         }
     };
     Runnable latestPriceRunnable = new Runnable() {
