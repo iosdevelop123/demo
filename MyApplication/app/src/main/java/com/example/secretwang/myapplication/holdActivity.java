@@ -96,7 +96,7 @@ public class holdActivity extends Activity {
             Bundle bundle = message.getData();
             String string = bundle.getString("key");
             if (string.equals("[]")){
-                Toast.makeText(holdActivity.this,"没有订单",Toast.LENGTH_SHORT).show();
+                Toast.makeText(holdActivity.this,"没有订单,或数据请求失败",Toast.LENGTH_SHORT).show();
             }else {
                 int price = 0;
                 try {

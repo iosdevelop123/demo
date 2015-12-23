@@ -122,7 +122,6 @@ public class MainActivity extends Activity {
                     String Bh = jsonObject.getString("Bh");
                     String Name = jsonObject.getString("Name");
                     hblist.add(Bh);
-                   // Log.v("++++++", Bh);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
