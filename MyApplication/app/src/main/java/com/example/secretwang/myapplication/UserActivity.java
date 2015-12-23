@@ -34,7 +34,7 @@ public class UserActivity extends Activity {
     String[] from={"item0","item1","item2"};  //这里是ListView显示内容每一列的列名
     //这里是ListView显示每一列对应的list_item中控件的id
     int[] to={R.id.user_item0,R.id.user_item1, R.id.user_item2};
-    Object[] userItem0={R.drawable.keyongyue,R.drawable.gerenxinxi,R.drawable.shoushi};
+    Object[] userItem0={R.mipmap.keyongyue,R.mipmap.xinxi,R.mipmap.shoushi};
     String[] userItem1={"可用余额","昵称","修改密码"}; //这里第一列所要显示的项目
     String[] userItem2={"0.00","nick",""};  //第二列
     ArrayList<HashMap<String,Object>> list=null;

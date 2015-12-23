@@ -104,10 +104,12 @@ public class MainActivity extends Activity {
         Log.v("ssss", String.valueOf(ss));
         String sss=net.getIpAddress();
         Log.v("sssss",String.valueOf(sss));
-        TelephonyManager TelephonyMgr = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
-        String szImei = TelephonyMgr.getDeviceId();
-        Log.v("ssssss",szImei);
+        //TelephonyManager TelephonyMgr = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
+       // String szImei = TelephonyMgr.getDeviceId();
+       // Log.v("ssssss",szImei);
+
     }
+
 //获取货币列表
     Handler HBListhandler = new Handler(){
         @Override

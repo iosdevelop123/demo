@@ -183,19 +183,19 @@
         android:layout_toEndOf="@+id/button" />
     
     <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
         android:id="@+id/setBtn"
-        android:background="@drawable/root_setting"
+        android:background="@mipmap/setting"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
     <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
         android:id="@+id/usrBtn"
-        android:background="@drawable/login_logo"
+        android:background="@mipmap/user"
         android:layout_alignParentTop="true"
         android:layout_alignRight="@+id/surfaceView"
         android:layout_alignEnd="@+id/surfaceView" />
@@ -206,18 +206,12 @@
         android:layout_height="40dp"
         android:text="买入"
         android:id="@+id/button"
-        android:layout_above="@+id/nametextView"
-        android:layout_alignLeft="@+id/textView_priceText"
-        android:layout_alignStart="@+id/textView_priceText" />
-<<<<<<< HEAD
         android:layout_alignParentTop="true"
-        android:layout_toEndOf="@+id/textView7"
-        android:backgroundTint="#c1bfbf" />
-=======
         android:layout_above="@+id/nametextView"
+        android:layout_toEndOf="@+id/textView7"
+        android:backgroundTint="#c1bfbf"
         android:layout_alignLeft="@+id/textView_priceText"
         android:layout_alignStart="@+id/textView_priceText" />
->>>>>>> 38022f9df96444874c93cd319cf995b363f404e6
 
     <Button
         android:layout_width="wrap_content"
