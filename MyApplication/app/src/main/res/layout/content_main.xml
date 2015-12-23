@@ -206,7 +206,8 @@
         android:text="买入"
         android:id="@+id/button"
         android:layout_alignParentTop="true"
-        android:layout_toEndOf="@+id/textView7" />
+        android:layout_toEndOf="@+id/textView7"
+        android:backgroundTint="#c1bfbf" />
 
     <Button
         android:layout_width="wrap_content"
@@ -217,7 +218,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:background="@drawable/shape"
-        android:backgroundTint="#e81818"
+        android:backgroundTint="#ff4320"
         android:textColor="#ffffff"
         android:textSize="20dp" />
 
@@ -228,7 +229,7 @@
         android:id="@+id/button_buyLess"
         android:background="@drawable/shape"
         android:textColor="#ffffff"
-        android:backgroundTint="#1d41d0"
+        android:backgroundTint="#0069d5"
         android:textSize="20dp"
         android:layout_above="@+id/textView8"
         android:layout_alignParentRight="true"
