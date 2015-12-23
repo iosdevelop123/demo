@@ -40,6 +40,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class holdActivity extends Activity {
     private Button historyButton;
@@ -50,6 +52,8 @@ public class holdActivity extends Activity {
     private List<Map<String, Object>> list = new ArrayList<>();
     private String no = "true";
     private List l = new ArrayList();
+    private Timer timer;//定时器
+    private Boolean isFirst;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -63,10 +67,18 @@ public class holdActivity extends Activity {
         setContentView(R.layout.activity_hold);
 
         SharedPreferences sharedPreferences =getSharedPreferences("userInfo",MODE_PRIVATE);
-        loginStr = sharedPreferences.getString("login","");
+        loginStr = sharedPreferences.getString("login", "");
         //开启网络请求进度条
         progressDialog = ProgressDialog.show(holdActivity.this, "","正在加载,请稍候！");
-        new Thread(runnable).start();
+        isFirst = true;
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                new Thread(runnable).start();
+            }
+        }, 1000, 2500);
+
         createUI();
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -95,8 +107,12 @@ public class holdActivity extends Activity {
             Bundle bundle = message.getData();
             String string = bundle.getString("key");
             if (string.equals("[]")){
-                Toast.makeText(holdActivity.this,"没有订单,或数据请求失败",Toast.LENGTH_SHORT).show();
+                if (isFirst) {
+                    Toast.makeText(holdActivity.this, "没有订单,或数据请求失败", Toast.LENGTH_SHORT).show();
+                    isFirst = false;
+                }
             }else {
+                list.removeAll(list);
                 int price = 0;
                 try {
                     JSONArray jsonArray = new JSONArray(string);
@@ -330,9 +346,9 @@ public class holdActivity extends Activity {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
             // Do something.
             //        返回上一个activity传值
+            timer.cancel();
             Intent intent = new Intent();
             String s = this.getIntent().getStringExtra("name");
-            Log.i("qqqqqq",s);
             for (int i=0;i<l.size();i++){
                 if (s.equals(l.get(i))){
 

@@ -19,6 +19,7 @@ import android.text.style.BackgroundColorSpan;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -45,6 +46,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -71,6 +74,7 @@ public class MainActivity extends Activity {
     private String kanduoOrkankong;
     private static String OpenSell_New = "OpenSell-New";
     private static String OpenBuy_New = "OpenBuy-New";
+    private Timer timer;
 
     public List orderNumbersList = new ArrayList();//订单编号数组
     private List SymbolNumberSList = new ArrayList();//选中货币的订单编号数组
@@ -92,11 +96,22 @@ public class MainActivity extends Activity {
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
-        new Thread(latestPriceRunnable).start();//获取最新行情数据
+        timeDingshi();
         new Thread(HBListRunnable).start();//获取货币列表
         //new Thread(ServerTimeRunnable).start(); //获取服务器时间
         TaskLog();//操作日志
     }
+
+    private void timeDingshi(){
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                new Thread(latestPriceRunnable).start();//获取最新行情数据
+            }
+        }, 1000, 1000);
+    }
+
  //操作日志
     private void TaskLog(){
         NetWorkUtils net = new NetWorkUtils();
@@ -269,7 +284,7 @@ public class MainActivity extends Activity {
             super.handleMessage(message);
             Bundle bundle = message.getData();
             String string = bundle.getString("value");
-//            Log.v("++++++++++++", string);
+            Log.v("++++++++++++", string);
             if (string.equals("连接超时")){}else {
                 String[] strArray = null;
                 strArray = string.split(",");
@@ -287,32 +302,26 @@ public class MainActivity extends Activity {
     Runnable latestPriceRunnable = new Runnable() {
         @Override
         public void run() {
-           while (true) {
-               String method = "TransformData";
-               JSONObject parma = new JSONObject();
-               try {
-                   parma.put("TaskGuid", TaskGuid);
-                   parma.put("DataType", "MT4Data");
-                   parma.put("DriverID", "1234567890");
-                   parma.put("Type", "CLG6,HKZ5");
-               } catch (JSONException e) {
-                   e.printStackTrace();
-               }
-               try {
-                   String str_json = parma.toString();
-                   request request = new request();
-                   SoapObject string = request.getResult(method, str_json);
-                   String jsonRequest = string.getProperty(0).toString();
-                   Thread.sleep(1000);// 线程暂停1秒，单位毫秒
-                   Message message = new Message();
-                   Bundle bundle = new Bundle();
-                   bundle.putString("value", jsonRequest);
-                   message.setData(bundle);
-                   latestPriceHandler.sendMessage(message);
-               } catch (Exception e) {
-                   e.printStackTrace();
-               }
-           }
+            String method = "TransformData";
+            JSONObject parma = new JSONObject();
+            try {
+                parma.put("TaskGuid", TaskGuid);
+                parma.put("DataType", "MT4Data");
+                parma.put("DriverID", "1234567890");
+                parma.put("Type", "CLG6,HKZ5");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            String str_json = parma.toString();
+            request request = new request();
+            SoapObject string = request.getResult(method, str_json);
+            String jsonRequest = string.getProperty(0).toString();
+            Message message = new Message();
+            Bundle bundle = new Bundle();
+            bundle.putString("value", jsonRequest);
+            message.setData(bundle);
+            latestPriceHandler.sendMessage(message);
         }
     };
 
@@ -322,6 +331,7 @@ public class MainActivity extends Activity {
     View.OnClickListener holdButtonClick =(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            timer.cancel();
             Intent intent = new Intent(MainActivity.this,holdActivity.class);
             String name = nametextView.getText().toString();
             System.out.println(name);
@@ -331,6 +341,7 @@ public class MainActivity extends Activity {
     });
     @Override
     protected void onActivityResult(int requestCode,int resultCode,Intent data){
+        timeDingshi();
         String s = data.getStringExtra("change");
         if(s.equals("true")){
             buyLessButton.setText(BUYLESS);
@@ -919,6 +930,18 @@ public class MainActivity extends Activity {
         Log.i(">>>>>>","看空反向开仓");
         kanduoOrkankong = OpenSell_New;
         new Thread(fanxiangOrderNumRunnable).start();
+    }
+
+
+//左下角返回按钮点击事件
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+            onBackPressed();
+            timer.cancel();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
 //    @Override
