@@ -3,35 +3,38 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-    <LinearLayout android:layout_width="match_parent"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
         android:weightSum="1">
-      <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-          <ImageView
-            android:id="@+id/user_item0"
-            android:layout_width="25dp"
-            android:layout_height="60dp"
-            android:gravity="center_vertical"
-              android:layout_alignParentTop="true" />
-          <TextView
-           android:id="@+id/user_item1"
-           android:layout_width="270dp"
-           android:layout_height="60dp"
-           android:gravity="center_vertical"
-              android:layout_alignParentTop="true"
-              android:layout_toStartOf="@+id/user_item2"
-              android:layout_toLeftOf="@+id/user_item2" />
-         <TextView
-          android:id="@+id/user_item2"
-          android:layout_width="80dp"
-          android:layout_height="60dp"
-          android:gravity="center_vertical"
-             android:layout_alignParentTop="true"
-             android:layout_alignParentRight="true"
-             android:layout_alignParentEnd="true" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <ImageView
+                android:id="@+id/user_item0"
+                android:layout_marginLeft="10dp"
+                android:layout_width="25dp"
+                android:layout_height="60dp"
+                android:layout_alignParentTop="true"
+                android:gravity="center_vertical" />
+            <TextView
+                android:id="@+id/user_item1"
+                android:layout_width="220dp"
+                android:layout_height="60dp"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="25dp"
+                android:layout_toLeftOf="@+id/user_item2"
+                android:layout_toStartOf="@+id/user_item2"
+                android:gravity="center_vertical" />
+            <TextView
+                android:id="@+id/user_item2"
+                android:layout_width="80dp"
+                android:layout_height="60dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:gravity="center_vertical" />
         </RelativeLayout>
     </LinearLayout>
 </LinearLayout>

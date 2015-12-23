@@ -1,23 +1,19 @@
 
 package com.example.secretwang.myapplication;
-
 import android.app.Activity;
-
 import android.app.ProgressDialog;
-
-
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-
-
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Checkable;
 import android.widget.TextView;
 import android.widget.Toast;
 import org.json.JSONException;
@@ -29,6 +25,7 @@ public class LoginActivity extends Activity {
     private TextView passWord;
     private Button btn;
     private ProgressDialog progressDialog;
+    private Context context;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +43,7 @@ public class LoginActivity extends Activity {
                     btn.setText("登陆中...");
                     btn.setBackgroundResource(R.drawable.shape);
                     //开启网络请求进度条
-                    progressDialog = ProgressDialog.show(LoginActivity.this, "","正在加载,请稍候！");
+                    progressDialog = ProgressDialog.show(LoginActivity.this, "", "正在加载,请稍候！");
                 }
             });
 
