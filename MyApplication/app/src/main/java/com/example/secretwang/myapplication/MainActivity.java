@@ -416,10 +416,7 @@ public class MainActivity extends Activity {
     private String genjuzaicangChangeButton(SoapObject soapObject){
         String s = soapObject.getProperty(0).toString();
         String duoOrkong = "";
-        if (s.equals("[]")){
-            buyLessButton.setText(BUYLESS);
-            buyMoreButton.setText(BUYMORE);
-        }else {
+        if (s.equals("[]")){}else {
             try {
                 JSONArray jsonArray = new JSONArray(s);
                 for (int i = 0; i < jsonArray.length(); i++) {
