@@ -50,8 +50,9 @@ public class holdActivity extends Activity {
     private String loginStr;
     private ProgressDialog progressDialog;
     private List<Map<String, Object>> list = new ArrayList<>();
-    private String no = "true";
-    private List l = new ArrayList();
+    private String no = "true";//判断是否全部平仓
+    private List l_name = new ArrayList();//存储名字
+
     private Timer timer;//定时器
     private Boolean isFirst;
     /**
@@ -106,11 +107,14 @@ public class holdActivity extends Activity {
             super.handleMessage(message);
             Bundle bundle = message.getData();
             String string = bundle.getString("key");
-            if (string.equals("[]")){
+            if (string.equals("[连接超时]")){
                 if (isFirst) {
-                    Toast.makeText(holdActivity.this, "没有订单,或数据请求失败", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(holdActivity.this, "数据请求失败", Toast.LENGTH_SHORT).show();
                     isFirst = false;
                 }
+            }else if (string.equals("[]")){
+                Toast.makeText(holdActivity.this, "没有订单", Toast.LENGTH_SHORT).show();
+                isFirst = false;
             }else {
                 list.removeAll(list);
                 int price = 0;
@@ -130,7 +134,7 @@ public class holdActivity extends Activity {
                         map.put("textView_OrderNumber", jsonObject.getString("OrderNumber"));
                         price += jsonObject.getInt("Profit");
                         list.add(map);
-                        l.add(jsonObject.getString("Symbol"));
+                        l_name.add(jsonObject.getString("Symbol"));
                     }
                     if (price < 0) {
                         priceTextView.setTextColor(Color.parseColor("#0069d5"));
@@ -174,7 +178,9 @@ public class holdActivity extends Activity {
     private List data(SoapObject soapObject) {
         List list = new ArrayList();
         String string = soapObject.getProperty(0).toString();
-        if (string.equals("连接超时")){}else {
+        if (string.equals("连接超时")){
+            list.add("连接超时");
+        }else {
             try {
                 JSONArray jsonArray = new JSONArray(string);
                 for (int i = 0; i < jsonArray.length(); i++) {
@@ -332,7 +338,7 @@ public class holdActivity extends Activity {
                 if (s.equals("True")){
                     progressDialog.dismiss();
                     list.remove(posi);
-                    l.remove(posi);
+                    l_name.remove(posi);
                     listView.setAdapter(new HoldAdspter(getApplicationContext(),list));
                 }
             }
@@ -349,9 +355,8 @@ public class holdActivity extends Activity {
             timer.cancel();
             Intent intent = new Intent();
             String s = this.getIntent().getStringExtra("name");
-            for (int i=0;i<l.size();i++){
-                if (s.equals(l.get(i))){
-
+            for (int i=0;i<l_name.size();i++){
+                if (s.equals(l_name.get(i))){
                     no = "false";
                     break;
                 }

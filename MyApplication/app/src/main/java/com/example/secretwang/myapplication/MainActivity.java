@@ -3,6 +3,7 @@ package com.example.secretwang.myapplication;
 import android.app.Activity;
 import android.app.AlertDialog;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -74,7 +75,9 @@ public class MainActivity extends Activity {
     private String kanduoOrkankong;
     private static String OpenSell_New = "OpenSell-New";
     private static String OpenBuy_New = "OpenBuy-New";
-    private Timer timer;
+    private Timer timer;//定时器
+    private String itemName;//储存切换货币时要切换的货币的名字
+    private ProgressDialog progressDialog;//刷新提示框
 
     public List orderNumbersList = new ArrayList();//订单编号数组
     private List SymbolNumberSList = new ArrayList();//选中货币的订单编号数组
@@ -106,6 +109,7 @@ public class MainActivity extends Activity {
             @Override
             public void run() {
                 new Thread(latestPriceRunnable).start();//获取最新行情数据
+//                new Thread(genjuzaicangdingdangaibianmairuanniumingziRunnable).start();
             }
         }, 1000, 1000);
     }
@@ -152,7 +156,7 @@ public class MainActivity extends Activity {
         }
     };
 
-    Handler handler = new Handler(){
+    Handler zaicanghandler = new Handler(){
         @Override
         public void handleMessage(Message message){
             super.handleMessage(message);
@@ -180,6 +184,8 @@ public class MainActivity extends Activity {
 
         }
     };
+
+//    第一次进入主界面根据在仓订单刷新界面
     Runnable zaicangRunnable = new Runnable() {
         @Override
         public void run() {
@@ -198,9 +204,9 @@ public class MainActivity extends Activity {
             List list = getZaicangDingDan(soapObject);
             Message message = new Message();
             Bundle bundle = new Bundle();
-            bundle.putString("zaicangkey",list.toString());
+            bundle.putString("zaicangkey", list.toString());
             message.setData(bundle);
-            handler.sendMessage(message);
+            zaicanghandler.sendMessage(message);
         }
     };
     private List getZaicangDingDan(SoapObject soapObject){
@@ -275,6 +281,7 @@ public class MainActivity extends Activity {
             if (string.equals("连接超时")){}else {
                 String[] strArray = null;
                 strArray = string.split(",");
+
                 String CLF6Price = strArray[2].toString();
                 String HKZ5Price = strArray[5].toString();
                 String HBName = strArray[1].toString();
@@ -337,7 +344,6 @@ public class MainActivity extends Activity {
     }
 
 
-
     //        跳转个人中心界面
     View.OnClickListener userBtnClick=(new View.OnClickListener() {
         @Override
@@ -372,7 +378,8 @@ public class MainActivity extends Activity {
                     @Override
                     public void onSelected(int selectedIndex, String item1) {
                         Log.d(TAG, "[Dialog]selectedIndex: " + selectedIndex + ", item: " + item1);
-                        nametextView.setText(item1);
+//                        nametextView.setText(item1);
+                        itemName = item1;
                         category=selectedIndex-2;
                     }
                 });
@@ -384,6 +391,7 @@ public class MainActivity extends Activity {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 new Thread(genjuzaicangdingdangaibianmairuanniumingziRunnable).start();//选择商品的时候根据在仓订单里面要选择的商品的购买的情况改变按钮的名字
+                                progressDialog = ProgressDialog.show(MainActivity.this,"","正在切换中...");
                             }
                         })
                         .show();
@@ -415,14 +423,15 @@ public class MainActivity extends Activity {
     };
     private String genjuzaicangChangeButton(SoapObject soapObject){
         String s = soapObject.getProperty(0).toString();
+        Log.i("qqqqqq", s);
         String duoOrkong = "";
-        if (s.equals("[]")){}else {
+        if (s.equals("[]")){}else if (s.equals("连接超时")){duoOrkong = "连接超时";}else {
             try {
                 JSONArray jsonArray = new JSONArray(s);
                 for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
                     String name = jsonObject.getString("Symbol");
-                    if (name.equals(nametextView.getText().toString())){
+                    if (name.equals(itemName)){
                         duoOrkong = jsonObject.getString("TypeName");
                         break;
                     }
@@ -440,15 +449,21 @@ public class MainActivity extends Activity {
             Bundle bundle = message.getData();
             String s = bundle.getString("duokong");
             if (s.equals("")){
+                nametextView.setText(itemName);
                 buyLessButton.setText(BUYLESS);
                 buyMoreButton.setText(BUYMORE);
             }else if (s.equals("空")){
+                nametextView.setText(itemName);
                 buyMoreButton.setText(FANXIANG);
                 buyLessButton.setText(BUYONCE);
             }else if (s.equals("多")){
+                nametextView.setText(itemName);
                 buyMoreButton.setText(BUYONCE);
                 buyLessButton.setText(FANXIANG);
+            }else{
+                Toast.makeText(MainActivity.this,"切换失败",Toast.LENGTH_SHORT).show();
             }
+            progressDialog.dismiss();
         }
     };
 
