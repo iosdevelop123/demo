@@ -450,7 +450,6 @@ public class MainActivity extends Activity {
             super.handleMessage(message);
             Bundle bundle = message.getData();
             String s = bundle.getString("duokong");
-
             if (s.equals("")){
                 nametextView.setText(itemName);
                 buyLessButton.setText(BUYLESS);
@@ -478,6 +477,7 @@ public class MainActivity extends Activity {
             Log.i(">>>>>", "全部卖出");
             buttonCanNotClick();
             new Thread(orderNumbersRunnable).start();
+            progressDialog = ProgressDialog.show(MainActivity.this,"","全部卖出...");
         }
     };
 
@@ -561,10 +561,9 @@ public class MainActivity extends Activity {
                 Toast.makeText(MainActivity.this, "卖出失败", Toast.LENGTH_SHORT).show();
             }
             buttonCanClick();
+            progressDialog.dismiss();
         }
     };
-
-
 //    全部卖出数据请求
     Runnable allSellRunnable = new Runnable() {
         @Override
@@ -602,8 +601,6 @@ public class MainActivity extends Activity {
 
 
 
-
-
 //    看多按钮点击事件
     View.OnClickListener buyMoreClick = new View.OnClickListener() {
         @Override
@@ -625,6 +622,7 @@ public class MainActivity extends Activity {
     private void buyMoreButtonClick() {
         Log.i(">>>>>>>>>>>>>>>", "看多买入");
         new Thread(kanduoRunnable).start();
+        progressDialog = ProgressDialog.show(MainActivity.this,"","下单中...");
         buttonCanNotClick();
     }
 //    根据返回，判断是否买入成功
@@ -646,6 +644,7 @@ public class MainActivity extends Activity {
                     e.printStackTrace();
                 }
             }
+            progressDialog.dismiss();
             buttonCanClick();
         }
     };
@@ -684,11 +683,8 @@ public class MainActivity extends Activity {
         Log.i(">>>>>>","看多反向开仓");
         kanduoOrkankong = OpenBuy_New;
         new Thread(fanxiangOrderNumRunnable).start();
+        progressDialog = ProgressDialog.show(MainActivity.this,"","下单中...");
     }
-
-
-
-
     Handler fanxiangOrderNumHandler = new Handler(){
         @Override
         public void handleMessage(Message message) {
@@ -768,8 +764,10 @@ public class MainActivity extends Activity {
                 new Thread(fanxiangmairuRunnable).start();
             }else {
                 Toast.makeText(MainActivity.this, "反向开仓失败", Toast.LENGTH_SHORT).show();
+                progressDialog.dismiss();
             }
             buttonCanClick();
+
         }
     };
     //    全部卖出数据请求
@@ -855,6 +853,7 @@ public class MainActivity extends Activity {
                     e.printStackTrace();
                 }
             }
+            progressDialog.dismiss();
         }
     };
 
@@ -875,8 +874,9 @@ public class MainActivity extends Activity {
         }
     };
     private void buyLessButtonClick() {
-        Log.i(">>>>>","看空买入");
+        Log.i(">>>>>", "看空买入");
         new Thread(kankongRunnable).start();
+        progressDialog = ProgressDialog.show(MainActivity.this,"","下单中...");
         buttonCanNotClick();
     }
     Handler kankonghandle = new Handler(){
@@ -897,6 +897,7 @@ public class MainActivity extends Activity {
                     e.printStackTrace();
                 }
             }
+            progressDialog.dismiss();
             buttonCanClick();
         }
     };
@@ -932,6 +933,7 @@ public class MainActivity extends Activity {
         Log.i(">>>>>>","看空反向开仓");
         kanduoOrkankong = OpenSell_New;
         new Thread(fanxiangOrderNumRunnable).start();
+        progressDialog = ProgressDialog.show(MainActivity.this,"","下单中...");
     }
 
 
