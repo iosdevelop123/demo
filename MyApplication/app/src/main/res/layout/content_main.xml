@@ -78,11 +78,11 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/lighting"
         android:id="@+id/textView4"
         android:layout_below="@+id/textView_priceText"
         android:layout_centerHorizontal="true"
-        android:textColor="#eac281" />
+        android:textColor="#030014"
+        android:backgroundTint="#030014" />
 
 
     <SurfaceView

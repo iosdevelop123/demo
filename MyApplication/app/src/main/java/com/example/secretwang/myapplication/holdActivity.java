@@ -107,14 +107,19 @@ public class holdActivity extends Activity {
             super.handleMessage(message);
             Bundle bundle = message.getData();
             String string = bundle.getString("key");
+            Log.i("wwwww",string);
             if (string.equals("[连接超时]")){
                 if (isFirst) {
                     Toast.makeText(holdActivity.this, "数据请求失败", Toast.LENGTH_SHORT).show();
                     isFirst = false;
                 }
             }else if (string.equals("[]")){
-                Toast.makeText(holdActivity.this, "没有订单", Toast.LENGTH_SHORT).show();
-                isFirst = false;
+                list.removeAll(list);
+                priceTextView.setText("0");
+                if (isFirst){
+                    Toast.makeText(holdActivity.this, "没有订单", Toast.LENGTH_SHORT).show();
+                    isFirst = false;
+                }
             }else {
                 list.removeAll(list);
                 int price = 0;
@@ -142,11 +147,12 @@ public class holdActivity extends Activity {
                         priceTextView.setTextColor(Color.parseColor("#fe0000"));
                     }
                     priceTextView.setText(String.valueOf(price));
-                    listView.setAdapter(new HoldAdspter(getApplicationContext(), list));
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
+            listView.setAdapter(new HoldAdspter(getApplicationContext(), list));
             progressDialog.dismiss(); //关闭进度条
         }
     };
@@ -180,7 +186,7 @@ public class holdActivity extends Activity {
         String string = soapObject.getProperty(0).toString();
         if (string.equals("连接超时")){
             list.add("连接超时");
-        }else {
+        }else if (string.equals("[]")){list.add("");} else{
             try {
                 JSONArray jsonArray = new JSONArray(string);
                 for (int i = 0; i < jsonArray.length(); i++) {

@@ -499,6 +499,7 @@ public class MainActivity extends Activity {
             }else {
                 new Thread(allSellRunnable).start();
             }
+            progressDialog.dismiss();
         }
     };
     Runnable orderNumbersRunnable = new Runnable() {
