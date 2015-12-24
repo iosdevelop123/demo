@@ -426,7 +426,6 @@ public class MainActivity extends Activity {
     };
     private String genjuzaicangChangeButton(SoapObject soapObject){
         String s = soapObject.getProperty(0).toString();
-        Log.i("qqqqqq", s);
         String duoOrkong = "";
         if (s.equals("[]")){}else if (s.equals("连接超时")){duoOrkong = "连接超时";}else {
             try {
@@ -451,6 +450,7 @@ public class MainActivity extends Activity {
             super.handleMessage(message);
             Bundle bundle = message.getData();
             String s = bundle.getString("duokong");
+
             if (s.equals("")){
                 nametextView.setText(itemName);
                 buyLessButton.setText(BUYLESS);
