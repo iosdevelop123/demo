@@ -258,5 +258,17 @@
         android:layout_alignEnd="@+id/surfaceView"
         android:src="@mipmap/banner3" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/netImgBtn"
+        android:backgroundTint="#00f2f0f0"
+        android:layout_below="@+id/textView4"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="53dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
 
 </RelativeLayout>
