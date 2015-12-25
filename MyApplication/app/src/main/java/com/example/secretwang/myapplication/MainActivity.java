@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -22,6 +23,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import android.view.Window;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -74,6 +79,7 @@ public class MainActivity extends Activity {
     private Timer timer;//定时器
     private String itemName;//储存切换货币时要切换的货币的名字
     private ProgressDialog progressDialog;//刷新提示框
+    private String CLF6Price;
     private String HKZ5Price;
     public List orderNumbersList = new ArrayList();//订单编号数组
     private List SymbolNumberSList = new ArrayList();//选中货币的订单编号数组
@@ -82,6 +88,7 @@ public class MainActivity extends Activity {
     private String BUYLESS = "看空";
     private String BUYONCE = "追单";
     private String FANXIANG = "反向开仓";
+    private Button netBtn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -97,6 +104,32 @@ public class MainActivity extends Activity {
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
         timeDingshi();
         new Thread(HBListRunnable).start();//获取货币列表
+        //网络判断动画
+        netAnimation();
+    }
+    //
+    private void netAnimation(){
+        NetWorkUtils net = new NetWorkUtils();
+        int type=net.getAPNType(MainActivity.this);
+        if (type==0){
+            netBtn.setText("您当前使用的是2/3/4G网络");
+            //初始化
+            Animation alphaAnimation  = new AlphaAnimation(1.0f,0.0f);
+            //设置动画时间
+            alphaAnimation .setDuration(10000);
+            netBtn.startAnimation(alphaAnimation);
+            netBtn.setBackgroundColor(Color.TRANSPARENT);
+            netBtn.setVisibility(View.INVISIBLE);
+        }else if (type==1){
+            netBtn.setText("您当前使用的是wifi网络");
+            //初始化
+            Animation alphaAnimation  = new AlphaAnimation(1.0f,0.0f);
+            //设置动画时间
+            alphaAnimation .setDuration(10000);
+            netBtn.startAnimation(alphaAnimation);
+            netBtn.setBackgroundColor(Color.TRANSPARENT);
+            netBtn.setVisibility(View.INVISIBLE);
+        }
     }
 //定时器
     private void timeDingshi(){
@@ -252,6 +285,8 @@ public class MainActivity extends Activity {
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
         //最新行情数据
         PriceTxt = (TextView)findViewById(R.id.textView_priceText);
+        //网络button
+        netBtn =(Button)findViewById(R.id.netImgBtn);
     }
 //    设置按钮允许点击
     private void buttonCanClick(){
@@ -273,11 +308,18 @@ public class MainActivity extends Activity {
             Bundle bundle = message.getData();
             String string = bundle.getString("value");
             Log.v("++++++++++++", string);
-            if (string.equals("连接超时")){} else {
+
+            if (string.equals("连接超时")){}
+            else if (string.equals("@")){}
+            else {
                 String[] strArray = null;
                 strArray = string.split(",");
-                String CLF6Price = strArray[2].toString();
                 String HBName = strArray[1].toString();
+                if(strArray.length>1){
+                   CLF6Price = strArray[2].toString();
+                }else {
+                    CLF6Price = "0.00";
+                }
                 if(strArray.length>4){
                      HKZ5Price = strArray[5].toString();
                 }else {

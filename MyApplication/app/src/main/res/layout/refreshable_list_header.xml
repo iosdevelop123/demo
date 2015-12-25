@@ -12,7 +12,6 @@
     		android:layout_width="wrap_content"
     		android:layout_height="wrap_content"
     		android:layout_marginLeft="25dp"
-    		android:src="@drawable/refreshable_listview_arrow"
     		android:id="@+id/refreshable_list_arrow"
     		android:contentDescription="@string/app_name" />
     	<ProgressBar
