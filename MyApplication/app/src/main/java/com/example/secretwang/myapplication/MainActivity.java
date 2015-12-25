@@ -78,6 +78,7 @@ public class MainActivity extends Activity {
     private Timer timer;//定时器
     private String itemName;//储存切换货币时要切换的货币的名字
     private ProgressDialog progressDialog;//刷新提示框
+    private String CLF6Price;
     private String HKZ5Price;
     public List orderNumbersList = new ArrayList();//订单编号数组
     private List SymbolNumberSList = new ArrayList();//选中货币的订单编号数组
@@ -278,11 +279,17 @@ public class MainActivity extends Activity {
             Bundle bundle = message.getData();
             String string = bundle.getString("value");
             Log.v("++++++++++++", string);
-            if (string.equals("连接超时")){}else {
+            if (string.equals("连接超时")){}
+            else if (string.equals("@")){}
+            else {
                 String[] strArray = null;
                 strArray = string.split(",");
-                String CLF6Price = strArray[2].toString();
                 String HBName = strArray[1].toString();
+                if(strArray.length>1){
+                   CLF6Price = strArray[2].toString();
+                }else {
+                    CLF6Price = "0.00";
+                }
                 if(strArray.length>4){
                      HKZ5Price = strArray[5].toString();
                 }else {
