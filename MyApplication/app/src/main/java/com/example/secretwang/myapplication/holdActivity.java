@@ -115,7 +115,7 @@ public class holdActivity extends Activity {
                 }
             }else if (string.equals("[]")){
                 list.removeAll(list);
-                priceTextView.setText("0");
+                priceTextView.setText("0"); 
                 if (isFirst){
                     Toast.makeText(holdActivity.this, "没有订单", Toast.LENGTH_SHORT).show();
                     isFirst = false;

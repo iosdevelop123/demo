@@ -13,10 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.print.PrintAttributes;
-import android.provider.ContactsContract;
-import android.telephony.TelephonyManager;
-import android.text.style.BackgroundColorSpan;
+
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -30,21 +27,20 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.ksoap2.serialization.SoapObject;
-import java.io.InputStream;
-import java.lang.reflect.Array;
+
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
-import java.util.Arrays;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
@@ -109,7 +105,6 @@ public class MainActivity extends Activity {
             @Override
             public void run() {
                 new Thread(latestPriceRunnable).start();//获取最新行情数据
-//                new Thread(genjuzaicangdingdangaibianmairuanniumingziRunnable).start();
             }
         }, 1000, 1000);
     }
@@ -278,7 +273,7 @@ public class MainActivity extends Activity {
             Bundle bundle = message.getData();
             String string = bundle.getString("value");
             Log.v("++++++++++++", string);
-            if (string.equals("连接超时")){}else {
+            if (string.equals("连接超时")){} else {
                 String[] strArray = null;
                 strArray = string.split(",");
                 String CLF6Price = strArray[2].toString();
@@ -596,8 +591,6 @@ public class MainActivity extends Activity {
                 sellHandler.sendMessage(message);
             }
     };
-
-
 
 
 
