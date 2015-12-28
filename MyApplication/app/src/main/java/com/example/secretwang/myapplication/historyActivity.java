@@ -81,11 +81,14 @@ public class historyActivity extends Activity {
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
+            SharedPreferences s = getSharedPreferences("driverID",MODE_PRIVATE);
+            String driverId = s.getString("driver","");
             String method = "TransformData";
             int timeLong = (int) (System.currentTimeMillis()/1000+60*60*24);
             int starTime = (int) (System.currentTimeMillis()/1000-60*60*24*4);
             JSONObject parma = new JSONObject();
             try {
+                parma.put("DriverID",driverId);
                 parma.put("TaskGuid","ab8495db-3a4a-4f70-bb81-8518f60ec8bf");
                 parma.put("DataType","ClientCloseTrades");
                 parma.put("LoginAccount",loginStr);

@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.Telephony;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -77,6 +78,13 @@ public class LoginActivity extends Activity {
                 progressDialog = ProgressDialog.show(LoginActivity.this, "", "正在加载,请稍候！");
             }
         });
+
+        TelephonyManager telephonyManager = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
+        String s = telephonyManager.getDeviceId();
+        SharedPreferences driverId = getSharedPreferences("driverID",MODE_PRIVATE);
+        SharedPreferences.Editor drivereditor = driverId.edit();
+        drivereditor.putString("driver",s);
+        drivereditor.commit();
     }
     // remenber方法用于判断是否记住密码，checkBox1选中时，提取出EditText里面的内容，
     // 放到SharedPreferences里面的login和password中
