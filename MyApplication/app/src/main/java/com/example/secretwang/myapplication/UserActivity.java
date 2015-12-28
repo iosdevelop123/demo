@@ -80,6 +80,7 @@ public class UserActivity extends Activity {
                             public void onClick(DialogInterface dialog, int which) {
                                 //退出登录请求服务器
                                 new Thread(exitRunnable).start();
+                                finish();
                                 Intent intent = new Intent(UserActivity.this, LoginActivity.class);
                                 startActivity(intent);
                             }

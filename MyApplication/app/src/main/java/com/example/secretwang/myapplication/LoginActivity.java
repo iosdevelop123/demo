@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.Checkable;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,19 +31,43 @@ public class LoginActivity extends Activity {
     private TextView passWord;
     private Button btn;
     private ProgressDialog progressDialog;
-    private Context context;
-
+    private CheckBox checkBox;
+    static String YES = "yes";
+    static String NO = "no";
+    static String login, password;
+    private String isMemory = "";//isMemory变量用来判断SharedPreferences有没有数据，包括上面的YES和NO
+    private String FILE = "userInfo";//用于保存SharedPreferences的文件
+    private SharedPreferences sp = null;//声明一个SharedPreferences
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         userName = (TextView) findViewById(R.id.userName);
         passWord = (TextView) findViewById(R.id.passWord);
+        checkBox = (CheckBox) findViewById(R.id.checkBox);
         btn = (Button) findViewById(R.id.login);
+        sp = getSharedPreferences(FILE, MODE_PRIVATE);
+        isMemory = sp.getString("isMemory", NO);
+        //进入界面时，这个if用来判断SharedPreferences里面name和password有没有数据，有的话则直接打在EditText上面
+        if (isMemory.equals(YES)){
+            login = sp.getString("login","");
+            password = sp.getString("password","");
+            userName.setText(login);
+            passWord.setText(password);
+        }
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putString(login,userName.getText().toString());
+        editor.putString(password,passWord.getText().toString());
+        editor.commit();
         //button点击事件
+        //触击登录按钮，执行remenber方法文本框里的信息重新写入SharedPreferences里面覆盖之前的，
+        // 去除掉勾选框，触击登录按钮执行remenber方法就将之前保存到SharedPreferences的数据清除了
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                login = userName.getText().toString();
+                password = passWord.getText().toString();
+                remember();
                 //开启线程
                 new Thread(runnable).start();
                 btn.setClickable(false);
@@ -52,9 +77,26 @@ public class LoginActivity extends Activity {
                 progressDialog = ProgressDialog.show(LoginActivity.this, "", "正在加载,请稍候！");
             }
         });
-
     }
-
+    // remenber方法用于判断是否记住密码，checkBox1选中时，提取出EditText里面的内容，
+    // 放到SharedPreferences里面的login和password中
+    public void remember(){
+        if (checkBox.isChecked()){
+//            if (sp == null){
+//                sp=getSharedPreferences(FILE,MODE_PRIVATE);
+//            }
+            SharedPreferences.Editor editor = sp.edit();
+            editor.putString("login",userName.getText().toString());
+            editor.putString("password",passWord.getText().toString());
+            editor.putString("isMemory",YES);
+            editor.commit();
+        }else if (!checkBox.isChecked()){
+            sp=getSharedPreferences(FILE,MODE_PRIVATE);
+            SharedPreferences.Editor editor = sp.edit();
+            editor.putString("isMemory",NO);
+            editor.commit();
+        }
+    }
     Handler handler = new Handler() {
         @Override
         public void handleMessage(Message message) {
@@ -65,10 +107,10 @@ public class LoginActivity extends Activity {
             progressDialog.dismiss(); //关闭进度条
             if (string.equals("True")) {
                 Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
-                SharedPreferences setting = getSharedPreferences("userInfo", MODE_PRIVATE);
-                SharedPreferences.Editor editor = setting.edit();
-                editor.putString("login", userName.getText().toString());
-                editor.commit();
+//                SharedPreferences setting = getSharedPreferences("userInfo", MODE_PRIVATE);
+//                SharedPreferences.Editor editor = setting.edit();
+//                editor.putString("login", userName.getText().toString());
+//                editor.commit();
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 startActivity(intent);
             } else if (string.equals("输入字符串的格式不正确。")) {
@@ -123,7 +165,11 @@ public class LoginActivity extends Activity {
                         public void onClick(DialogInterface dialog, int which) {
                             //退出程序
                             finish();
-                            onBackPressed();
+                            // 返回桌面操作
+                             Intent home = new Intent(Intent.ACTION_MAIN);
+                             home.addCategory(Intent.CATEGORY_HOME);
+                             startActivity(home);
+                             onBackPressed();
                         }
                     })
                     .setNegativeButton("取消", null)
