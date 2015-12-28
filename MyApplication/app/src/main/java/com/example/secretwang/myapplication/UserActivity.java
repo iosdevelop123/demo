@@ -81,6 +81,7 @@ public class UserActivity extends Activity {
                                 //退出登录请求服务器
                                 new Thread(exitRunnable).start();
                                 finish();
+                                onBackPressed();
                                 Intent intent = new Intent(UserActivity.this, LoginActivity.class);
                                 startActivity(intent);
                             }

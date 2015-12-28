@@ -164,12 +164,12 @@ public class LoginActivity extends Activity {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             //退出程序
-                            finish();
+                            // finish();
                             // 返回桌面操作
                              Intent home = new Intent(Intent.ACTION_MAIN);
                              home.addCategory(Intent.CATEGORY_HOME);
                              startActivity(home);
-                             onBackPressed();
+//                             onBackPressed();
                         }
                     })
                     .setNegativeButton("取消", null)
