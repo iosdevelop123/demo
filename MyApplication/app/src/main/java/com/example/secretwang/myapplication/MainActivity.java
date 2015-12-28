@@ -10,7 +10,6 @@ import android.content.Intent;
 
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -25,8 +24,6 @@ import android.view.View;
 import android.view.Window;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
-import android.view.animation.ScaleAnimation;
-import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -40,14 +37,14 @@ import org.json.JSONObject;
 import org.ksoap2.serialization.SoapObject;
 
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -55,7 +52,6 @@ public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String[] shoushu = new String[]{"1", "2", "3", "4",
            "5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20" };
-    //private  static  final  String[] xiangmu = new String[] {"CLG6","HKZ5"};
     private  List<String> hblist = new ArrayList<String>();
     private static String TaskGuid = "ab8495db-3a4a-4f70-bb81-8518f60ec8bf";
     private Button buyMoreButton;
@@ -89,13 +85,26 @@ public class MainActivity extends Activity {
     private String BUYONCE = "追单";
     private String FANXIANG = "反向开仓";
     private Button netBtn;
+
+    private String NAME1 = "CLG6";//宏定义
+    private String NAME2 = "HKZ5";
+
+    private int NowHour;//当前时间
+    private int NowMinute;
+
+    private String driverId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
+
         createButton();
+        SharedPreferences driver = getSharedPreferences("driverID",MODE_PRIVATE);
+        driverId = driver.getString("driver","");
+
         new Thread(zaicangRunnable).start();//进入主界面根据在仓订单刷新按钮名字
         SharedPreferences sharedPreferences = getSharedPreferences("userInfo", MODE_PRIVATE);
         loginStr = sharedPreferences.getString("login", "");
@@ -106,7 +115,16 @@ public class MainActivity extends Activity {
         new Thread(HBListRunnable).start();//获取货币列表
         //网络判断动画
         netAnimation();
+
     }
+//    获取当前时间
+    private void getNowTime(){
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm");
+        String s = simpleDateFormat.format(new Date());
+        NowHour = Integer.parseInt(s.substring(0, 2)) + 8;
+        NowMinute = Integer.parseInt(s.substring(3, 5));
+    }
+
     //
     private void netAnimation(){
         NetWorkUtils net = new NetWorkUtils();
@@ -195,7 +213,7 @@ public class MainActivity extends Activity {
                 for (int i=0;i<jsonArray.length();i++){
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
                     String sym = jsonObject.getString("Symbol");
-                    if (sym.equals("CLG6")){
+                    if (sym.equals(NAME1)){
                         String type =jsonObject.getString("TypeName");
                         if (type.equals("多")){
                             buyMoreButton.setText(BUYONCE);
@@ -220,7 +238,7 @@ public class MainActivity extends Activity {
             String method = "TransformData";
             JSONObject parma = new JSONObject();
             try {
-                parma.put("DriverID","1234567890");
+                parma.put("DriverID",driverId);
                 parma.put("TaskGuid",TaskGuid);
                 parma.put("DataType","ClientOpenTrades");
                 parma.put("LoginAccount",loginStr);
@@ -341,8 +359,8 @@ public class MainActivity extends Activity {
             try {
                 parma.put("TaskGuid", TaskGuid);
                 parma.put("DataType", "MT4Data");
-                parma.put("DriverID", "1234567890");
-                parma.put("Type", "CLG6,HKZ5");
+                parma.put("DriverID", driverId);
+                parma.put("Type", NAME1 + ","+NAME2);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -420,18 +438,19 @@ public class MainActivity extends Activity {
                         Log.d(TAG, "[Dialog]selectedIndex: " + selectedIndex + ", item: " + item1);
 //                        nametextView.setText(item1);
                         itemName = item1;
-                        category=selectedIndex-2;
+                        category = selectedIndex - 2;
                     }
                 });
                 new AlertDialog.Builder(MainActivity.this)
                         .setTitle("设置您委托的产品类型和手数")
                         .setView(outerView)
                         .setCancelable(false)
+                        .setNegativeButton("取消",null)
                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 new Thread(genjuzaicangdingdangaibianmairuanniumingziRunnable).start();//选择商品的时候根据在仓订单里面要选择的商品的购买的情况改变按钮的名字
-                                progressDialog = ProgressDialog.show(MainActivity.this,"","正在切换中...");
+                                progressDialog = ProgressDialog.show(MainActivity.this, "", "正在切换中...");
                             }
                         })
                         .show();
@@ -444,7 +463,7 @@ public class MainActivity extends Activity {
             String TransformData = "TransformData";
             JSONObject zaicang = new JSONObject();
             try {
-                zaicang.put("DriverID","1234567890");
+                zaicang.put("DriverID",driverId);
                 zaicang.put("TaskGuid",TaskGuid);
                 zaicang.put("DataType","ClientOpenTrades");
                 zaicang.put("LoginAccount",loginStr);
@@ -545,7 +564,7 @@ public class MainActivity extends Activity {
             String TransformData = "TransformData";
             JSONObject zaicang = new JSONObject();
             try {
-                zaicang.put("DriverID","1234567890");
+                zaicang.put("DriverID",driverId);
                 zaicang.put("TaskGuid",TaskGuid);
                 zaicang.put("DataType","ClientOpenTrades");
                 zaicang.put("LoginAccount",loginStr);
@@ -613,6 +632,7 @@ public class MainActivity extends Activity {
                     s += "," + orderNumbersList.get(i);
                 }
                 try {
+                    allSellParma.put( "DriverID",driverId);
                     allSellParma.put("TaskGuid", TaskGuid);
                     allSellParma.put("DataType", "CloseOrderS");
                     allSellParma.put("OrderNumberS", s.substring(1));
@@ -653,13 +673,37 @@ public class MainActivity extends Activity {
 
 
 
-
 //    看多买入
     private void buyMoreButtonClick() {
-        Log.i(">>>>>>>>>>>>>>>", "看多买入");
-        new Thread(kanduoRunnable).start();
-        progressDialog = ProgressDialog.show(MainActivity.this,"","下单中...");
-        buttonCanNotClick();
+        getNowTime();
+        if (nametextView.getText().toString().equals(NAME2)){
+            if (NowHour>=9&&NowHour<=12){
+                if (NowHour==9 && NowMinute<=15){
+                    Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT);
+                }else {
+                    Log.i(">>>>>>>>>>>>>>>", "看多买入");
+                    new Thread(kanduoRunnable).start();
+                    progressDialog = ProgressDialog.show(MainActivity.this,"","下单中...");
+                    buttonCanNotClick();
+                }
+            }else if (NowHour>=13&&NowHour<=16){
+                if (NowHour==16 && NowMinute>=10){
+                    Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT);
+                }else {
+                    Log.i(">>>>>>>>>>>>>>>", "看多买入");
+                    new Thread(kanduoRunnable).start();
+                    progressDialog = ProgressDialog.show(MainActivity.this,"","下单中...");
+                    buttonCanNotClick();
+                }
+            }else {
+                Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT);
+            }
+        }else {
+            Log.i(">>>>>>>>>>>>>>>", "看多买入");
+            new Thread(kanduoRunnable).start();
+            progressDialog = ProgressDialog.show(MainActivity.this, "", "下单中...");
+            buttonCanNotClick();
+        }
     }
 //    根据返回，判断是否买入成功
     Handler buyMoreHandler = new Handler(){
@@ -691,6 +735,7 @@ public class MainActivity extends Activity {
             String SetData = "SetData";
             JSONObject parma = new JSONObject();
             try {
+                parma.put("DriverID",driverId);
                 parma.put("TaskGuid",TaskGuid);
                 parma.put("DataType","OpenBuy-New");
                 parma.put("LoginAccount",loginStr);
@@ -749,7 +794,7 @@ public class MainActivity extends Activity {
             String TransformData = "TransformData";
             JSONObject zaicang = new JSONObject();
             try {
-                zaicang.put("DriverID","1234567890");
+                zaicang.put("DriverID",driverId);
                 zaicang.put("TaskGuid",TaskGuid);
                 zaicang.put("DataType","ClientOpenTrades");
                 zaicang.put("LoginAccount",loginStr);
@@ -817,6 +862,7 @@ public class MainActivity extends Activity {
                 s += "," + SymbolNumberSList.get(i);
             }
             try {
+                allSellParma.put("DriverID",driverId);
                 allSellParma.put("TaskGuid", TaskGuid);
                 allSellParma.put("DataType", "CloseOrderS");
                 allSellParma.put("OrderNumberS", s.substring(1));
@@ -844,6 +890,7 @@ public class MainActivity extends Activity {
             String SetData = "SetData";
             JSONObject parma = new JSONObject();
             try {
+                parma.put("DriverID",driverId);
                 parma.put("TaskGuid",TaskGuid);
                 parma.put("DataType",kanduoOrkankong);
                 parma.put("LoginAccount",loginStr);
@@ -910,10 +957,35 @@ public class MainActivity extends Activity {
         }
     };
     private void buyLessButtonClick() {
-        Log.i(">>>>>", "看空买入");
-        new Thread(kankongRunnable).start();
-        progressDialog = ProgressDialog.show(MainActivity.this,"","下单中...");
-        buttonCanNotClick();
+        getNowTime();
+        if (nametextView.getText().toString().equals(NAME2)) {
+            if (NowHour >= 9 && NowHour <= 12) {
+                if (NowHour == 9 && NowMinute <= 15) {
+                    Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT);
+                } else {
+                    Log.i(">>>>>", "看空买入");
+                    new Thread(kankongRunnable).start();
+                    progressDialog = ProgressDialog.show(MainActivity.this, "", "下单中...");
+                    buttonCanNotClick();
+                }
+            }else if (NowHour>=13 && NowHour<=16){
+                if (NowHour==16 && NowMinute>=10){
+                    Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT);
+                }else {
+                    Log.i(">>>>>", "看空买入");
+                    new Thread(kankongRunnable).start();
+                    progressDialog = ProgressDialog.show(MainActivity.this, "", "下单中...");
+                    buttonCanNotClick();
+                }
+            }else {
+                Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT);
+            }
+        }else {
+            Log.i(">>>>>", "看空买入");
+            new Thread(kankongRunnable).start();
+            progressDialog = ProgressDialog.show(MainActivity.this, "", "下单中...");
+            buttonCanNotClick();
+        }
     }
     Handler kankonghandle = new Handler(){
         @Override
@@ -943,6 +1015,7 @@ public class MainActivity extends Activity {
             String SetData = "SetData";
             JSONObject parma = new JSONObject();
             try {
+                parma.put("DriverID",driverId);
                 parma.put("TaskGuid",TaskGuid);
                 parma.put("DataType","OpenSell-New");
                 parma.put("LoginAccount",loginStr);

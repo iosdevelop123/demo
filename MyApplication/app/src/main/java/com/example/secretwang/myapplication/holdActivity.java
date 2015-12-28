@@ -55,6 +55,7 @@ public class holdActivity extends Activity {
 
     private Timer timer;//定时器
     private Boolean isFirst;
+    private String driverId;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -66,10 +67,13 @@ public class holdActivity extends Activity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_hold);
-
         SharedPreferences sharedPreferences =getSharedPreferences("userInfo",MODE_PRIVATE);
         loginStr = sharedPreferences.getString("login", "");
         //开启网络请求进度条
+//        获取android唯一标识
+        SharedPreferences driver =getSharedPreferences("driverID", MODE_PRIVATE);
+        driverId = driver.getString("driver","");
+
         progressDialog = ProgressDialog.show(holdActivity.this, "","正在加载,请稍候！");
         isFirst = true;
         timer = new Timer();
@@ -78,8 +82,7 @@ public class holdActivity extends Activity {
             public void run() {
                 new Thread(runnable).start();
             }
-        }, 1000, 2500);
-
+        }, 1000, 2000);
         createUI();
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -164,7 +167,7 @@ public class holdActivity extends Activity {
             JSONObject parma = new JSONObject();
             try {
                 parma.put("TaskGuid","ab8495db-3a4a-4f70-bb81-8518f60ec8bf");
-                parma.put("DriverID","1234567890");
+                parma.put("DriverID",driverId);
                 parma.put("DataType","ClientOpenTrades");
                 parma.put("LoginAccount",loginStr);
             } catch (JSONException e) {
@@ -315,7 +318,7 @@ public class holdActivity extends Activity {
                 String SetData = "SetData";
                 JSONObject jsonObject = new JSONObject();
                 try {
-                    jsonObject.put("DriverID","1234567890");
+                    jsonObject.put("DriverID",driverId);
                     jsonObject.put("TaskGuid","ab8495db-3a4a-4f70-bb81-8518f60ec8bf");
                     jsonObject.put("DataType","CloseOrder");
                     jsonObject.put("OrderNumber",orderNum);
@@ -352,7 +355,6 @@ public class holdActivity extends Activity {
 
     }
 
-
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
@@ -374,45 +376,5 @@ public class holdActivity extends Activity {
         }
         return super.onKeyDown(keyCode, event);
     }
-
-//    @Override
-//    public void onStart() {
-//        super.onStart();
-//
-//        // ATTENTION: This was auto-generated to implement the App Indexing API.
-//        // See https://g.co/AppIndexing/AndroidStudio for more information.
-//        client.connect();
-//        Action viewAction = Action.newAction(
-//                Action.TYPE_VIEW, // TODO: choose an action type.
-//                "hold Page", // TODO: Define a title for the content shown.
-//                // TODO: If you have web page content that matches this app activity's content,
-//                // make sure this auto-generated web page URL is correct.
-//                // Otherwise, set the URL to null.
-//                Uri.parse("http://host/path"),
-//                // TODO: Make sure this auto-generated app deep link URI is correct.
-//                Uri.parse("android-app://com.example.secretwang.myapplication/http/host/path")
-//        );
-//        AppIndex.AppIndexApi.start(client, viewAction);
-//    }
-//
-//    @Override
-//    public void onStop() {
-//        super.onStop();
-//
-//        // ATTENTION: This was auto-generated to implement the App Indexing API.
-//        // See https://g.co/AppIndexing/AndroidStudio for more information.
-//        Action viewAction = Action.newAction(
-//                Action.TYPE_VIEW, // TODO: choose an action type.
-//                "hold Page", // TODO: Define a title for the content shown.
-//                // TODO: If you have web page content that matches this app activity's content,
-//                // make sure this auto-generated web page URL is correct.
-//                // Otherwise, set the URL to null.
-//                Uri.parse("http://host/path"),
-//                // TODO: Make sure this auto-generated app deep link URI is correct.
-//                Uri.parse("android-app://com.example.secretwang.myapplication/http/host/path")
-//        );
-//        AppIndex.AppIndexApi.end(client, viewAction);
-//        client.disconnect();
-//    }
 
 }

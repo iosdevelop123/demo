@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.Telephony;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -53,6 +54,12 @@ public class LoginActivity extends Activity {
             }
         });
 
+        TelephonyManager telephonyManager = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
+        String s = telephonyManager.getDeviceId();
+        SharedPreferences driverId = getSharedPreferences("driverID",MODE_PRIVATE);
+        SharedPreferences.Editor editor = driverId.edit();
+        editor.putString("driver",s);
+        editor.commit();
     }
 
     Handler handler = new Handler() {
