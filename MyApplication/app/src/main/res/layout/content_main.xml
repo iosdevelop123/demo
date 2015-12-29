@@ -40,9 +40,8 @@
         android:text="@string/buyNum"
         android:id="@+id/buyNumTextView"
         android:textColor="#ffffff"
-        android:layout_below="@+id/nametextView"
-        android:layout_alignRight="@+id/nametextView"
-        android:layout_alignEnd="@+id/nametextView" />
+        android:layout_alignTop="@+id/shoushutextView"
+        android:layout_centerHorizontal="true" />
 
     <Button
         android:layout_width="wrap_content"

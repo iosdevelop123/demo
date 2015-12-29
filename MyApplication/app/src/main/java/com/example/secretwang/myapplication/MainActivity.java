@@ -47,12 +47,14 @@ import java.util.ArrayList;
 
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.jar.Attributes;
 
 public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String[] shoushu = new String[]{"1", "2", "3", "4",
            "5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20" };
-    private  List<String> hblist = new ArrayList<String>();
+    private  List<String> hblist = new ArrayList<String>();//货币英文名
+    private  List<String> nameList = new ArrayList<String>();//货币中文名
     private static String TaskGuid = "ab8495db-3a4a-4f70-bb81-8518f60ec8bf";
     private Button buyMoreButton;
     private Button buyLessButton;
@@ -197,6 +199,7 @@ public class MainActivity extends Activity {
                     String Bh = jsonObject.getString("Bh");
                     String Name = jsonObject.getString("Name");
                     hblist.add(Bh);
+                    nameList.add(Name);
                 }
                 NAME1 = hblist.get(0);
                 NAME2 = hblist.get(1);
@@ -357,22 +360,14 @@ public class MainActivity extends Activity {
             else {
                 String[] strArray = null;
                 strArray = string.split(",");
-                String HBName = strArray[1].toString();
-                if(strArray.length>1){
-                   CLF6Price = strArray[2].toString();
-                }else {
-                    CLF6Price = "0.00";
-                }
-                if(strArray.length>4){
-                     HKZ5Price = strArray[5].toString();
-                }else {
-                     HKZ5Price = "0.00";
-                }
-                if (nametextView.getText().toString().equals(HBName)) {
-                    PriceTxt.setText(CLF6Price);
-                } else {
-                    PriceTxt.setText(HKZ5Price);
-                }
+                if(strArray.length>1) CLF6Price = strArray[2].toString();
+                else  CLF6Price = "0.00";
+                if(strArray.length>4) HKZ5Price = strArray[5].toString();
+                else  HKZ5Price = "0.00";
+                if (nametextView.getText().toString().equals(nameList.get(0)))
+                      PriceTxt.setText(CLF6Price);
+                else  PriceTxt.setText(HKZ5Price);
+
             }
         }
     };
@@ -434,7 +429,8 @@ public class MainActivity extends Activity {
                 });
                 wv2 = (WheelView) outerView.findViewById(R.id.wheel_view_wv2);
                 wv2.setOffset(2);
-                wv2.setItems(hblist);
+                //wv2.setItems(hblist);
+                wv2.setItems(nameList);
                 wv2.setSeletion(category);
                 wv2.setOnWheelViewListener(new WheelView.OnWheelViewListener() {
                     @Override
