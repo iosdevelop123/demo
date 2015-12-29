@@ -679,7 +679,7 @@ public class MainActivity extends Activity {
     private void buyMoreButtonClick() {
         Log.i(">>>>>>>>>>>>>>>", "看多买入");
         getNowTime();
-        if (nametextView.getText().toString().equals(NAME2)){
+        if (itemName.equals(NAME2)){
             if (NowHour>=9&&NowHour<=12){
                 if (NowHour==9 && NowMinute<=15){
                     Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT).show();
@@ -744,7 +744,7 @@ public class MainActivity extends Activity {
                 parma.put("TaskGuid",TaskGuid);
                 parma.put("DataType","OpenBuy-New");
                 parma.put("LoginAccount",loginStr);
-                parma.put("Symbol",nametextView.getText().toString());
+                parma.put("Symbol",itemName);
                 parma.put("Volume",shouTxt.getText().toString());
                 parma.put("StopLoss","0");
                 parma.put("TakeProfit","0");
@@ -899,7 +899,7 @@ public class MainActivity extends Activity {
                 parma.put("TaskGuid",TaskGuid);
                 parma.put("DataType",kanduoOrkankong);
                 parma.put("LoginAccount",loginStr);
-                parma.put("Symbol",nametextView.getText().toString());
+                parma.put("Symbol",itemName);
                 parma.put("Volume",fanxianggoumaishoushu);
                 parma.put("StopLoss","0");
                 parma.put("TakeProfit","0");
@@ -963,7 +963,7 @@ public class MainActivity extends Activity {
     };
     private void buyLessButtonClick() {
         getNowTime();
-        if (nametextView.getText().toString().equals(NAME2)) {
+        if (itemName.equals(NAME2)) {
             if (NowHour >= 9 && NowHour <= 12) {
                 if (NowHour == 9 && NowMinute <= 15) {
                     Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT).show();
@@ -1024,7 +1024,7 @@ public class MainActivity extends Activity {
                 parma.put("TaskGuid",TaskGuid);
                 parma.put("DataType","OpenSell-New");
                 parma.put("LoginAccount",loginStr);
-                parma.put("Symbol",nametextView.getText().toString());
+                parma.put("Symbol",itemName);
                 parma.put("Volume",shouTxt.getText().toString());
                 parma.put("StopLoss","0");
                 parma.put("TakeProfit","0");
