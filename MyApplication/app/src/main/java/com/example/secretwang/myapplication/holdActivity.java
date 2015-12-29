@@ -82,7 +82,7 @@ public class holdActivity extends Activity {
             public void run() {
                 new Thread(runnable).start();
             }
-        }, 1000, 2000);
+        }, 1000, 3000);
         createUI();
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -363,6 +363,7 @@ public class holdActivity extends Activity {
             timer.cancel();
             Intent intent = new Intent();
             String s = this.getIntent().getStringExtra("name");
+            System.out.println(s);
             for (int i=0;i<l_name.size();i++){
                 if (s.equals(l_name.get(i))){
                     no = "false";

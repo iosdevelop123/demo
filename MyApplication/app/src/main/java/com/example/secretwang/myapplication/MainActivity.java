@@ -88,11 +88,12 @@ public class MainActivity extends Activity {
     private String FANXIANG = "反向开仓";
     private Button netBtn;
 
-    private String NAME1 = "CLG6";//宏定义
-    private String NAME2 = "HKZ5";
+    private String NAME1;//宏定义
+    private String NAME2 = "HKF5";
 
     private int NowHour;//当前时间
     private int NowMinute;
+    private String chinaName;
 
     private String driverId;
 
@@ -119,7 +120,6 @@ public class MainActivity extends Activity {
         netAnimation();
         getNowTime();
         new Thread(latestPriceRunnable).start();//获取最新行情数据
-//        timer = new Timer();//定时器初始化
     }
 //    获取当前时间
     private void getNowTime(){
@@ -203,6 +203,7 @@ public class MainActivity extends Activity {
                 }
                 NAME1 = hblist.get(0);
                 NAME2 = hblist.get(1);
+                itemName = NAME1;
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -385,7 +386,7 @@ public class MainActivity extends Activity {
         public void onClick(View v) {
             timer.cancel();
             Intent intent = new Intent(MainActivity.this,holdActivity.class);
-            String name = nametextView.getText().toString();
+            String name = itemName;
             System.out.println(name);
             intent.putExtra("name",name);
             startActivityForResult(intent, 0);
@@ -437,7 +438,8 @@ public class MainActivity extends Activity {
                     public void onSelected(int selectedIndex, String item1) {
                         Log.d(TAG, "[Dialog]selectedIndex: " + selectedIndex + ", item: " + item1);
 //                        nametextView.setText(item1);
-                        itemName = item1;
+                        chinaName = item1;
+                        itemName = hblist.get(selectedIndex - 2);
                         category = selectedIndex - 2;
                     }
                 });
@@ -507,15 +509,15 @@ public class MainActivity extends Activity {
             Bundle bundle = message.getData();
             String s = bundle.getString("duokong");
             if (s.equals("")){
-                nametextView.setText(itemName);
+                nametextView.setText(chinaName);
                 buyLessButton.setText(BUYLESS);
                 buyMoreButton.setText(BUYMORE);
             }else if (s.equals("空")){
-                nametextView.setText(itemName);
+                nametextView.setText(chinaName);
                 buyMoreButton.setText(FANXIANG);
                 buyLessButton.setText(BUYONCE);
             }else if (s.equals("多")){
-                nametextView.setText(itemName);
+                nametextView.setText(chinaName);
                 buyMoreButton.setText(BUYONCE);
                 buyLessButton.setText(FANXIANG);
             }else{
