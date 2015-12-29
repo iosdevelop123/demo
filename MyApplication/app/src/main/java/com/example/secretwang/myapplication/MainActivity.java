@@ -103,7 +103,7 @@ public class MainActivity extends Activity {
 
         createButton();
         SharedPreferences driver = getSharedPreferences("driverID",MODE_PRIVATE);
-        driverId = driver.getString("driver","");
+        driverId = driver.getString("driver", "");
 
         new Thread(zaicangRunnable).start();//进入主界面根据在仓订单刷新按钮名字
         SharedPreferences sharedPreferences = getSharedPreferences("userInfo", MODE_PRIVATE);
@@ -111,17 +111,22 @@ public class MainActivity extends Activity {
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
-        timeDingshi();
+//        timeDingshi();
         new Thread(HBListRunnable).start();//获取货币列表
         //网络判断动画
         netAnimation();
-
+        getNowTime();
+        new Thread(latestPriceRunnable).start();//获取最新行情数据
+//        timer = new Timer();//定时器初始化
     }
 //    获取当前时间
     private void getNowTime(){
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm");
         String s = simpleDateFormat.format(new Date());
         NowHour = Integer.parseInt(s.substring(0, 2)) + 8;
+        if (NowHour>=24){
+            NowHour = NowHour - 24;
+        }
         NowMinute = Integer.parseInt(s.substring(3, 5));
     }
 
@@ -155,7 +160,25 @@ public class MainActivity extends Activity {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                new Thread(latestPriceRunnable).start();//获取最新行情数据
+                String method = "TransformData";
+                JSONObject parma = new JSONObject();
+                try {
+                    parma.put("TaskGuid", TaskGuid);
+                    parma.put("DataType", "MT4Data");
+                    parma.put("DriverID", driverId);
+                    parma.put("Type", NAME1 + ","+NAME2);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                String str_json = parma.toString();
+                request request = new request();
+                SoapObject string = request.getResult(method, str_json);
+                String jsonRequest = string.getProperty(0).toString();
+                Message message = new Message();
+                Bundle bundle = new Bundle();
+                bundle.putString("value", jsonRequest);
+                message.setData(bundle);
+                latestPriceHandler.sendMessage(message);
             }
         }, 1000, 1000);
     }
@@ -175,6 +198,8 @@ public class MainActivity extends Activity {
                     String Name = jsonObject.getString("Name");
                     hblist.add(Bh);
                 }
+                NAME1 = hblist.get(0);
+                NAME2 = hblist.get(1);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -354,29 +379,9 @@ public class MainActivity extends Activity {
     Runnable latestPriceRunnable = new Runnable() {
         @Override
         public void run() {
-            String method = "TransformData";
-            JSONObject parma = new JSONObject();
-            try {
-                parma.put("TaskGuid", TaskGuid);
-                parma.put("DataType", "MT4Data");
-                parma.put("DriverID", driverId);
-                parma.put("Type", NAME1 + ","+NAME2);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            String str_json = parma.toString();
-            request request = new request();
-            SoapObject string = request.getResult(method, str_json);
-            String jsonRequest = string.getProperty(0).toString();
-            Message message = new Message();
-            Bundle bundle = new Bundle();
-            bundle.putString("value", jsonRequest);
-            message.setData(bundle);
-            latestPriceHandler.sendMessage(message);
+            timeDingshi();
         }
     };
-
 
 
     //    持仓按钮点击事件
@@ -400,7 +405,6 @@ public class MainActivity extends Activity {
             buyMoreButton.setText(BUYMORE);
         }
     }
-
 
     //        跳转个人中心界面
     View.OnClickListener userBtnClick=(new View.OnClickListener() {
@@ -694,6 +698,7 @@ public class MainActivity extends Activity {
                     new Thread(kanduoRunnable).start();
                     progressDialog = ProgressDialog.show(MainActivity.this,"","下单中...");
                     buttonCanNotClick();
+                    Log.i("eeee", Integer.toString(NowHour));
                 }
             }else {
                 Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT);
