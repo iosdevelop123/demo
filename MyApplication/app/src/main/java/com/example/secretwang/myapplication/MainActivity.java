@@ -679,11 +679,12 @@ public class MainActivity extends Activity {
 
 //    看多买入
     private void buyMoreButtonClick() {
+        Log.i(">>>>>>>>>>>>>>>", "看多买入");
         getNowTime();
         if (nametextView.getText().toString().equals(NAME2)){
             if (NowHour>=9&&NowHour<=12){
                 if (NowHour==9 && NowMinute<=15){
-                    Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT);
+                    Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT).show();
                 }else {
                     Log.i(">>>>>>>>>>>>>>>", "看多买入");
                     new Thread(kanduoRunnable).start();
@@ -692,7 +693,7 @@ public class MainActivity extends Activity {
                 }
             }else if (NowHour>=13&&NowHour<=16){
                 if (NowHour==16 && NowMinute>=10){
-                    Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT);
+                    Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT).show();
                 }else {
                     Log.i(">>>>>>>>>>>>>>>", "看多买入");
                     new Thread(kanduoRunnable).start();
@@ -701,8 +702,9 @@ public class MainActivity extends Activity {
                     Log.i("eeee", Integer.toString(NowHour));
                 }
             }else {
-                Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT);
+                Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT).show();
             }
+
         }else {
             Log.i(">>>>>>>>>>>>>>>", "看多买入");
             new Thread(kanduoRunnable).start();
@@ -966,7 +968,7 @@ public class MainActivity extends Activity {
         if (nametextView.getText().toString().equals(NAME2)) {
             if (NowHour >= 9 && NowHour <= 12) {
                 if (NowHour == 9 && NowMinute <= 15) {
-                    Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT);
+                    Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT).show();
                 } else {
                     Log.i(">>>>>", "看空买入");
                     new Thread(kankongRunnable).start();
@@ -975,7 +977,7 @@ public class MainActivity extends Activity {
                 }
             }else if (NowHour>=13 && NowHour<=16){
                 if (NowHour==16 && NowMinute>=10){
-                    Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT);
+                    Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT).show();
                 }else {
                     Log.i(">>>>>", "看空买入");
                     new Thread(kankongRunnable).start();
@@ -983,7 +985,7 @@ public class MainActivity extends Activity {
                     buttonCanNotClick();
                 }
             }else {
-                Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT);
+                Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT).show();
             }
         }else {
             Log.i(">>>>>", "看空买入");
