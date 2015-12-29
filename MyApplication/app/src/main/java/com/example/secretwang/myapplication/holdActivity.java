@@ -125,10 +125,10 @@ public class holdActivity extends Activity {
                 }
             }else {
                 list.removeAll(list);
+                l_name.removeAll(l_name);
                 int price = 0;
                 try {
                     JSONArray jsonArray = new JSONArray(string);
-//                    List<Map<String, Object>> list = new ArrayList<>();
                     for (int i = 0; i < jsonArray.length(); i++) {
                         Map<String, Object> map = new HashMap<>();
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
