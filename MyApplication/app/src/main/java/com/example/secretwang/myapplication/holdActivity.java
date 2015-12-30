@@ -74,20 +74,42 @@ public class holdActivity extends Activity {
         SharedPreferences driver =getSharedPreferences("driverID", MODE_PRIVATE);
         driverId = driver.getString("driver","");
 
-        progressDialog = ProgressDialog.show(holdActivity.this, "","正在加载,请稍候！");
+        progressDialog = ProgressDialog.show(holdActivity.this, "", "正在加载,请稍候！");
         isFirst = true;
-        timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                new Thread(runnable).start();
-            }
-        }, 1000, 3000);
+        new Thread(runnable).start();
         createUI();
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
+    private void dingshiqi(){
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                String method = "TransformData";
+                JSONObject parma = new JSONObject();
+                try {
+                    parma.put("TaskGuid","ab8495db-3a4a-4f70-bb81-8518f60ec8bf");
+                    parma.put("DriverID",driverId);
+                    parma.put("DataType","ClientOpenTrades");
+                    parma.put("LoginAccount",loginStr);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                String str_json = parma.toString();
+                request request = new request();
+                SoapObject soapObject = request.getResult(method,str_json);
+                List list = data(soapObject);
+                Message message = new Message();
+                Bundle bundle = new Bundle();
+                bundle.putString("key",list.toString());
+                message.setData(bundle);
+                handler.sendMessage(message);
+            }
+        }, 1000, 3000);
+    }
+
 
     private void createUI() {
         //        持仓
@@ -163,25 +185,7 @@ public class holdActivity extends Activity {
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            String method = "TransformData";
-            JSONObject parma = new JSONObject();
-            try {
-                parma.put("TaskGuid","ab8495db-3a4a-4f70-bb81-8518f60ec8bf");
-                parma.put("DriverID",driverId);
-                parma.put("DataType","ClientOpenTrades");
-                parma.put("LoginAccount",loginStr);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            String str_json = parma.toString();
-            request request = new request();
-            SoapObject soapObject = request.getResult(method,str_json);
-            List list = data(soapObject);
-            Message message = new Message();
-            Bundle bundle = new Bundle();
-            bundle.putString("key",list.toString());
-            message.setData(bundle);
-            handler.sendMessage(message);
+           dingshiqi();
         }
     };
     private List data(SoapObject soapObject) {
@@ -349,6 +353,8 @@ public class holdActivity extends Activity {
                     list.remove(posi);
                     l_name.remove(posi);
                     listView.setAdapter(new HoldAdspter(getApplicationContext(),list));
+                }else {
+                    Toast.makeText(holdActivity.this,"平仓失败",Toast.LENGTH_SHORT).show();
                 }
             }
         };
