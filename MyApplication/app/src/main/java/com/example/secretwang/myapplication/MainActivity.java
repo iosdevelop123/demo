@@ -134,27 +134,31 @@ public class MainActivity extends Activity {
         NowMinute = Integer.parseInt(s.substring(3, 5));
     }
 
-    //
+    //网络判断
     private void netAnimation(){
         NetWorkUtils net = new NetWorkUtils();
         int type=net.getAPNType(MainActivity.this);
         if (type==0){
             netBtn.setText("您当前使用的是2/3/4G网络");
+            netBtn.setTextColor(Color.WHITE);
+            //netBtn.setBackgroundColor(Color.BLUE);
             //初始化
             Animation alphaAnimation  = new AlphaAnimation(1.0f,0.0f);
             //设置动画时间
             alphaAnimation .setDuration(10000);
             netBtn.startAnimation(alphaAnimation);
-            netBtn.setBackgroundColor(Color.TRANSPARENT);
+           // netBtn.setBackgroundColor(Color.TRANSPARENT);
             netBtn.setVisibility(View.INVISIBLE);
         }else if (type==1){
             netBtn.setText("您当前使用的是wifi网络");
+            netBtn.setTextColor(Color.WHITE);
+            //netBtn.setBackgroundColor(Color.BLUE);
             //初始化
             Animation alphaAnimation  = new AlphaAnimation(1.0f,0.0f);
             //设置动画时间
             alphaAnimation .setDuration(10000);
             netBtn.startAnimation(alphaAnimation);
-            netBtn.setBackgroundColor(Color.TRANSPARENT);
+            //netBtn.setBackgroundColor(Color.TRANSPARENT);
             netBtn.setVisibility(View.INVISIBLE);
         }
     }
