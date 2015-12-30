@@ -1,3 +1,5 @@
+//import android.provider.MediaStore
+
 apply plugin: 'com.android.application'
 
 android {
@@ -26,4 +28,5 @@ dependencies {
     compile 'com.android.support:design:23.1.1'
     compile 'com.google.android.gms:play-services-appindexing:8.1.0'
     compile files('libs/ksoap2-android-assembly-3.0.0-jar-with-dependencies.jar')
+    compile files('libs/pgyersdk_sdk_2.2.2.jar')
 }

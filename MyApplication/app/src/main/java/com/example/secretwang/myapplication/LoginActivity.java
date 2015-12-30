@@ -8,24 +8,26 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-
+import android.provider.SyncStateContract;
 import android.telephony.TelephonyManager;
-
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
-
 import android.widget.TextView;
 import android.widget.Toast;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.ksoap2.serialization.SoapObject;
+import com.pgyersdk.crash.PgyCrashManager;
+import com.pgyersdk.javabean.AppBean;
+import com.pgyersdk.update.PgyUpdateManager;
+import com.pgyersdk.update.UpdateManagerListener;
+import android.app.Application;
 
 public class LoginActivity extends Activity {
     private TextView userName;
@@ -42,6 +44,38 @@ public class LoginActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //蒲公英上报Crash异常
+        PgyCrashManager.register(this);
+        try{}
+        catch (Exception e)
+        {
+            PgyCrashManager.reportCaughtException(LoginActivity.this,e);
+        }
+        //蒲公英检查版本更新
+        PgyUpdateManager.register(LoginActivity.this,new UpdateManagerListener() {
+            @Override
+            public void onUpdateAvailable(String s) {
+                //将新版本信息封装到AppBean中
+                final AppBean appBean = getAppBeanFromString(s);
+                new AlertDialog.Builder(LoginActivity.this)
+                        .setTitle("提示")
+                        .setMessage("软件有新的版本，立即更新？")
+                        .setNegativeButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                startDownloadTask(LoginActivity.this, appBean.getDownloadURL());
+                            }
+                        })
+                        .setCancelable(false)
+                        .setPositiveButton("取消",null)
+                        .show();
+            }
+                        @Override
+            public void onNoUpdateAvailable() {
+                //Log.v("ok","没有更新");
+            }
+        });
+       // PgyUpdateManager.register(LoginActivity.this);
         setContentView(R.layout.activity_login);
         userName = (TextView) findViewById(R.id.userName);
         passWord = (TextView) findViewById(R.id.passWord);

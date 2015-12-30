@@ -534,12 +534,25 @@ public class MainActivity extends Activity {
         public void onClick(View v) {
             Log.i(">>>>>", "全部卖出");
             buttonCanNotClick();
-            new Thread(orderNumbersRunnable).start();
-            progressDialog = ProgressDialog.show(MainActivity.this,"","全部卖出...");
+            new AlertDialog.Builder(MainActivity.this)
+                    .setTitle("是否全部卖出")
+                    .setCancelable(false)
+                    .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            buttonCanClick();
+                        }
+                    })
+                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            new Thread(orderNumbersRunnable).start();
+                            progressDialog = ProgressDialog.show(MainActivity.this,"","全部卖出...");
+                        }
+                    })
+                    .show();
         }
     };
-
-
 
 
 //    解析订单编号
