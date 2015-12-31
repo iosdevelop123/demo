@@ -47,7 +47,7 @@ import java.util.ArrayList;
 
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.jar.Attributes;
+
 
 public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -56,26 +56,26 @@ public class MainActivity extends Activity {
     private  List<String> hblist = new ArrayList<String>();//货币英文名
     private  List<String> nameList = new ArrayList<String>();//货币中文名
     private static String TaskGuid = "ab8495db-3a4a-4f70-bb81-8518f60ec8bf";
-    private Button buyMoreButton;
-    private Button buyLessButton;
-    private Button allSellButton;
+    private Button buyMoreButton;//看多按钮
+    private Button buyLessButton;//看空按钮
+    private Button allSellButton;//全部卖出按钮
     private TextView yingliText;//主界面显示盈利的text
     private TextView duoOrkongText;//主界面显示是看多买入还是看空买入
-    private TextView mairuduoshaoshouTex;
+    private TextView mairuduoshaoshouTex;//主界面显示买入多少手
     private WheelView wv;
     private WheelView wv2;
     private  int number;
     private  int category;
     private GoogleApiClient client;
     private ImageButton settingBtn;
-    private  TextView shouTxt;
-    private  TextView nametextView;
+    private  TextView shouTxt;//设置委托手数
+    private  TextView nametextView;//名称
     private  ImageButton userBtn;
     private  Button holdButton;
-    private TextView PriceTxt;
-    private String fanxianggoumaishoushu;
-    private String kanduoOrkankong;
-    private static String OpenSell_New = "OpenSell-New";
+    private TextView PriceTxt;//最新行情
+    private String fanxianggoumaishoushu;//反向开仓时，统计持仓的手数
+    private String kanduoOrkankong;//在反向开仓的时候，给个值，判断是看多反向还是看空反向
+    private static String OpenSell_New = "OpenSell-New";//宏定义
     private static String OpenBuy_New = "OpenBuy-New";
     private Timer timer;//定时器
     private String itemName;//储存切换货币时要切换的货币的名字
@@ -85,7 +85,7 @@ public class MainActivity extends Activity {
     public List orderNumbersList = new ArrayList();//订单编号数组
     private List SymbolNumberSList = new ArrayList();//选中货币的订单编号数组
     private String loginStr;
-    private String BUYMORE = "看多";
+    private String BUYMORE = "看多";//宏定义
     private String BUYLESS = "看空";
     private String BUYONCE = "追单";
     private String FANXIANG = "反向开仓";
@@ -98,6 +98,9 @@ public class MainActivity extends Activity {
     private int NowMinute;
     private int profit = 0;//总共盈利
     private String driverId;//手机唯一标识
+    private request request = new request();//数据请求
+    private Bundle bundle = new Bundle();
+    private JSONObject parma = new JSONObject();//请求数据要传入的参数
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,18 +112,16 @@ public class MainActivity extends Activity {
         createButton();
         SharedPreferences driver = getSharedPreferences("driverID",MODE_PRIVATE);
         driverId = driver.getString("driver", "");
-        timer = new Timer();
+        timer = new Timer();//定时器
         new Thread(zaicangRunnable).start();//进入主界面根据在仓订单刷新按钮名字
         SharedPreferences sharedPreferences = getSharedPreferences("userInfo", MODE_PRIVATE);
         loginStr = sharedPreferences.getString("login", "");
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
-//        timeDingshi();
         new Thread(HBListRunnable).start();//获取货币列表
         //网络判断动画
         netAnimation();
-        getNowTime();
         new Thread(latestPriceRunnable).start();//获取最新行情数据
         chicangyingliTimeDingshi();//定时刷新盈利
     }
@@ -165,10 +166,8 @@ public class MainActivity extends Activity {
     }
 //    持仓盈利定时器
     private void chicangyingliTimeDingshi(){
-//        timer = new Timer();
-        final String method = "TransformData";
-        final JSONObject parma = new JSONObject();
-        final request request = new request();
+        final String method = "TransformData";//参数设置
+//        final JSONObject parma = new JSONObject();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -180,10 +179,10 @@ public class MainActivity extends Activity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                SoapObject soapObject = request.getResult(method, parma.toString());
-                List list = getZaicangDingDan(soapObject);
+                SoapObject soapObject = request.getResult(method, parma.toString());//请求网络，返回的值是soapObject类型
+                List list = getZaicangDingDan(soapObject);//解析返回的值
                 Message message = new Message();
-                Bundle bundle = new Bundle();
+//                Bundle bundle = new Bundle();
                 bundle.putString("zaicangkey", list.toString());
                 message.setData(bundle);
                 zaicanghandler.sendMessage(message);
@@ -193,10 +192,8 @@ public class MainActivity extends Activity {
 
 //  最新行情定时器
     private void zuixinhangqingtimeDingshi(){
-//        timer = new Timer();
         final String method = "TransformData";
-        final JSONObject parma = new JSONObject();
-        final request request = new request();
+//        final JSONObject parma = new JSONObject();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -211,7 +208,7 @@ public class MainActivity extends Activity {
                 SoapObject string = request.getResult(method, parma.toString());
                 String jsonRequest = string.getProperty(0).toString();
                 Message message = new Message();
-                Bundle bundle = new Bundle();
+//                Bundle bundle = new Bundle();
                 bundle.putString("value", jsonRequest);
                 message.setData(bundle);
                 latestPriceHandler.sendMessage(message);
@@ -248,18 +245,17 @@ public class MainActivity extends Activity {
         @Override
         public void run() {
             String method = "TransformData";
-            JSONObject parma = new JSONObject();
+//            JSONObject parma = new JSONObject();
             try {
                 parma.put("TaskGuid","b4026263-704e-4e12-a64d-f79cb42962cc");
                 parma.put("DataType","HBList");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            request request = new request();
             SoapObject string = request.getResult(method, parma.toString());
             String jsonRequest = string.getProperty(0).toString();
             Message message = new Message();
-            Bundle bundle = new Bundle();
+//            Bundle bundle = new Bundle();
             bundle.putString("HBListkey",jsonRequest);
             message.setData(bundle);
             HBListhandler.sendMessage(message);
@@ -276,7 +272,7 @@ public class MainActivity extends Activity {
         @Override
         public void run() {
             String method = "TransformData";
-            JSONObject parma = new JSONObject();
+//            JSONObject parma = new JSONObject();
             try {
                 parma.put("DriverID",driverId);
                 parma.put("TaskGuid",TaskGuid);
@@ -285,11 +281,10 @@ public class MainActivity extends Activity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            request request = new request();
             SoapObject soapObject = request.getResult(method, parma.toString());
             List list = getZaicangDingDan(soapObject);
             Message message = new Message();
-            Bundle bundle = new Bundle();
+//            Bundle bundle = new Bundle();
             bundle.putString("zaicangkey", list.toString());
             message.setData(bundle);
             zaicanghandler.sendMessage(message);
@@ -316,6 +311,7 @@ public class MainActivity extends Activity {
         }
         return list;
     }
+//    根据在仓订单改变主界面显示
     Handler zaicanghandler = new Handler(){
         @Override
         public void handleMessage(Message message){
@@ -344,7 +340,7 @@ public class MainActivity extends Activity {
                                 buyLessButton.setText(BUYONCE);
                                 buyMoreButton.setText(FANXIANG);
                             }
-                            break;
+                            break;//如果有一个这样的就跳出循环
                         } else {
                             duoOrkongText.setText("");
                             buyMoreButton.setText(BUYMORE);
@@ -431,7 +427,6 @@ public class MainActivity extends Activity {
             Bundle bundle = message.getData();
             String string = bundle.getString("value");
             Log.v("++++++++++++", string);
-
             if (string.equals("连接超时")){}
             else if (string.equals("@")){}
             else {
@@ -454,8 +449,6 @@ public class MainActivity extends Activity {
             zuixinhangqingtimeDingshi();
         }
     };
-
-
     //    持仓按钮点击事件，并传递数据
     View.OnClickListener holdButtonClick =(new View.OnClickListener() {
         @Override
@@ -470,17 +463,20 @@ public class MainActivity extends Activity {
 //    从第二界面返回的数据在这里
     @Override
     protected void onActivityResult(int requestCode,int resultCode,Intent data){
-//        开启定时器
-        timer = new Timer();
+
+        timer = new Timer();//开启定时器
         zuixinhangqingtimeDingshi();
         chicangyingliTimeDingshi();
-        String s = data.getStringExtra("change");
+//        String s = data.getStringExtra("change");
 //        判断持仓是否把这个货币平仓，如果全部平仓则刷新买入按钮
-        if(s.equals("true")){
-            buyLessButton.setText(BUYLESS);
-            buyMoreButton.setText(BUYMORE);
-        }
+//        if(s.equals("true")){
+//            buyLessButton.setText(BUYLESS);
+//            buyMoreButton.setText(BUYMORE);
+//        }
     }
+
+
+
 
     //        跳转个人中心界面
     View.OnClickListener userBtnClick=(new View.OnClickListener() {
@@ -645,30 +641,29 @@ public class MainActivity extends Activity {
                 buyMoreButton.setText(BUYMORE);
                 buyLessButton.setText(BUYLESS);
                 buttonCanClick();
+                progressDialog.dismiss();
             }else {
                 new Thread(allSellRunnable).start();
             }
-            progressDialog.dismiss();
         }
     };
     Runnable orderNumbersRunnable = new Runnable() {
         @Override
         public void run() {
             String TransformData = "TransformData";
-            JSONObject zaicang = new JSONObject();
+//            JSONObject zaicang = new JSONObject();
             try {
-                zaicang.put("DriverID",driverId);
-                zaicang.put("TaskGuid",TaskGuid);
-                zaicang.put("DataType","ClientOpenTrades");
-                zaicang.put("LoginAccount",loginStr);
+                parma.put("DriverID",driverId);
+                parma.put("TaskGuid",TaskGuid);
+                parma.put("DataType","ClientOpenTrades");
+                parma.put("LoginAccount",loginStr);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            request request = new request();
-            SoapObject soapObject = request.getResult(TransformData, zaicang.toString());
+            SoapObject soapObject = request.getResult(TransformData, parma.toString());
             orderNumbersList = getOrderNumberS(soapObject);
             Message message = new Message();
-            Bundle bundle = new Bundle();
+//            Bundle bundle = new Bundle();
             if (orderNumbersList.size() == 0){
                 bundle.putString("orderNumber", "null");
             }else {
@@ -719,24 +714,24 @@ public class MainActivity extends Activity {
         @Override
         public void run() {
             String SetData = "SetData";
-            JSONObject allSellParma = new JSONObject();
+//            JSONObject allSellParma = new JSONObject();
             String s = "";
                 for (int i = 0; i < orderNumbersList.size(); i++) {
                     s += "," + orderNumbersList.get(i);
                 }
                 try {
-                    allSellParma.put( "DriverID",driverId);
-                    allSellParma.put("TaskGuid", TaskGuid);
-                    allSellParma.put("DataType", "CloseOrderS");
-                    allSellParma.put("OrderNumberS", s.substring(1));
-                    allSellParma.put("LoginAccount", loginStr);
+                    parma.put( "DriverID",driverId);
+                    parma.put("TaskGuid", TaskGuid);
+                    parma.put("DataType", "CloseOrderS");
+                    parma.put("OrderNumberS", s.substring(1));
+                    parma.put("LoginAccount", loginStr);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                request request = new request();
-                SoapObject soapObject = request.getResult(SetData, allSellParma.toString());
+//                request request = new request();
+                SoapObject soapObject = request.getResult(SetData, parma.toString());
                 Message message =new Message();
-                Bundle bundle = new Bundle();
+//                Bundle bundle = new Bundle();
                 if (soapObject.getProperty(0).toString().equals("True")){
                     bundle.putString("sellKey","True");
                 }else {
@@ -768,10 +763,9 @@ public class MainActivity extends Activity {
 
 //    看多买入
     private void buyMoreButtonClick() {
-        Log.i(">>>>>>>>>>>>>>>", "看多买入");
-        getNowTime();
-        if (itemName.equals(NAME2)){
-            if (NowHour>=9&&NowHour<=12){
+        getNowTime();//现在的时间
+        if (itemName.equals(NAME2)){//判断选择的是不是恒生指数
+            if (NowHour>=9&&NowHour<=12){//判断是不是在交易时间
                 if (NowHour==9 && NowMinute<=15){
                     Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT).show();
                 }else {
@@ -829,7 +823,7 @@ public class MainActivity extends Activity {
         @Override
         public void run() {
             String SetData = "SetData";
-            JSONObject parma = new JSONObject();
+//            JSONObject parma = new JSONObject();
             try {
                 parma.put("DriverID",driverId);
                 parma.put("TaskGuid",TaskGuid);
@@ -843,10 +837,10 @@ public class MainActivity extends Activity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            request request = new request();
+//            request request = new request();
             SoapObject soapObject = request.getResult(SetData, parma.toString());
             Message message = new Message();
-            Bundle bundle = new Bundle();
+//            Bundle bundle = new Bundle();
             bundle.putString("buyMore", soapObject.getProperty(0).toString());
             message.setData(bundle);
             buyMoreHandler.sendMessage(message);
@@ -888,20 +882,20 @@ public class MainActivity extends Activity {
         @Override
         public void run() {
             String TransformData = "TransformData";
-            JSONObject zaicang = new JSONObject();
+//            JSONObject zaicang = new JSONObject();
             try {
-                zaicang.put("DriverID",driverId);
-                zaicang.put("TaskGuid",TaskGuid);
-                zaicang.put("DataType","ClientOpenTrades");
-                zaicang.put("LoginAccount",loginStr);
+                parma.put("DriverID",driverId);
+                parma.put("TaskGuid",TaskGuid);
+                parma.put("DataType","ClientOpenTrades");
+                parma.put("LoginAccount",loginStr);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            request request = new request();
-            SoapObject soapObject = request.getResult(TransformData, zaicang.toString());
+//            request request = new request();
+            SoapObject soapObject = request.getResult(TransformData, parma.toString());
             List list = getxiangtongdeOrderNums(soapObject);
             Message message = new Message();
-            Bundle bundle = new Bundle();
+//            Bundle bundle = new Bundle();
             bundle.putString("kanduofanxiangOrderNum", list.toString());
             message.setData(bundle);
             fanxiangOrderNumHandler.sendMessage(message);
@@ -952,25 +946,25 @@ public class MainActivity extends Activity {
         @Override
         public void run() {
             String SetData = "SetData";
-            JSONObject allSellParma = new JSONObject();
+//            JSONObject allSellParma = new JSONObject();
             String s = "";
             for (int i = 0; i < SymbolNumberSList.size(); i++) {
                 s += "," + SymbolNumberSList.get(i);
             }
             Log.i("eeeeee",s);
             try {
-                allSellParma.put("DriverID",driverId);
-                allSellParma.put("TaskGuid", TaskGuid);
-                allSellParma.put("DataType", "CloseOrderS");
-                allSellParma.put("OrderNumberS", s.substring(1));
-                allSellParma.put("LoginAccount", loginStr);
+                parma.put("DriverID",driverId);
+                parma.put("TaskGuid", TaskGuid);
+                parma.put("DataType", "CloseOrderS");
+                parma.put("OrderNumberS", s.substring(1));
+                parma.put("LoginAccount", loginStr);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            request request = new request();
-            SoapObject soapObject = request.getResult(SetData, allSellParma.toString());
+//            request request = new request();
+            SoapObject soapObject = request.getResult(SetData, parma.toString());
             Message message =new Message();
-            Bundle bundle = new Bundle();
+//            Bundle bundle = new Bundle();
             if (soapObject.getProperty(0).toString().equals("True")){
                 bundle.putString("sellKey","True");
             }else {
@@ -985,7 +979,7 @@ public class MainActivity extends Activity {
         @Override
         public void run() {
             String SetData = "SetData";
-            JSONObject parma = new JSONObject();
+//            JSONObject parma = new JSONObject();
             try {
                 parma.put("DriverID",driverId);
                 parma.put("TaskGuid",TaskGuid);
@@ -999,10 +993,10 @@ public class MainActivity extends Activity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            request request = new request();
+//            request request = new request();
             SoapObject soapObject = request.getResult(SetData, parma.toString());
             Message message = new Message();
-            Bundle bundle = new Bundle();
+//            Bundle bundle = new Bundle();
             bundle.putString("kanduofanxiangmairu", soapObject.getProperty(0).toString());
             message.setData(bundle);
             fanxiangmairuHandler.sendMessage(message);
@@ -1110,7 +1104,7 @@ public class MainActivity extends Activity {
         @Override
         public void run() {
             String SetData = "SetData";
-            JSONObject parma = new JSONObject();
+//            JSONObject parma = new JSONObject();
             try {
                 parma.put("DriverID",driverId);
                 parma.put("TaskGuid",TaskGuid);
@@ -1124,10 +1118,10 @@ public class MainActivity extends Activity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            request request = new request();
+//            request request = new request();
             SoapObject soapObject = request.getResult(SetData, parma.toString());
             Message message = new Message();
-            Bundle bundle = new Bundle();
+//            Bundle bundle = new Bundle();
             bundle.putString("buyLess", soapObject.getProperty(0).toString());
             message.setData(bundle);
             kankonghandle.sendMessage(message);

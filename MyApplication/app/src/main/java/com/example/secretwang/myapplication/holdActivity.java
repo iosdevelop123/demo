@@ -47,7 +47,7 @@ public class holdActivity extends Activity {
     private Button historyButton;
     private ListView listView = null;
     private TextView priceTextView = null;
-    private String loginStr;
+    private String loginStr;//登录名
     private ProgressDialog progressDialog;
     private List<Map<String, Object>> list = new ArrayList<>();
     private String no = "true";//判断是否全部平仓
@@ -56,6 +56,8 @@ public class holdActivity extends Activity {
     private Timer timer;//定时器
     private Boolean isFirst;
     private String driverId;
+    private request request = new request();//数据请求
+    private Bundle bundle = new Bundle();//
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -98,11 +100,9 @@ public class holdActivity extends Activity {
                     e.printStackTrace();
                 }
                 String str_json = parma.toString();
-                request request = new request();
-                SoapObject soapObject = request.getResult(method,str_json);
+                SoapObject soapObject = request.getResult(method, str_json);
                 List list = data(soapObject);
                 Message message = new Message();
-                Bundle bundle = new Bundle();
                 bundle.putString("key",list.toString());
                 message.setData(bundle);
                 handler.sendMessage(message);
