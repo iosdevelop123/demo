@@ -25,9 +25,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class UserActivity extends Activity {
-    private Button btn_exit ;
-    private ListView lv;
-    private String Balance;
+    private Button btn_exit ;//退出按钮
+    private ListView lv; //个人中心listview
+    private String Balance;//可用余额
     private String loginStr;
 
     private ProgressDialog progressDialog;
@@ -43,13 +43,15 @@ public class UserActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user);
+        //获取存储类里面的用户名
         SharedPreferences sharedPreferences = getSharedPreferences("userInfo",MODE_PRIVATE);
         loginStr = sharedPreferences.getString("login","");
         //加载视图
         loadUI();
-        //开启线程
+        //开启请求余额线程
         new Thread(runnable).start();
   }
+    //加载界面
     public void loadUI(){
         //创建ArrayList对象；
         list=new ArrayList<HashMap<String,Object>>();
@@ -80,10 +82,11 @@ public class UserActivity extends Activity {
                             public void onClick(DialogInterface dialog, int which) {
                                 //退出登录请求服务器
                                 new Thread(exitRunnable).start();
+                                //移除个人中心视图
                                 finish();
                                 onBackPressed();
-                                Intent intent = new Intent(UserActivity.this, LoginActivity.class);
-                                startActivity(intent);
+                                //跳转到登陆界面
+                                startActivity(new Intent(UserActivity.this, LoginActivity.class));
                             }
                         })
                         .setNegativeButton("取消", null)
@@ -94,24 +97,17 @@ public class UserActivity extends Activity {
         progressDialog = ProgressDialog.show(UserActivity.this, "", "正在加载,请稍候！");
     }
     //退出登录请求
-    Handler exitHandler = new Handler() {
-        @Override
-        public void handleMessage(Message message){
-            super.handleMessage(message);
-            Bundle bundle = message.getData();
-            String string = bundle.getString("value");
-             //Log.e(">>>>>>>>>>exit", string);
-        }
-    };
     Runnable exitRunnable = new Runnable() {
         @Override
         public void run() {
             String method = "SetData";
             JSONObject param = new JSONObject();
+            SharedPreferences driver = getSharedPreferences("driverID",MODE_PRIVATE);
+            String driverId = driver.getString("driver", "");
             try{
                 param.put("TaskGuid","ab8495db-3a4a-4f70-bb81-8518f60ec8bf");
                 param.put("DataType","DriverLoginOut");
-                param.put("LoginAccount","123456789");
+                param.put("DriverID",driverId);
             }catch (JSONException e){
                 e.printStackTrace();
             }
@@ -120,17 +116,13 @@ public class UserActivity extends Activity {
                 request request = new request();
                 SoapObject string = request.getResult(method, str_json);
                 String jsonRequest = string.getProperty(0).toString();
-                Message message = new Message();
-                Bundle bundle = new Bundle();
-                bundle.putString("value",jsonRequest);
-                message.setData(bundle);
-                exitHandler.sendMessage(message);
+                Log.v("&&&&&&&&&&",jsonRequest);
             }catch (Exception e){
                 e.printStackTrace();
             }
         }
     };
-    //请求可用余额
+    //请求结果处理
     Handler handler = new Handler() {
         @Override
         public void handleMessage(Message message){
@@ -165,6 +157,7 @@ public class UserActivity extends Activity {
             progressDialog.dismiss(); //关闭进度条
             }
     };
+    //请求余额线程
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
