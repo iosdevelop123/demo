@@ -60,6 +60,8 @@ public class MainActivity extends Activity {
     private Button buyLessButton;
     private Button allSellButton;
     private TextView yingliText;//主界面显示盈利的text
+    private TextView duoOrkongText;//主界面显示是看多买入还是看空买入
+    private TextView mairuduoshaoshouTex;
     private WheelView wv;
     private WheelView wv2;
     private  int number;
@@ -94,9 +96,8 @@ public class MainActivity extends Activity {
 
     private int NowHour;//当前时间
     private int NowMinute;
-    private String chinaName;//中文名字
     private int profit = 0;//总共盈利
-    private String driverId;
+    private String driverId;//手机唯一标识
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,11 +166,12 @@ public class MainActivity extends Activity {
 //    持仓盈利定时器
     private void chicangyingliTimeDingshi(){
 //        timer = new Timer();
+        final String method = "TransformData";
+        final JSONObject parma = new JSONObject();
+        final request request = new request();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                String method = "TransformData";
-                JSONObject parma = new JSONObject();
                 try {
                     parma.put("DriverID", driverId);
                     parma.put("TaskGuid", TaskGuid);
@@ -178,7 +180,6 @@ public class MainActivity extends Activity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                request request = new request();
                 SoapObject soapObject = request.getResult(method, parma.toString());
                 List list = getZaicangDingDan(soapObject);
                 Message message = new Message();
@@ -194,10 +195,11 @@ public class MainActivity extends Activity {
     private void zuixinhangqingtimeDingshi(){
 //        timer = new Timer();
         final String method = "TransformData";
+        final JSONObject parma = new JSONObject();
+        final request request = new request();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                JSONObject parma = new JSONObject();
                 try {
                     parma.put("TaskGuid", TaskGuid);
                     parma.put("DataType", "MT4Data");
@@ -206,9 +208,7 @@ public class MainActivity extends Activity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                String str_json = parma.toString();
-                request request = new request();
-                SoapObject string = request.getResult(method, str_json);
+                SoapObject string = request.getResult(method, parma.toString());
                 String jsonRequest = string.getProperty(0).toString();
                 Message message = new Message();
                 Bundle bundle = new Bundle();
@@ -233,12 +233,12 @@ public class MainActivity extends Activity {
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
                     String Bh = jsonObject.getString("Bh");
                     String Name = jsonObject.getString("Name");
-                    hblist.add(Bh);
-                    nameList.add(Name);
+                    hblist.add(Bh);//协议名字
+                    nameList.add(Name);//汉语名字
                 }
                 NAME1 = hblist.get(0);
                 NAME2 = hblist.get(1);
-                itemName = NAME1;
+                itemName = NAME1;//进入主界面的时候默认刷新美原油
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -266,53 +266,12 @@ public class MainActivity extends Activity {
         }
     };
 
-    Handler zaicanghandler = new Handler(){
-        @Override
-        public void handleMessage(Message message){
-            super.handleMessage(message);
-            Bundle bundle = message.getData();
-            String string = bundle.getString("zaicangkey");
-            try {
-                JSONArray jsonArray = new JSONArray(string);
-                if (jsonArray.length()==0){
-                    buyMoreButton.setText(BUYMORE);
-                    buyLessButton.setText(BUYLESS);
-                }else {
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                        JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        String sym = jsonObject.getString("Symbol");
-                        if (sym.equals(itemName)) {
-                            String type = jsonObject.getString("TypeName");
-                            if (type.equals("多")) {
-                                buyMoreButton.setText(BUYONCE);
-                                buyLessButton.setText(FANXIANG);
-                            } else if (type.equals("空")) {
-                                buyLessButton.setText(BUYONCE);
-                                buyMoreButton.setText(FANXIANG);
-                            }
-                            break;
-                        } else {
-                            buyMoreButton.setText(BUYMORE);
-                            buyLessButton.setText(BUYLESS);
-                        }
-                    }
-                }
-//                Log.i("111111",String.valueOf(profit));
-                yingliText.setText(String.valueOf(profit));
-                if (profit<0){//根据正负设置颜色
-                    yingliText.setTextColor(Color.parseColor("#0069d5"));
-                }else {
-                    yingliText.setTextColor(Color.parseColor("#fe0000"));
-                }
-                profit = 0;//清零，否则会累加
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
 
-        }
-    };
 
-//    第一次进入主界面根据在仓订单刷新界面
+
+
+
+//    主界面根据在仓订单刷新界面
     Runnable zaicangRunnable = new Runnable() {
         @Override
         public void run() {
@@ -347,6 +306,7 @@ public class MainActivity extends Activity {
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
                     map.put("Symbol",jsonObject.getString("Symbol"));
                     map.put("TypeName",jsonObject.getString("TypeName"));
+                    map.put("Volume",jsonObject.getInt("Volume"));
                     profit +=jsonObject.getInt("Profit");
                     list.add(map);
                 }
@@ -356,8 +316,65 @@ public class MainActivity extends Activity {
         }
         return list;
     }
+    Handler zaicanghandler = new Handler(){
+        @Override
+        public void handleMessage(Message message){
+            super.handleMessage(message);
+            Bundle bundle = message.getData();
+            String string = bundle.getString("zaicangkey");
+            int shoushu = 0;
+            try {
+                JSONArray jsonArray = new JSONArray(string);
+                if (jsonArray.length()==0){
+                    duoOrkongText.setText("");
+                    buyMoreButton.setText(BUYMORE);
+                    buyLessButton.setText(BUYLESS);
+                }else {
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        String sym = jsonObject.getString("Symbol");
+                        if (sym.equals(itemName)) {
+                            String type = jsonObject.getString("TypeName");
+                            if (type.equals("多")) {
+                                duoOrkongText.setText(BUYMORE);
+                                buyMoreButton.setText(BUYONCE);
+                                buyLessButton.setText(FANXIANG);
+                            } else if (type.equals("空")) {
+                                duoOrkongText.setText(BUYLESS);
+                                buyLessButton.setText(BUYONCE);
+                                buyMoreButton.setText(FANXIANG);
+                            }
+                            break;
+                        } else {
+                            duoOrkongText.setText("");
+                            buyMoreButton.setText(BUYMORE);
+                            buyLessButton.setText(BUYLESS);
+                        }
+                    }
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        shoushu += jsonObject.getInt("Volume");
+                    }
+                }
+                mairuduoshaoshouTex.setText(String.valueOf(shoushu));
+                yingliText.setText(String.valueOf(profit));
+                if (profit<0){//根据正负设置颜色
+                    yingliText.setTextColor(Color.parseColor("#0069d5"));
+                }else {
+                    yingliText.setTextColor(Color.parseColor("#fe0000"));
+                }
+                profit = 0;//清零，否则会累加
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+    };
 
 
+
+
+//    界面创建
     private void createButton() {
         //手数和品种
         shouTxt=(TextView) findViewById(R.id.shoushutextView);
@@ -389,6 +406,10 @@ public class MainActivity extends Activity {
         netBtn =(Button)findViewById(R.id.netImgBtn);
         //主界面盈利的number
         yingliText = (TextView)findViewById(R.id.textView10);
+//        主界面显示买入的是看多买入还是看空买入
+        duoOrkongText = (TextView)findViewById(R.id.textView34);
+//        显示买入多少手
+        mairuduoshaoshouTex = (TextView)findViewById(R.id.textView6);
     }
 //    设置按钮允许点击
     private void buttonCanClick(){
@@ -435,24 +456,26 @@ public class MainActivity extends Activity {
     };
 
 
-    //    持仓按钮点击事件
+    //    持仓按钮点击事件，并传递数据
     View.OnClickListener holdButtonClick =(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            timer.cancel();
+            timer.cancel();//进入下一界面关闭定时器
             Intent intent = new Intent(MainActivity.this,holdActivity.class);
             String name = itemName;
-            System.out.println(name);
-            intent.putExtra("name",name);
+            intent.putExtra("name",name);//把本界面选择的货币传递给持仓界面
             startActivityForResult(intent, 0);
         }
     });
+//    从第二界面返回的数据在这里
     @Override
     protected void onActivityResult(int requestCode,int resultCode,Intent data){
+//        开启定时器
         timer = new Timer();
         zuixinhangqingtimeDingshi();
         chicangyingliTimeDingshi();
         String s = data.getStringExtra("change");
+//        判断持仓是否把这个货币平仓，如果全部平仓则刷新买入按钮
         if(s.equals("true")){
             buyLessButton.setText(BUYLESS);
             buyMoreButton.setText(BUYMORE);
@@ -495,7 +518,6 @@ public class MainActivity extends Activity {
                     public void onSelected(int selectedIndex, String item1) {
                         Log.d(TAG, "[Dialog]selectedIndex: " + selectedIndex + ", item: " + item1);
                         nametextView.setText(item1);
-                        chinaName = item1;
                         itemName = hblist.get(selectedIndex - 2);
                         category = selectedIndex - 2;
                     }
