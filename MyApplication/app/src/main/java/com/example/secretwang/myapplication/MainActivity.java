@@ -526,7 +526,6 @@ public class MainActivity extends Activity {
                         .setTitle("设置您委托的产品类型和手数")
                         .setView(outerView)
                         .setCancelable(false)
-                        .setNegativeButton("取消",null)
                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
