@@ -1,6 +1,5 @@
 
 package com.example.secretwang.myapplication;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -11,7 +10,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.SyncStateContract;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -27,17 +25,16 @@ import com.pgyersdk.crash.PgyCrashManager;
 import com.pgyersdk.javabean.AppBean;
 import com.pgyersdk.update.PgyUpdateManager;
 import com.pgyersdk.update.UpdateManagerListener;
-import android.app.Application;
 
 public class LoginActivity extends Activity {
     private TextView userName;
     private TextView passWord;
-    private Button btn;
-    private ProgressDialog progressDialog;
-    private CheckBox checkBox;
+    private Button btn;//登录按钮
+    private ProgressDialog progressDialog;//请求网络提示
+    private CheckBox checkBox;//记住密码勾选框
     static String YES = "yes";
     static String NO = "no";
-    static String login, password;
+    static String login, password;//截取用户名和密码字符串
     private String isMemory = "";//isMemory变量用来判断SharedPreferences有没有数据，包括上面的YES和NO
     private String FILE = "userInfo";//用于保存SharedPreferences的文件
     private SharedPreferences sp = null;//声明一个SharedPreferences
@@ -60,12 +57,14 @@ public class LoginActivity extends Activity {
                 new AlertDialog.Builder(LoginActivity.this)
                         .setTitle("提示")
                         .setMessage("软件有新的版本，立即更新？")
+                        //确定按钮监听事件
                         .setNegativeButton("确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 startDownloadTask(LoginActivity.this, appBean.getDownloadURL());
                             }
                         })
+                        //弹窗点击取消键才消失
                         .setCancelable(false)
                         .setPositiveButton("取消",null)
                         .show();
@@ -81,7 +80,7 @@ public class LoginActivity extends Activity {
         passWord = (TextView) findViewById(R.id.passWord);
         checkBox = (CheckBox) findViewById(R.id.checkBox);
         btn = (Button) findViewById(R.id.login);
-        sp = getSharedPreferences(FILE, MODE_PRIVATE);
+        sp = getSharedPreferences(FILE, MODE_PRIVATE);//android轻量级数据存储类
         isMemory = sp.getString("isMemory", NO);
         //进入界面时，这个if用来判断SharedPreferences里面name和password有没有数据，有的话则直接打在EditText上面
         if (isMemory.equals(YES)){
@@ -124,9 +123,6 @@ public class LoginActivity extends Activity {
     // 放到SharedPreferences里面的login和password中
     public void remember(){
         if (checkBox.isChecked()){
-//            if (sp == null){
-//                sp=getSharedPreferences(FILE,MODE_PRIVATE);
-//            }
             SharedPreferences.Editor editor = sp.edit();
             editor.putString("login",userName.getText().toString());
             editor.putString("password",passWord.getText().toString());
@@ -145,14 +141,10 @@ public class LoginActivity extends Activity {
             super.handleMessage(message);
             Bundle bundle = message.getData();
             String string = bundle.getString("value");
-            //Log.v("66666666666",string);
+            //Log.v("login",string);
             progressDialog.dismiss(); //关闭进度条
             if (string.equals("True")) {
                 Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
-//                SharedPreferences setting = getSharedPreferences("userInfo", MODE_PRIVATE);
-//                SharedPreferences.Editor editor = setting.edit();
-//                editor.putString("login", userName.getText().toString());
-//                editor.commit();
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 startActivity(intent);
             } else if (string.equals("输入字符串的格式不正确。")) {
@@ -182,12 +174,12 @@ public class LoginActivity extends Activity {
             }
             try {
                 String str_json = param.toString();
-                request request = new request();
+                request request = new request();//请求服务器类
                 SoapObject string = request.getResult(method, str_json);
-                String jsonRequest = string.getProperty(0).toString();
+                String jsonRequest = string.getProperty(0).toString();//解析后的字符串
                 Message message = new Message();
                 Bundle bundle = new Bundle();
-                bundle.putString("value", jsonRequest);
+                bundle.putString("value", jsonRequest);//值传到handler类处理
                 message.setData(bundle);
                 handler.sendMessage(message);
             } catch (Exception e) {
