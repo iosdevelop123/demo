@@ -274,25 +274,27 @@ public class MainActivity extends Activity {
             String string = bundle.getString("zaicangkey");
             try {
                 JSONArray jsonArray = new JSONArray(string);
-                for (int i=0;i<jsonArray.length();i++){
-                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    String sym = jsonObject.getString("Symbol");
-                    if (sym.equals(itemName)){
-                        String type =jsonObject.getString("TypeName");
-                        if (type.equals("多")){
-                            buyMoreButton.setText(BUYONCE);
-                            buyLessButton.setText(FANXIANG);
-                        }else if (type.equals("空")){
-                            buyLessButton.setText(BUYONCE);
-                            buyMoreButton.setText(FANXIANG);
-                        }else {
+                if (jsonArray.length()==0){
+                    buyMoreButton.setText(BUYMORE);
+                    buyLessButton.setText(BUYLESS);
+                }else {
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        String sym = jsonObject.getString("Symbol");
+                        if (sym.equals(itemName)) {
+                            String type = jsonObject.getString("TypeName");
+                            if (type.equals("多")) {
+                                buyMoreButton.setText(BUYONCE);
+                                buyLessButton.setText(FANXIANG);
+                            } else if (type.equals("空")) {
+                                buyLessButton.setText(BUYONCE);
+                                buyMoreButton.setText(FANXIANG);
+                            }
+                            break;
+                        } else {
                             buyMoreButton.setText(BUYMORE);
                             buyLessButton.setText(BUYLESS);
                         }
-                        break;
-                    }else {
-                        buyMoreButton.setText(BUYMORE);
-                        buyLessButton.setText(BUYLESS);
                     }
                 }
 //                Log.i("111111",String.valueOf(profit));
