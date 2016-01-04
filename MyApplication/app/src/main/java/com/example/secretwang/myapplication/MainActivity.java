@@ -770,7 +770,7 @@ public class MainActivity extends Activity {
                    //将解析的字符串转换成json对象
                    JSONObject jsonObject=new JSONObject(jsonRequest);
                    LowestMoney =jsonObject.getInt("Balance");
-                  // Log.v("7777777777",String.valueOf(LowestMoney));
+
                }catch (Exception e){
                    e.printStackTrace();
                }
