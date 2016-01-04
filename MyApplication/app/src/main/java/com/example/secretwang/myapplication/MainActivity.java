@@ -66,7 +66,6 @@ public class MainActivity extends Activity {
     private WheelView wv2;
     private  int number;
     private  int category;
-    private GoogleApiClient client;
     private ImageButton settingBtn;
     private  TextView shouTxt;//设置委托手数
     private  TextView nametextView;//名称
@@ -116,9 +115,6 @@ public class MainActivity extends Activity {
         new Thread(zaicangRunnable).start();//进入主界面根据在仓订单刷新按钮名字
         SharedPreferences sharedPreferences = getSharedPreferences("userInfo", MODE_PRIVATE);
         loginStr = sharedPreferences.getString("login", "");
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
         new Thread(HBListRunnable).start();//获取货币列表
         //网络判断动画
         netAnimation();
@@ -133,7 +129,7 @@ public class MainActivity extends Activity {
         if (NowHour>=24){
             NowHour = NowHour - 24;
         }
-        NowMinute = Integer.parseInt(s.substring(3, 5));
+        NowMinute = Integer.parseInt(s.substring(3, 5));//截取字符串
     }
 
     //网络判断
@@ -393,9 +389,6 @@ public class MainActivity extends Activity {
 //        全部卖出按钮
         allSellButton = (Button)findViewById(R.id.button_allSell);
         allSellButton.setOnClickListener(allSellClick);
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
         //最新行情数据
         PriceTxt = (TextView)findViewById(R.id.textView_priceText);
         //网络button
