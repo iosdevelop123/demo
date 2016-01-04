@@ -110,9 +110,9 @@ public class LoginActivity extends Activity {
                 progressDialog = ProgressDialog.show(LoginActivity.this, "", "正在加载,请稍候！");
             }
         });
-        TelephonyManager telephonyManager = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
-        String s = telephonyManager.getDeviceId();
-//        String s = "111";
+//        TelephonyManager telephonyManager = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
+//        String s = telephonyManager.getDeviceId();
+        String s = "111";
         SharedPreferences driverId = getSharedPreferences("driverID",MODE_PRIVATE);
         SharedPreferences.Editor drivereditor = driverId.edit();
         drivereditor.putString("driver",s);
