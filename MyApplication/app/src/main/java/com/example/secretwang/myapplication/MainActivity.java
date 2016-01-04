@@ -66,7 +66,7 @@ public class MainActivity extends Activity {
     private WheelView wv2;
     private  int number;
     private  int category;
-    private GoogleApiClient client;
+//    private GoogleApiClient client;
     private ImageButton settingBtn;
     private  TextView shouTxt;//设置委托手数
     private  TextView nametextView;//名称
@@ -118,7 +118,7 @@ public class MainActivity extends Activity {
         loginStr = sharedPreferences.getString("login", "");
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+//        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
         new Thread(HBListRunnable).start();//获取货币列表
         //网络判断动画
         netAnimation();
@@ -393,9 +393,6 @@ public class MainActivity extends Activity {
 //        全部卖出按钮
         allSellButton = (Button)findViewById(R.id.button_allSell);
         allSellButton.setOnClickListener(allSellClick);
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
         //最新行情数据
         PriceTxt = (TextView)findViewById(R.id.textView_priceText);
         //网络button
