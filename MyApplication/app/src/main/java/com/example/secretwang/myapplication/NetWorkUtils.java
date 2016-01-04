@@ -76,13 +76,14 @@ public class NetWorkUtils {
             return netType;
         }
         int nType = networkInfo.getType();
-        if(nType==ConnectivityManager.TYPE_MOBILE){
-            //Log.e("networkInfo.getExtraInfo()", "networkInfo.getExtraInfo() is " + networkInfo.getExtraInfo());
-            if(networkInfo.getExtraInfo().toLowerCase().equals("cmnet")){
-                netType = CMNET;
-            }
-            else{
-                netType = CMWAP;
+        if(nType==ConnectivityManager.TYPE_MOBILE) {
+            String extraInfo = networkInfo.getExtraInfo();
+            if (!extraInfo.equals("")) {
+                if (networkInfo.getExtraInfo().toLowerCase().equals("cmnet")) {
+                    netType = CMNET;
+                } else {
+                    netType = CMWAP;
+                }
             }
         }
         else if(nType==ConnectivityManager.TYPE_WIFI){
