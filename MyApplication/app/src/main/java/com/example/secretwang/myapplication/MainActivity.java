@@ -184,7 +184,7 @@ public class MainActivity extends Activity {
                 message.setData(bundle);
                 zaicanghandler.sendMessage(message);
             }
-        }, 1000, 2000);
+        }, 1000, 3000);
     }
 
 //  最新行情定时器
@@ -269,7 +269,6 @@ public class MainActivity extends Activity {
         @Override
         public void run() {
             String method = "TransformData";
-//            JSONObject parma = new JSONObject();
             try {
                 parma.put("DriverID",driverId);
                 parma.put("TaskGuid",TaskGuid);
@@ -645,7 +644,6 @@ public class MainActivity extends Activity {
         @Override
         public void run() {
             String TransformData = "TransformData";
-//            JSONObject zaicang = new JSONObject();
             try {
                 parma.put("DriverID",driverId);
                 parma.put("TaskGuid",TaskGuid);
