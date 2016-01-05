@@ -26,6 +26,7 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -101,6 +102,7 @@ public class MainActivity extends Activity {
     private Bundle bundle = new Bundle();
     private JSONObject parma = new JSONObject();//请求数据要传入的参数
 
+    private String panduanshi;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -119,7 +121,6 @@ public class MainActivity extends Activity {
         netAnimation();
         new Thread(latestPriceRunnable).start();//获取最新行情数据
         chicangyingliTimeDingshi();//定时刷新盈利
-        new Thread(yuerunnable).start();//请求余额线程
     }
 //    获取当前时间
     private void getNowTime(){
@@ -724,9 +725,9 @@ public class MainActivity extends Activity {
                 Message message =new Message();
 //                Bundle bundle = new Bundle();
                 if (soapObject.getProperty(0).toString().equals("True")){
-                    bundle.putString("sellKey","True");
+                    bundle.putString("sellKey", "True");
                 }else {
-                    bundle.putString("sellKey","Fals");
+                    bundle.putString("sellKey", "Fals");
                 }
                 message.setData(bundle);
                 sellHandler.sendMessage(message);
@@ -735,20 +736,11 @@ public class MainActivity extends Activity {
 
 //    看多按钮点击事件
     View.OnClickListener buyMoreClick = new View.OnClickListener() {
+
         @Override
         public void onClick(View v) {
+            panduanshi = BUYMORE;
             new Thread(yuerunnable).start();//请求余额线程
-           if (LowestMoney>500) {
-               if (buyMoreButton.getText().toString().equals(BUYMORE)) {
-                   buyMoreButtonClick();
-               } else if (buyMoreButton.getText().toString().equals(BUYONCE)) {
-                   buyMoreButtonClick();
-               } else if (buyMoreButton.getText().toString().equals(FANXIANG)) {
-                   buyMoreButtonReverse();
-               }
-           }else {
-               Toast.makeText(MainActivity.this, "余额不足", Toast.LENGTH_SHORT).show();
-           }
         }
     };
        //请求余额线程
@@ -767,15 +759,58 @@ public class MainActivity extends Activity {
                    String str_json=parma.toString();
                    SoapObject string = request.getResult(method, str_json);
                    String jsonRequest = string.getProperty(0).toString();
-                   //将解析的字符串转换成json对象
-                   JSONObject jsonObject=new JSONObject(jsonRequest);
-                   LowestMoney =jsonObject.getInt("Balance");
-                  // Log.v("7777777777",String.valueOf(LowestMoney));
+                   Message message = new Message();
+                   Bundle bundle = new Bundle();
+                   bundle.putString("value", jsonRequest);
+                   message.setData(bundle);
+                   handler.sendMessage(message);
                }catch (Exception e){
                    e.printStackTrace();
                }
            }
        };
+
+    //请求余额保证金处理
+    Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message message){
+            super.handleMessage(message);
+            Bundle bundle = message.getData();
+            String string = bundle.getString("value");
+            try {
+                JSONObject jsonObject = new JSONObject(string);
+                LowestMoney = jsonObject.getInt("Balance");
+                if (panduanshi.equals(BUYMORE)){
+                    if (LowestMoney>500) {
+                        if (buyMoreButton.getText().toString().equals(BUYMORE)) {
+                            buyMoreButtonClick();
+                        } else if (buyMoreButton.getText().toString().equals(BUYONCE)) {
+                            buyMoreButtonClick();
+                        } else if (buyMoreButton.getText().toString().equals(FANXIANG)) {
+                            buyMoreButtonReverse();
+                        }
+                    }else {
+                        Toast.makeText(MainActivity.this, "余额不足", Toast.LENGTH_SHORT).show();
+                    }
+                }else if (panduanshi.equals(BUYLESS)){
+                    if (LowestMoney > 500) {
+                        if (buyLessButton.getText().toString().equals(BUYLESS)) {
+                            buyLessButtonClick();
+                        } else if (buyLessButton.getText().toString().equals(BUYONCE)) {
+                            buyLessButtonClick();
+                        } else if (buyLessButton.getText().toString().equals(FANXIANG)) {
+                            buyLessButtonReverse();
+                        }
+                    } else {
+                        Toast.makeText(MainActivity.this, "余额不足", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+    };
 
 //    看多买入
     private void buyMoreButtonClick() {
@@ -839,7 +874,6 @@ public class MainActivity extends Activity {
         @Override
         public void run() {
             String SetData = "SetData";
-//            JSONObject parma = new JSONObject();
             try {
                 parma.put("DriverID",driverId);
                 parma.put("TaskGuid",TaskGuid);
@@ -1012,7 +1046,6 @@ public class MainActivity extends Activity {
 //            request request = new request();
             SoapObject soapObject = request.getResult(SetData, parma.toString());
             Message message = new Message();
-//            Bundle bundle = new Bundle();
             bundle.putString("kanduofanxiangmairu", soapObject.getProperty(0).toString());
             message.setData(bundle);
             fanxiangmairuHandler.sendMessage(message);
@@ -1051,18 +1084,8 @@ public class MainActivity extends Activity {
     View.OnClickListener buyLessButtonClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            panduanshi = BUYLESS;
             new Thread(yuerunnable).start();//请求余额线程
-            if (LowestMoney>500) {
-                if (buyLessButton.getText().toString().equals(BUYLESS)) {
-                    buyLessButtonClick();
-                } else if (buyLessButton.getText().toString().equals(BUYONCE)) {
-                    buyLessButtonClick();
-                } else if (buyLessButton.getText().toString().equals(FANXIANG)) {
-                    buyLessButtonReverse();
-                }
-            } else {
-                Toast.makeText(MainActivity.this, "余额不足", Toast.LENGTH_SHORT).show();
-            }
         }
     };
     private void buyLessButtonClick() {
