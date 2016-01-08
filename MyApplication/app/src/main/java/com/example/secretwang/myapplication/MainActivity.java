@@ -796,7 +796,7 @@ public class MainActivity extends Activity {
                     }else {
                         Toast.makeText(MainActivity.this, "余额不足", Toast.LENGTH_SHORT).show();
                     }
-                }else {
+                }else if (panduanshi.equals(BUYLESS)){
                     if (LowestMoney > 500) {
                         if (buyLessButton.getText().toString().equals(BUYLESS)) {
                             buyLessButtonClick();
@@ -878,7 +878,6 @@ public class MainActivity extends Activity {
         @Override
         public void run() {
             String SetData = "SetData";
-//            JSONObject parma = new JSONObject();
             try {
                 parma.put("DriverID",driverId);
                 parma.put("TaskGuid",TaskGuid);
@@ -1054,7 +1053,6 @@ public class MainActivity extends Activity {
 //            request request = new request();
             SoapObject soapObject = request.getResult(SetData, parma.toString());
             Message message = new Message();
-//            Bundle bundle = new Bundle();
             bundle.putString("kanduofanxiangmairu", soapObject.getProperty(0).toString());
             message.setData(bundle);
             fanxiangmairuHandler.sendMessage(message);
@@ -1200,7 +1198,7 @@ public class MainActivity extends Activity {
                         public void onClick(DialogInterface dialog, int which) {
                             //退出登录
                             timer.cancel();
-                            finish();
+//                            finish();
                             onBackPressed();
                         }
                     })

@@ -54,8 +54,7 @@
         android:text="@string/allsell"
         android:id="@+id/button_allSell"
         android:textColor="#000000"
-        android:background="@drawable/shape"
-        android:backgroundTint="#eac281"
+        android:background="@drawable/jinse"
         android:textSize="20sp"
         android:layout_above="@+id/textView5"
         android:textAlignment="center"
@@ -117,10 +116,10 @@
         android:layout_height="40dp"
         android:text="持仓"
         android:id="@+id/button_hold"
-        android:backgroundTint="#eac281"
         android:layout_alignTop="@+id/usrBtn"
         android:layout_alignRight="@+id/nametextView"
-        android:layout_alignEnd="@+id/nametextView" />
+        android:layout_alignEnd="@+id/nametextView"
+        android:background="@drawable/jinse" />
     
     <ImageButton
         android:layout_width="22dp"
@@ -146,7 +145,7 @@
         android:layout_height="40dp"
         android:text="买入"
         android:id="@+id/button"
-        android:backgroundTint="#c1bfbf"
+        android:background="@drawable/huise"
         android:layout_alignTop="@+id/button_hold"
         android:layout_alignLeft="@+id/nametextView"
         android:layout_alignStart="@+id/nametextView" />
@@ -159,10 +158,9 @@
         android:layout_above="@+id/textView5"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:background="@drawable/shape"
-        android:backgroundTint="#ff4320"
         android:textColor="#ffffff"
         android:textSize="20dp"
+        android:background="@drawable/buymore"
         android:layout_toLeftOf="@+id/nametextView"
         android:layout_toStartOf="@+id/nametextView" />
 
@@ -173,7 +171,6 @@
         android:id="@+id/button_buyLess"
         android:background="@drawable/shape"
         android:textColor="#ffffff"
-        android:backgroundTint="#0069d5"
         android:textSize="20dp"
         android:layout_alignTop="@+id/button_allSell"
         android:layout_alignRight="@+id/netImgBtn"
@@ -196,9 +193,8 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignRight="@+id/netImgBtn"
-        android:background="@drawable/shape"
-        android:layout_alignEnd="@+id/netImgBtn"
-        android:backgroundTint="#eac281">
+        android:background="@drawable/jinse"
+        android:layout_alignEnd="@+id/netImgBtn">
 
         <TextView
             android:layout_width="wrap_content"
@@ -221,7 +217,8 @@
         android:textSize="30dp"
         android:layout_alignTop="@+id/horizontalScrollView"
         android:layout_toLeftOf="@+id/textView9"
-        android:layout_toStartOf="@+id/textView9" />
+        android:layout_toStartOf="@+id/textView9"
+        android:layout_above="@+id/netImgBtn" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -239,8 +236,7 @@
         android:layout_width="wrap_content"
         android:layout_height="60dp"
         android:id="@+id/horizontalScrollView2"
-        android:background="@drawable/shape"
-        android:backgroundTint="#eac281"
+        android:background="@drawable/jinse"
         android:layout_below="@+id/netImgBtn"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
@@ -273,7 +269,7 @@
 
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="32dp"
+        android:layout_height="35dp"
         android:text="11111"
         android:id="@+id/textView6"
         android:textColor="#030014"
