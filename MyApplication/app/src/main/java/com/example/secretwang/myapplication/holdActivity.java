@@ -52,7 +52,7 @@ public class holdActivity extends Activity {
     private List<Map<String, Object>> list = new ArrayList<>();
     private String no = "true";//判断是否全部平仓
     private List l_name = new ArrayList();//存储名字
-
+    private String Ip;//手机ip地址
     private Timer timer;//定时器
     private Boolean isFirst;
     private String driverId;
@@ -75,7 +75,8 @@ public class holdActivity extends Activity {
 //        获取android唯一标识
         SharedPreferences driver =getSharedPreferences("driverID", MODE_PRIVATE);
         driverId = driver.getString("driver","");
-
+        SharedPreferences IP = getSharedPreferences("IP",MODE_PRIVATE);
+        Ip = IP.getString("IP", "");
         progressDialog = ProgressDialog.show(holdActivity.this, "", "正在加载,请稍候！");
         isFirst = true;
         new Thread(runnable).start();
@@ -328,6 +329,7 @@ public class holdActivity extends Activity {
                     jsonObject.put("OrderNumber",orderNum);
                     jsonObject.put("Volume",buyNum);
 //                jsonObject.put("LoginAccount","");
+                    jsonObject.put("Ip",Ip);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

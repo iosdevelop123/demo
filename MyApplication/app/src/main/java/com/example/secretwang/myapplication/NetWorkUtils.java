@@ -27,7 +27,7 @@ public class NetWorkUtils {
         return false;
     }
     //获取本机WIFI
-    private static String getLocalIpAddress(Context context) {
+    public static String getLocalIpAddress(Context context) {
         WifiManager wifiManager = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
         // 获取32位整型IP地址
@@ -38,11 +38,11 @@ public class NetWorkUtils {
                 (ipAddress >> 16 & 0xff), (ipAddress >> 24 & 0xff));
     }
     //3G网络IP
-    public static String getIpAddress() {
+    public static String getIpAddress( ) {
         try {
             for(Enumeration<NetworkInterface> en = NetworkInterface
                     .getNetworkInterfaces(); en.hasMoreElements();) {
-                NetworkInterface intf = en.nextElement();
+                NetworkInterface intf = en.nextElement();// 得到每一个网络接口绑定的所有ip
                 for (Enumeration<InetAddress> enumIpAddr = intf
                         .getInetAddresses(); enumIpAddr.hasMoreElements();) {
                     InetAddress inetAddress = enumIpAddr.nextElement();

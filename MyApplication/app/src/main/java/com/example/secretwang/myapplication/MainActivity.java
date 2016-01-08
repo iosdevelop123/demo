@@ -93,7 +93,7 @@ public class MainActivity extends Activity {
     private int LowestMoney;//保证金
     private String NAME1;//宏定义
     private String NAME2 = "HKF5";
-
+    private String Ip;//手机ip地址
     private int NowHour;//当前时间
     private int NowMinute;
     private int profit = 0;//总共盈利
@@ -148,10 +148,10 @@ public class MainActivity extends Activity {
             netBtn.startAnimation(alphaAnimation);
            // netBtn.setBackgroundColor(Color.TRANSPARENT);
             netBtn.setVisibility(View.INVISIBLE);
+            Ip = net.getIpAddress( );
         }else if (type==1){
             netBtn.setText("您当前使用的是wifi网络");
             netBtn.setTextColor(Color.WHITE);
-            //netBtn.setBackgroundColor(Color.BLUE);
             //初始化
             Animation alphaAnimation  = new AlphaAnimation(1.0f,0.0f);
             //设置动画时间
@@ -159,7 +159,13 @@ public class MainActivity extends Activity {
             netBtn.startAnimation(alphaAnimation);
             //netBtn.setBackgroundColor(Color.TRANSPARENT);
             netBtn.setVisibility(View.INVISIBLE);
+            Ip = net.getLocalIpAddress(MainActivity.this);
         }
+        SharedPreferences IP = getSharedPreferences("IP",MODE_PRIVATE);
+        SharedPreferences.Editor ipEditor = IP.edit();
+        ipEditor.putString("IP",Ip);
+        ipEditor.commit();
+        //Log.v("666666",Ip);
     }
 //    持仓盈利定时器
     private void chicangyingliTimeDingshi(){
@@ -362,9 +368,6 @@ public class MainActivity extends Activity {
 
         }
     };
-
-
-
 
 //    界面创建
     private void createButton() {
@@ -717,6 +720,7 @@ public class MainActivity extends Activity {
                     parma.put("DataType", "CloseOrderS");
                     parma.put("OrderNumberS", s.substring(1));
                     parma.put("LoginAccount", loginStr);
+                    parma.put("Ip",Ip);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -885,6 +889,7 @@ public class MainActivity extends Activity {
                 parma.put("StopLoss","0");
                 parma.put("TakeProfit","0");
                 parma.put("Comment","Android");
+                parma.put("Ip",Ip);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -1009,6 +1014,7 @@ public class MainActivity extends Activity {
                 parma.put("DataType", "CloseOrderS");
                 parma.put("OrderNumberS", s.substring(1));
                 parma.put("LoginAccount", loginStr);
+                parma.put("Ip",Ip);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -1041,6 +1047,7 @@ public class MainActivity extends Activity {
                 parma.put("StopLoss","0");
                 parma.put("TakeProfit","0");
                 parma.put("Comment","Android");
+                parma.put("Ip",Ip);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -1143,6 +1150,7 @@ public class MainActivity extends Activity {
             buttonCanClick();
         }
     };
+ //  看空请求数据
     Runnable kankongRunnable = new Runnable() {
         @Override
         public void run() {
@@ -1158,6 +1166,7 @@ public class MainActivity extends Activity {
                 parma.put("StopLoss","0");
                 parma.put("TakeProfit","0");
                 parma.put("Comment","Android");
+                parma.put("Ip",Ip);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
