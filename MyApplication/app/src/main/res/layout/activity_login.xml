@@ -62,7 +62,6 @@
         android:id="@+id/login"
         android:layout_marginTop="58dp"
         android:background="@drawable/shape"
-        android:backgroundTint="#1471dd"
         android:layout_below="@+id/passWord"
         android:layout_centerHorizontal="true" />
 

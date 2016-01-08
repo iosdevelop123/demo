@@ -1189,7 +1189,7 @@ public class MainActivity extends Activity {
                         public void onClick(DialogInterface dialog, int which) {
                             //退出登录
                             timer.cancel();
-                            finish();
+//                            finish();
                             onBackPressed();
                         }
                     })
