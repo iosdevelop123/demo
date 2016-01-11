@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Bundle;
 
+import android.util.Log;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -52,8 +53,8 @@ public class historyActivity extends Activity {
                 Toast.makeText(historyActivity.this, "连接超时", Toast.LENGTH_SHORT).show();
             }else {
                 try {
-                    List<Map<String, Object>> listMap = new ArrayList<>();
                     JSONArray jsonArray = new JSONArray(string);
+                    List<Map<String, Object>> listMap = new ArrayList<>();
                     for (int i = 0; i < jsonArray.length(); i++) {
                         Map<String, Object> map = new HashMap<String, Object>();
                         JSONObject resultStr = jsonArray.getJSONObject(i);
@@ -62,8 +63,8 @@ public class historyActivity extends Activity {
                         map.put("shoNumText", resultStr.getString("Volume") + "手");
                         map.put("feesText", "手续费" + resultStr.getString("Commission"));
                         map.put("DataText", resultStr.getString("CloseTime"));
-                        map.put("openTimeText", resultStr.getString("openTimeHour") + ":" + resultStr.getString("openTimeMin"));
-                        map.put("CloseTimeText", resultStr.getString("closeTimeHour") + ":" + resultStr.getString("closeTimeMin"));
+                        map.put("openTimeText", resultStr.getInt("openTimeHour") + ":" + resultStr.getInt("openTimeMin"));
+                        map.put("CloseTimeText", resultStr.getInt("closeTimeHour") + ":" + resultStr.getInt("closeTimeMin"));
                         map.put("priceText", resultStr.getString("Profit"));
                         map.put("openPriceText", resultStr.getString("OpenPrice"));
                         map.put("closePriceText", resultStr.getString("ClosePrice"));
@@ -84,8 +85,8 @@ public class historyActivity extends Activity {
             SharedPreferences s = getSharedPreferences("driverID",MODE_PRIVATE);
             String driverId = s.getString("driver","");
             String method = "TransformData";
-            int timeLong = (int) (System.currentTimeMillis()/1000+60*60*24);
-            int starTime = (int) (System.currentTimeMillis()/1000-60*60*24*4);
+            int timeLong = (int) (System.currentTimeMillis()/1000+3600*24);
+            int starTime = (int) (System.currentTimeMillis()/1000-60*60*24*3);
             JSONObject parma = new JSONObject();
             try {
                 parma.put("DriverID",driverId);
@@ -111,9 +112,7 @@ public class historyActivity extends Activity {
     private List data(SoapObject soapObject){
         List list = new ArrayList<>();
         String string = soapObject.getProperty(0).toString();
-        if (string.equals("连接超时")){
-
-        }else {
+        if (string.equals("连接超时")){}else {
             try {
                 JSONArray jsonArray = new JSONArray(string);
                 for (int i = 0; i < jsonArray.length(); i++) {

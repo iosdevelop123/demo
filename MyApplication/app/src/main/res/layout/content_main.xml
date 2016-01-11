@@ -173,10 +173,9 @@
         android:textColor="#ffffff"
         android:textSize="20dp"
         android:layout_alignTop="@+id/button_allSell"
-        android:layout_alignRight="@+id/netImgBtn"
-        android:layout_alignEnd="@+id/netImgBtn"
-        android:layout_toRightOf="@+id/button_hold"
-        android:layout_toEndOf="@+id/button_hold" />
+        android:layout_toRightOf="@+id/nametextView"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
     <TextView
         android:layout_width="wrap_content"
