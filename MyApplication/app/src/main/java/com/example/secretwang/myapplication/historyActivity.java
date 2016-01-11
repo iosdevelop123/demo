@@ -1,6 +1,7 @@
 package com.example.secretwang.myapplication;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.app.ProgressDialog;
 
@@ -63,8 +64,18 @@ public class historyActivity extends Activity {
                         map.put("shoNumText", resultStr.getString("Volume") + "手");
                         map.put("feesText", "手续费" + resultStr.getString("Commission"));
                         map.put("DataText", resultStr.getString("CloseTime"));
-                        map.put("openTimeText", resultStr.getInt("openTimeHour") + ":" + resultStr.getInt("openTimeMin"));
-                        map.put("CloseTimeText", resultStr.getInt("closeTimeHour") + ":" + resultStr.getInt("closeTimeMin"));
+                        int openMin = resultStr.getInt("openTimeMin");
+                        if (openMin<10){
+                            map.put("openTimeText", resultStr.getInt("openTimeHour") + ":" + "0" + openMin);
+                        }else {
+                            map.put("openTimeText", resultStr.getInt("openTimeHour") + ":" + openMin);
+                        }
+                        int closeMin = resultStr.getInt("closeTimeMin");
+                        if (closeMin<10){
+                            map.put("CloseTimeText", resultStr.getInt("closeTimeHour") + ":" + "0" + closeMin);
+                        }else {
+                            map.put("CloseTimeText", resultStr.getInt("closeTimeHour") + ":" + closeMin);
+                        }
                         map.put("priceText", resultStr.getString("Profit"));
                         map.put("openPriceText", resultStr.getString("OpenPrice"));
                         map.put("closePriceText", resultStr.getString("ClosePrice"));
