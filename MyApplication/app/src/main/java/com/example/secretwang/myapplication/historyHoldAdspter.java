@@ -90,9 +90,11 @@ public class historyHoldAdspter extends BaseAdapter {
         historyHold.openPriceText.setText((String)data.get(position).get("openPriceText"));
         historyHold.closePriceText.setText((String)data.get(position).get("closePriceText"));
         if (historyHold.MoreOrLessText.getText().toString().equals("看多")){
-            historyHold.MoreOrLessText.setBackgroundColor(Color.parseColor("#820101"));
+//            historyHold.MoreOrLessText.setBackgroundColor(Color.parseColor("#820101"));
+            historyHold.MoreOrLessText.setBackgroundResource(R.drawable.shape2);
         }else {
-            historyHold.MoreOrLessText.setBackgroundColor(Color.parseColor("#0000cc"));
+//            historyHold.MoreOrLessText.setBackgroundColor(Color.parseColor("#0000cc"));
+            historyHold.MoreOrLessText.setBackgroundResource(R.drawable.shape1);
         }
         if (historyHold.priceText.getText().toString().startsWith("-")){
             historyHold.priceText.setTextColor(Color.parseColor("#0069d5"));

@@ -290,9 +290,11 @@ public class holdActivity extends Activity {
             hold.textView_OrderNumber.setText((String)data.get(position).get("textView_OrderNumber"));
 //        判断是看多还是看空，显示背景颜色
             if (hold.textView_buyMoreOrLess.getText().toString().equals("看多")) {
-                hold.textView_buyMoreOrLess.setBackgroundColor(Color.parseColor("#7c0000"));
+//                hold.textView_buyMoreOrLess.setBackgroundColor(Color.parseColor("#7c0000"));
+                hold.textView_buyMoreOrLess.setBackgroundResource(R.drawable.shape2);
             }else {
-                hold.textView_buyMoreOrLess.setBackgroundColor(Color.parseColor("#333399"));
+//                hold.textView_buyMoreOrLess.setBackgroundColor(Color.parseColor("#333399"));
+                hold.textView_buyMoreOrLess.setBackgroundResource(R.drawable.shape1);
             }
 //        根据盈利判断字体颜色。
             if (!hold.textView_price.getText().toString().startsWith("-")){
