@@ -121,16 +121,19 @@ public class MainActivity extends Activity {
         netAnimation();
         new Thread(latestPriceRunnable).start();//获取最新行情数据
         chicangyingliTimeDingshi();//定时刷新盈利
+        getNowTime();
     }
 //    获取当前时间
     private void getNowTime(){
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
         String s = simpleDateFormat.format(new Date());
-        NowHour = Integer.parseInt(s.substring(0, 2)) + 8;
-        if (NowHour>=24){
-            NowHour = NowHour - 24;
-        }
+        NowHour = Integer.parseInt(s.substring(0, 2));
+        
+//        if (NowHour>=24){
+//            NowHour = NowHour - 24;
+//        }
         NowMinute = Integer.parseInt(s.substring(3, 5));//截取字符串
+
     }
 
     //网络判断
@@ -819,6 +822,8 @@ public class MainActivity extends Activity {
 //    看多买入
     private void buyMoreButtonClick() {
         getNowTime();//现在的时间
+        Log.i("qqqqqq", itemName);
+        Log.i("qqqqq", NAME2);
         if (itemName.equals(NAME2)){//判断选择的是不是恒生指数
             if (NowHour>=9&&NowHour<=12){//判断是不是在交易时间
                 if (NowHour==9 && NowMinute<=15){
@@ -1097,6 +1102,8 @@ public class MainActivity extends Activity {
     };
     private void buyLessButtonClick() {
         getNowTime();
+        Log.i("qqqqqq", itemName);
+        Log.i("qqqqq",NAME2);
         if (itemName.equals(NAME2)) {
             if (NowHour >= 9 && NowHour <= 12) {
                 if (NowHour == 9 && NowMinute <= 15) {
