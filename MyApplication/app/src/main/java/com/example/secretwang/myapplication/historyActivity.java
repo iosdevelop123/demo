@@ -29,7 +29,7 @@ public class historyActivity extends Activity {
     private ListView listView = null;
 
     private String loginStr;
-
+    private String namelist;
     private ProgressDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +40,8 @@ public class historyActivity extends Activity {
 
         SharedPreferences sharedPreferences = getSharedPreferences("userInfo",MODE_PRIVATE);
         loginStr = sharedPreferences.getString("login","");
+        SharedPreferences name = getSharedPreferences("name", MODE_PRIVATE);
+        namelist = name.getString("itemName","");
         new Thread(runnable).start();
         //开启网络请求进度条
         progressDialog = ProgressDialog.show(historyActivity.this, "","正在加载,请稍候！");
@@ -131,7 +133,13 @@ public class historyActivity extends Activity {
                     JSONObject myjson = jsonArray.getJSONObject(i);
 
                     map.put("TypeName", myjson.getString("TypeName"));
-                    map.put("Symbol", myjson.getString("Symbol"));
+                    String s;
+                    if ( myjson.getString("Symbol").equals(namelist)){
+                        s = "美原油";
+                    }else {
+                        s = "恒生指数";
+                    }
+                    map.put("Symbol", s);
                     map.put("Volume", myjson.getInt("Volume"));
                     map.put("Commission", myjson.getInt("Commission"));
 //                截取卖出时间字符串

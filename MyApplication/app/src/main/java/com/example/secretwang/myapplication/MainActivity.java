@@ -128,10 +128,6 @@ public class MainActivity extends Activity {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
         String s = simpleDateFormat.format(new Date());
         NowHour = Integer.parseInt(s.substring(0, 2));
-        
-//        if (NowHour>=24){
-//            NowHour = NowHour - 24;
-//        }
         NowMinute = Integer.parseInt(s.substring(3, 5));//截取字符串
 
     }
@@ -242,6 +238,10 @@ public class MainActivity extends Activity {
                 NAME1 = hblist.get(0);
                 NAME2 = hblist.get(1);
                 itemName = NAME1;//进入主界面的时候默认刷新美原油
+                SharedPreferences name = getSharedPreferences("name",MODE_PRIVATE);
+                SharedPreferences.Editor editor = name.edit();
+                editor.putString("itemName",itemName);
+                editor.commit();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -822,8 +822,6 @@ public class MainActivity extends Activity {
 //    看多买入
     private void buyMoreButtonClick() {
         getNowTime();//现在的时间
-        Log.i("qqqqqq", itemName);
-        Log.i("qqqqq", NAME2);
         if (itemName.equals(NAME2)){//判断选择的是不是恒生指数
             if (NowHour>=9&&NowHour<=12){//判断是不是在交易时间
                 if (NowHour==9 && NowMinute<=15){
