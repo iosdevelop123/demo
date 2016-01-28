@@ -92,7 +92,7 @@ public class MainActivity extends Activity {
     private Button netBtn;
     private int LowestMoney;//保证金
     private String NAME1;//宏定义
-    private String NAME2 = "HKF5";
+    private String NAME2 = "";
     private String Ip;//手机ip地址
     private int NowHour;//当前时间
     private int NowMinute;
@@ -164,7 +164,6 @@ public class MainActivity extends Activity {
         SharedPreferences.Editor ipEditor = IP.edit();
         ipEditor.putString("IP",Ip);
         ipEditor.commit();
-        //Log.v("666666",Ip);
     }
 //    持仓盈利定时器
     private void chicangyingliTimeDingshi(){
@@ -195,7 +194,6 @@ public class MainActivity extends Activity {
 //  最新行情定时器
     private void zuixinhangqingtimeDingshi(){
         final String method = "TransformData";
-//        final JSONObject parma = new JSONObject();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -238,9 +236,11 @@ public class MainActivity extends Activity {
                 NAME1 = hblist.get(0);
                 NAME2 = hblist.get(1);
                 itemName = NAME1;//进入主界面的时候默认刷新美原油
+                Log.i("qqqqq",NAME1);
                 SharedPreferences name = getSharedPreferences("name",MODE_PRIVATE);
                 SharedPreferences.Editor editor = name.edit();
                 editor.putString("itemName",itemName);
+                editor.putString("itemName2",NAME2);
                 editor.commit();
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -514,6 +514,7 @@ public class MainActivity extends Activity {
                         Log.d(TAG, "[Dialog]selectedIndex: " + selectedIndex + ", item: " + item1);
                         nametextView.setText(item1);
                         itemName = hblist.get(selectedIndex - 2);
+                        Log.i("wwwww",itemName);
                         category = selectedIndex - 2;
                     }
                 });
@@ -887,6 +888,7 @@ public class MainActivity extends Activity {
                 parma.put("DataType","OpenBuy-New");
                 parma.put("LoginAccount",loginStr);
                 parma.put("Symbol",itemName);
+                Log.i("aaaa",itemName);
                 parma.put("Volume",shouTxt.getText().toString());
                 parma.put("StopLoss","0");
                 parma.put("TakeProfit","0");

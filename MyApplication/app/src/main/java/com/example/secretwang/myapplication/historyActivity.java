@@ -30,6 +30,7 @@ public class historyActivity extends Activity {
 
     private String loginStr;
     private String namelist;
+    private String name2;
     private ProgressDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +43,7 @@ public class historyActivity extends Activity {
         loginStr = sharedPreferences.getString("login","");
         SharedPreferences name = getSharedPreferences("name", MODE_PRIVATE);
         namelist = name.getString("itemName","");
+        name2 = name.getString("itemName2","");
         new Thread(runnable).start();
         //开启网络请求进度条
         progressDialog = ProgressDialog.show(historyActivity.this, "","正在加载,请稍候！");
@@ -136,9 +138,14 @@ public class historyActivity extends Activity {
                     String s;
                     if ( myjson.getString("Symbol").equals(namelist)){
                         s = "美原油";
-                    }else {
+                    }else if (myjson.getString("Symbol").equals(name2)){
                         s = "恒生指数";
+                    }else {
+                        Log.i("ddddd",myjson.getString("Symbol"));
+                        s = myjson.getString("Symbol");
                     }
+                    Log.i("qqqq",namelist);
+                    Log.i("qqq",s);
                     map.put("Symbol", s);
                     map.put("Volume", myjson.getInt("Volume"));
                     map.put("Commission", myjson.getInt("Commission"));

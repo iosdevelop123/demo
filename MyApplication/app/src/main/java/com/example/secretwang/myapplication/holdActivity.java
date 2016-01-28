@@ -133,7 +133,6 @@ public class holdActivity extends Activity {
             super.handleMessage(message);
             Bundle bundle = message.getData();
             String string = bundle.getString("key");
-            Log.i("wwwww",string);
             if (string.equals("[连接超时]")){
                 if (isFirst) {
                     Toast.makeText(holdActivity.this, "数据请求失败", Toast.LENGTH_SHORT).show();
