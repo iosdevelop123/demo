@@ -53,7 +53,7 @@ import java.util.TimerTask;
 
 public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static final String[] shoushu = new String[]{"1", "2", "3", "4",
+    private  String[] shoushu = new String[]{"1", "2", "3", "4",
            "5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20" };
     private  List<String> hblist = new ArrayList<String>();//货币英文名
     private  List<String> nameList = new ArrayList<String>();//货币中文名
@@ -188,12 +188,20 @@ public class MainActivity extends Activity {
                       JSONObject json = js.getJSONObject(i);
                       int Volume = json.getInt("Volume");
                       sysUser = json.getBoolean("SysUser");
-                      Log.i("eeee",String.valueOf(Volume));
+                    //  Log.i("eeee",String.valueOf(Volume));
+                      if ( Integer.parseInt(shoushu[shoushu.length-1]) <=20 && Volume<=20 ){
+                       String[] b= new String[Volume];
+                       for (int j=0;j<Volume;j++){
+                          System.arraycopy(shoushu,0,b,0,Volume);
+                       }
+                       shoushu = b;
+                      }
                   }
               } catch (JSONException e) {
                   e.printStackTrace();
               }
           }
+
     };
 
 
