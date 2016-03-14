@@ -188,7 +188,6 @@ public class MainActivity extends Activity {
                       JSONObject json = js.getJSONObject(i);
                       int Volume = json.getInt("Volume");
                       sysUser = json.getBoolean("SysUser");
-                    //  Log.i("eeee",String.valueOf(Volume));
                       if ( Integer.parseInt(shoushu[shoushu.length-1]) <=20 && Volume<=20 ){
                        String[] b= new String[Volume];
                        for (int j=0;j<Volume;j++){
@@ -910,36 +909,40 @@ public class MainActivity extends Activity {
 
 //    看多买入
     private void buyMoreButtonClick() {
-        getNowTime();//现在的时间
-        if (itemName.equals(NAME2)){//判断选择的是不是恒生指数
-            if (NowHour>=9&&NowHour<=12){//判断是不是在交易时间
-                if (NowHour==9 && NowMinute<=15){
+        if (sysUser==true) {
+            getNowTime();//现在的时间
+            if (itemName.equals(NAME2)) {//判断选择的是不是恒生指数
+                if (NowHour >= 9 && NowHour <= 12) {//判断是不是在交易时间
+                    if (NowHour == 9 && NowMinute <= 15) {
+                        Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Log.i(">>>>>>>>>>>>>>>", "看多买入");
+                        new Thread(kanduoRunnable).start();
+                        progressDialog = ProgressDialog.show(MainActivity.this, "", "下单中...");
+                        buttonCanNotClick();
+                    }
+                } else if (NowHour >= 13 && NowHour <= 16) {
+                    if (NowHour == 16 && NowMinute >= 10) {
+                        Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Log.i(">>>>>>>>>>>>>>>", "看多买入");
+                        new Thread(kanduoRunnable).start();
+                        progressDialog = ProgressDialog.show(MainActivity.this, "", "下单中...");
+                        buttonCanNotClick();
+                        Log.i("eeee", Integer.toString(NowHour));
+                    }
+                } else {
                     Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT).show();
-                }else {
-                    Log.i(">>>>>>>>>>>>>>>", "看多买入");
-                    new Thread(kanduoRunnable).start();
-                    progressDialog = ProgressDialog.show(MainActivity.this,"","下单中...");
-                    buttonCanNotClick();
                 }
-            }else if (NowHour>=13&&NowHour<=16){
-                if (NowHour==16 && NowMinute>=10){
-                    Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT).show();
-                }else {
-                    Log.i(">>>>>>>>>>>>>>>", "看多买入");
-                    new Thread(kanduoRunnable).start();
-                    progressDialog = ProgressDialog.show(MainActivity.this,"","下单中...");
-                    buttonCanNotClick();
-                    Log.i("eeee", Integer.toString(NowHour));
-                }
-            }else {
-                Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT).show();
-            }
 
-        }else {
-            Log.i(">>>>>>>>>>>>>>>", "看多买入");
-            new Thread(kanduoRunnable).start();
-            progressDialog = ProgressDialog.show(MainActivity.this, "", "下单中...");
-            buttonCanNotClick();
+            } else {
+                Log.i(">>>>>>>>>>>>>>>", "看多买入");
+                new Thread(kanduoRunnable).start();
+                progressDialog = ProgressDialog.show(MainActivity.this, "", "下单中...");
+                buttonCanNotClick();
+            }
+        }else if (sysUser==false){
+            Toast.makeText(MainActivity.this,"下单失败",Toast.LENGTH_SHORT).show();
         }
     }
 //    根据返回，判断是否买入成功
@@ -1001,10 +1004,14 @@ public class MainActivity extends Activity {
 
 //    看多反向开仓
     private void buyMoreButtonReverse(){
-        Log.i(">>>>>>","看多反向开仓");
-        kanduoOrkankong = OpenBuy_New;
-        new Thread(fanxiangOrderNumRunnable).start();
-        progressDialog = ProgressDialog.show(MainActivity.this,"","下单中...");
+        if (sysUser==true) {
+            Log.i(">>>>>>", "看多反向开仓");
+            kanduoOrkankong = OpenBuy_New;
+            new Thread(fanxiangOrderNumRunnable).start();
+            progressDialog = ProgressDialog.show(MainActivity.this, "", "下单中...");
+        }else if (sysUser==false){
+            Toast.makeText(MainActivity.this,"下单失败",Toast.LENGTH_SHORT).show();
+        }
     }
     Handler fanxiangOrderNumHandler = new Handler(){
         @Override
@@ -1191,36 +1198,38 @@ public class MainActivity extends Activity {
         }
     };
     private void buyLessButtonClick() {
-        getNowTime();
-        Log.i("qqqqqq", itemName);
-        Log.i("qqqqq",NAME2);
-        if (itemName.equals(NAME2)) {
-            if (NowHour >= 9 && NowHour <= 12) {
-                if (NowHour == 9 && NowMinute <= 15) {
-                    Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT).show();
+        if (sysUser==true) {
+            getNowTime();
+            if (itemName.equals(NAME2)) {
+                if (NowHour >= 9 && NowHour <= 12) {
+                    if (NowHour == 9 && NowMinute <= 15) {
+                        Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Log.i(">>>>>", "看空买入");
+                        new Thread(kankongRunnable).start();
+                        progressDialog = ProgressDialog.show(MainActivity.this, "", "下单中...");
+                        buttonCanNotClick();
+                    }
+                } else if (NowHour >= 13 && NowHour <= 16) {
+                    if (NowHour == 16 && NowMinute >= 10) {
+                        Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Log.i(">>>>>", "看空买入");
+                        new Thread(kankongRunnable).start();
+                        progressDialog = ProgressDialog.show(MainActivity.this, "", "下单中...");
+                        buttonCanNotClick();
+                    }
                 } else {
-                    Log.i(">>>>>", "看空买入");
-                    new Thread(kankongRunnable).start();
-                    progressDialog = ProgressDialog.show(MainActivity.this, "", "下单中...");
-                    buttonCanNotClick();
-                }
-            }else if (NowHour>=13 && NowHour<=16){
-                if (NowHour==16 && NowMinute>=10){
                     Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT).show();
-                }else {
-                    Log.i(">>>>>", "看空买入");
-                    new Thread(kankongRunnable).start();
-                    progressDialog = ProgressDialog.show(MainActivity.this, "", "下单中...");
-                    buttonCanNotClick();
                 }
-            }else {
-                Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT).show();
+            } else {
+                Log.i(">>>>>", "看空买入");
+                new Thread(kankongRunnable).start();
+                progressDialog = ProgressDialog.show(MainActivity.this, "", "下单中...");
+                buttonCanNotClick();
             }
-        }else {
-            Log.i(">>>>>", "看空买入");
-            new Thread(kankongRunnable).start();
-            progressDialog = ProgressDialog.show(MainActivity.this, "", "下单中...");
-            buttonCanNotClick();
+        }else if (sysUser==false){
+            Toast.makeText(MainActivity.this,"下单失败",Toast.LENGTH_SHORT).show();
         }
     }
     Handler kankonghandle = new Handler(){
