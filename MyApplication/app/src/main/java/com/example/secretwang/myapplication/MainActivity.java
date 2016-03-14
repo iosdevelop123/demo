@@ -17,6 +17,7 @@ import android.os.Message;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.util.TimeUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -80,8 +81,8 @@ public class MainActivity extends Activity {
     private Timer timer;//定时器
     private String itemName;//储存切换货币时要切换的货币的名字
     private ProgressDialog progressDialog;//刷新提示框
-    private String CLF6Price;
-    private String HKZ5Price;
+    private String CLF6Price;//美原油
+    private String HKZ5Price;//恒生指数
     public List orderNumbersList = new ArrayList();//订单编号数组
     private List SymbolNumberSList = new ArrayList();//选中货币的订单编号数组
     private String loginStr;
@@ -102,7 +103,8 @@ public class MainActivity extends Activity {
     private Bundle bundle = new Bundle();
     private JSONObject parma = new JSONObject();//请求数据要传入的参数
 
-    private String panduanshi;
+    private String panduanshi;//判断是看空买入还是看多买入
+    private Boolean sysUser;//判断是否可以下单
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -110,9 +112,11 @@ public class MainActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
         createButton();
+        timer = new Timer();//定时器
+        getBiggestVolumeAndSysUserRunnable();
         SharedPreferences driver = getSharedPreferences("driverID",MODE_PRIVATE);
         driverId = driver.getString("driver", "");
-        timer = new Timer();//定时器
+
         new Thread(zaicangRunnable).start();//进入主界面根据在仓订单刷新按钮名字
         SharedPreferences sharedPreferences = getSharedPreferences("userInfo", MODE_PRIVATE);
         loginStr = sharedPreferences.getString("login", "");
@@ -122,7 +126,83 @@ public class MainActivity extends Activity {
         new Thread(latestPriceRunnable).start();//获取最新行情数据
         chicangyingliTimeDingshi();//定时刷新盈利
         getNowTime();
+
     }
+
+    //得到能下单的最大手数，和是否能下单
+//    Runnable
+         private void getBiggestVolumeAndSysUserRunnable(){
+//            = new Runnable() {
+        final String method = "TransformData";
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run () {
+                try {
+                    parma.put("Volume", 0);
+                    parma.put("Guid", "");
+                    parma.put("TaskGuid", "b4026263-704e-4e12-a64d-f79cb42962cc");
+                    parma.put("DataType", "Sys_Volume");
+                    parma.put("Seconds", 0);
+                    parma.put("Stoploss", 0);
+                    parma.put("Takeprofit", 0);
+                    parma.put("SysUser", true);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                SoapObject soapObject = request.getResult(method, parma.toString());
+                List list = getBiggestVolumeAndSysUser(soapObject);
+                Message mes = new Message();
+                bundle.putString("SysUserYesOrNo", list.toString());
+                mes.setData(bundle);
+                getBiggestVolumeAndSysUserHandler.handleMessage(mes);
+            }
+        },1000,60000);
+    };
+    private List getBiggestVolumeAndSysUser(SoapObject soapObject){
+        List list = new ArrayList();
+        String s = soapObject.getProperty(0).toString();
+        try {
+            JSONArray jsonArray = new JSONArray(s);
+            for (int i=0;i<jsonArray.length();i++){
+                Map<String,Object>map = new HashMap<>();
+                JSONObject js = jsonArray.getJSONObject(i);
+                map.put("Volume",js.getInt("Volume"));
+                map.put("SysUser",js.getBoolean("SysUser"));
+                list.add(map);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+    Handler getBiggestVolumeAndSysUserHandler = new Handler(){
+          @Override
+        public void handleMessage(Message mes){
+              super.handleMessage(mes);
+              Bundle bun = mes.getData();
+              String s = bun.getString("SysUserYesOrNo");
+              try {
+                  JSONArray js = new JSONArray(s);
+                  for (int i=0 ;i<js.length();i++){
+                      JSONObject json = js.getJSONObject(i);
+                      int Volume = json.getInt("Volume");
+                      sysUser = json.getBoolean("SysUser");
+                      Log.i("eeee",String.valueOf(Volume));
+                  }
+              } catch (JSONException e) {
+                  e.printStackTrace();
+              }
+          }
+    };
+
+
+
+
+
+
+
+
 //    获取当前时间
     private void getNowTime(){
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
@@ -236,7 +316,7 @@ public class MainActivity extends Activity {
                 NAME1 = hblist.get(0);
                 NAME2 = hblist.get(1);
                 itemName = NAME1;//进入主界面的时候默认刷新美原油
-                Log.i("qqqqq",NAME1);
+                //Log.i("qqqqq",NAME1);
                 SharedPreferences name = getSharedPreferences("name",MODE_PRIVATE);
                 SharedPreferences.Editor editor = name.edit();
                 editor.putString("itemName",itemName);
@@ -869,9 +949,11 @@ public class MainActivity extends Activity {
                 try {
                     JSONObject jsonObject = new JSONObject(string);
                     Toast.makeText(MainActivity.this,jsonObject.getString("ErrMessage"),Toast.LENGTH_SHORT).show();
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                Toast.makeText(MainActivity.this,"下单失败",Toast.LENGTH_LONG).show();
             }
             progressDialog.dismiss();
             buttonCanClick();
@@ -1147,9 +1229,11 @@ public class MainActivity extends Activity {
                 try {
                     JSONObject jsonObject = new JSONObject(string);
                     Toast.makeText(MainActivity.this,jsonObject.getString("ErrMessage"),Toast.LENGTH_SHORT).show();
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                Toast.makeText(MainActivity.this,"下单失败",Toast.LENGTH_LONG).show();
             }
             progressDialog.dismiss();
             buttonCanClick();
