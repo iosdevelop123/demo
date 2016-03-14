@@ -101,7 +101,7 @@ public class historyActivity extends Activity {
             String driverId = s.getString("driver","");
             String method = "TransformData";
             int timeLong = (int) (System.currentTimeMillis()/1000+3600*24);
-            int starTime = (int) (System.currentTimeMillis()/1000-60*60*24*3);
+            int starTime = (int) (System.currentTimeMillis()/1000-60*60*24*7);
             JSONObject parma = new JSONObject();
             try {
                 parma.put("DriverID",driverId);
@@ -133,19 +133,15 @@ public class historyActivity extends Activity {
                 for (int i = 0; i < jsonArray.length(); i++) {
                     Map<String, Object> map = new HashMap<String, Object>();
                     JSONObject myjson = jsonArray.getJSONObject(i);
-
                     map.put("TypeName", myjson.getString("TypeName"));
                     String s;
-                    if ( myjson.getString("Symbol").equals(namelist)){
+                    if ( myjson.get("Symbol").toString().equals(namelist)){
                         s = "美原油";
-                    }else if (myjson.getString("Symbol").equals(name2)){
+                    }else if (myjson.get("Symbol").toString().equals(name2)){
                         s = "恒生指数";
                     }else {
-                        Log.i("ddddd",myjson.getString("Symbol"));
-                        s = myjson.getString("Symbol");
+                        s = "其他";
                     }
-                    Log.i("qqqq",namelist);
-                    Log.i("qqq",s);
                     map.put("Symbol", s);
                     map.put("Volume", myjson.getInt("Volume"));
                     map.put("Commission", myjson.getInt("Commission"));

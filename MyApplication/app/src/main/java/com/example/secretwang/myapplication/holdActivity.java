@@ -58,6 +58,8 @@ public class holdActivity extends Activity {
     private String driverId;
     private request request = new request();//数据请求
     private Bundle bundle = new Bundle();//
+    private String name1;
+    private String name2;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -77,6 +79,9 @@ public class holdActivity extends Activity {
         driverId = driver.getString("driver","");
         SharedPreferences IP = getSharedPreferences("IP",MODE_PRIVATE);
         Ip = IP.getString("IP", "");
+        SharedPreferences name = getSharedPreferences("name", MODE_PRIVATE);
+        name1 = name.getString("itemName","");
+        name2 = name.getString("itemName2","");
         progressDialog = ProgressDialog.show(holdActivity.this, "", "正在加载,请稍候！");
         isFirst = true;
         new Thread(runnable).start();
@@ -154,7 +159,13 @@ public class holdActivity extends Activity {
                     for (int i = 0; i < jsonArray.length(); i++) {
                         Map<String, Object> map = new HashMap<>();
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        map.put("textView_name", jsonObject.getString("Symbol"));
+                        String s = null;
+                        if (jsonObject.getString("Symbol").equals(name1)){
+                            s = "美原油";
+                        }else if (jsonObject.getString("Symbol").equals(name2)){
+                            s = "恒生指数";
+                        }
+                        map.put("textView_name", s);
                         map.put("textView_buyNum", jsonObject.getString("Volume"));
                         map.put("textView_counterFee", jsonObject.getString("Commission"));
                         map.put("textView_buyMoreOrLess", jsonObject.getString("TypeName"));
