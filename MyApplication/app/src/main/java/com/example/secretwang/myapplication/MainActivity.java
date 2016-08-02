@@ -10,6 +10,7 @@ import android.content.Intent;
 
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -31,6 +32,7 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 import org.json.JSONArray;
@@ -53,10 +55,10 @@ import java.util.TimerTask;
 
 public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getSimpleName();
-    private  String[] shoushu = new String[]{"1", "2", "3", "4",
-           "5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20" };
-    private  List<String> hblist = new ArrayList<String>();//货币英文名
-    private  List<String> nameList = new ArrayList<String>();//货币中文名
+    private String[] shoushu = new String[]{"1", "2", "3", "4",
+            "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20"};
+    private List<String> hblist = new ArrayList<String>();//货币英文名
+    private List<String> nameList = new ArrayList<String>();//货币中文名
     private static String TaskGuid = "ab8495db-3a4a-4f70-bb81-8518f60ec8bf";
     private Button buyMoreButton;//看多按钮
     private Button buyLessButton;//看空按钮
@@ -66,13 +68,13 @@ public class MainActivity extends Activity {
     private TextView mairuduoshaoshouTex;//主界面显示买入多少手
     private WheelView wv;
     private WheelView wv2;
-    private  int number;
-    private  int category;
+    private int number;
+    private int category;
     private ImageButton settingBtn;
-    private  TextView shouTxt;//设置委托手数
-    private  TextView nametextView;//名称
-    private  ImageButton userBtn;
-    private  Button holdButton;
+    private TextView shouTxt;//设置委托手数
+    private TextView nametextView;//名称
+    private ImageButton userBtn;
+    private Button holdButton;
     private TextView PriceTxt;//最新行情
     private String fanxianggoumaishoushu;//反向开仓时，统计持仓的手数
     private String kanduoOrkankong;//在反向开仓的时候，给个值，判断是看多反向还是看空反向
@@ -105,6 +107,12 @@ public class MainActivity extends Activity {
 
     private String panduanshi;//判断是看空买入还是看多买入
     private Boolean sysUser;//判断是否可以下单
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -114,7 +122,7 @@ public class MainActivity extends Activity {
         createButton();
         timer = new Timer();//定时器
         getBiggestVolumeAndSysUserRunnable();
-        SharedPreferences driver = getSharedPreferences("driverID",MODE_PRIVATE);
+        SharedPreferences driver = getSharedPreferences("driverID", MODE_PRIVATE);
         driverId = driver.getString("driver", "");
 
         new Thread(zaicangRunnable).start();//进入主界面根据在仓订单刷新按钮名字
@@ -127,16 +135,19 @@ public class MainActivity extends Activity {
         chicangyingliTimeDingshi();//定时刷新盈利
         getNowTime();
 
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     //得到能下单的最大手数，和是否能下单
 //    Runnable
-         private void getBiggestVolumeAndSysUserRunnable(){
+    private void getBiggestVolumeAndSysUserRunnable() {
 //            = new Runnable() {
         final String method = "TransformData";
         timer.schedule(new TimerTask() {
             @Override
-            public void run () {
+            public void run() {
                 try {
                     parma.put("Volume", 0);
                     parma.put("Guid", "");
@@ -156,19 +167,23 @@ public class MainActivity extends Activity {
                 mes.setData(bundle);
                 getBiggestVolumeAndSysUserHandler.handleMessage(mes);
             }
-        },1000,60000);
-    };
-    private List getBiggestVolumeAndSysUser(SoapObject soapObject){
+        }, 1000, 60000);
+    }
+
+    ;
+
+    private List getBiggestVolumeAndSysUser(SoapObject soapObject) {
         List list = new ArrayList();
         String s = soapObject.getProperty(0).toString();
         try {
             JSONArray jsonArray = new JSONArray(s);
-            for (int i=0;i<jsonArray.length();i++){
-                Map<String,Object>map = new HashMap<>();
+            for (int i = 0; i < jsonArray.length(); i++) {
+                Map<String, Object> map = new HashMap<>();
                 JSONObject js = jsonArray.getJSONObject(i);
-                map.put("Volume",js.getInt("Volume"));
-                map.put("SysUser",js.getBoolean("SysUser"));
+                map.put("Volume", js.getInt("Volume"));
+                map.put("SysUser", js.getBoolean("SysUser"));
                 list.add(map);
+
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -176,42 +191,37 @@ public class MainActivity extends Activity {
 
         return list;
     }
-    Handler getBiggestVolumeAndSysUserHandler = new Handler(){
-          @Override
-        public void handleMessage(Message mes){
-              super.handleMessage(mes);
-              Bundle bun = mes.getData();
-              String s = bun.getString("SysUserYesOrNo");
-              try {
-                  JSONArray js = new JSONArray(s);
-                  for (int i=0 ;i<js.length();i++){
-                      JSONObject json = js.getJSONObject(i);
-                      int Volume = json.getInt("Volume");
-                      sysUser = json.getBoolean("SysUser");
-                      if ( Integer.parseInt(shoushu[shoushu.length-1]) <=20 && Volume<=20 ){
-                       String[] b= new String[Volume];
-                       for (int j=0;j<Volume;j++){
-                          System.arraycopy(shoushu,0,b,0,Volume);
-                       }
-                       shoushu = b;
-                      }
-                  }
-              } catch (JSONException e) {
-                  e.printStackTrace();
-              }
-          }
+
+    Handler getBiggestVolumeAndSysUserHandler = new Handler() {
+        @Override
+        public void handleMessage(Message mes) {
+            super.handleMessage(mes);
+            Bundle bun = mes.getData();
+            String s = bun.getString("SysUserYesOrNo");
+            try {
+                JSONArray js = new JSONArray(s);
+                for (int i = 0; i < js.length(); i++) {
+                    JSONObject json = js.getJSONObject(i);
+//                    int Volume = json.getInt("Volume");
+                    sysUser = json.getBoolean("SysUser");
+//                    if (Integer.parseInt(shoushu[shoushu.length - 1]) <= 20 && Volume <= 20) {
+//                        String[] b = new String[Volume];
+//                        for (int j = 0; j < Volume; j++) {
+//                            System.arraycopy(shoushu, 0, b, 0, Volume);
+//                        }
+//                        shoushu = b;
+//                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
 
     };
 
 
-
-
-
-
-
-
-//    获取当前时间
-    private void getNowTime(){
+    //    获取当前时间
+    private void getNowTime() {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
         String s = simpleDateFormat.format(new Date());
         NowHour = Integer.parseInt(s.substring(0, 2));
@@ -220,40 +230,41 @@ public class MainActivity extends Activity {
     }
 
     //网络判断
-    private void netAnimation(){
+    private void netAnimation() {
         NetWorkUtils net = new NetWorkUtils();
-        int type=net.getAPNType(MainActivity.this);
-        if (type==0){
+        int type = net.getAPNType(MainActivity.this);
+        if (type == 0) {
             netBtn.setText("您当前使用的是2/3/4G网络");
             netBtn.setTextColor(Color.WHITE);
             //netBtn.setBackgroundColor(Color.BLUE);
             //初始化
-            Animation alphaAnimation  = new AlphaAnimation(1.0f,0.0f);
+            Animation alphaAnimation = new AlphaAnimation(1.0f, 0.0f);
             //设置动画时间
-            alphaAnimation .setDuration(10000);
+            alphaAnimation.setDuration(10000);
             netBtn.startAnimation(alphaAnimation);
-           // netBtn.setBackgroundColor(Color.TRANSPARENT);
+            // netBtn.setBackgroundColor(Color.TRANSPARENT);
             netBtn.setVisibility(View.INVISIBLE);
-            Ip = net.getIpAddress( );
-        }else if (type==1){
+            Ip = net.getIpAddress();
+        } else if (type == 1) {
             netBtn.setText("您当前使用的是wifi网络");
             netBtn.setTextColor(Color.WHITE);
             //初始化
-            Animation alphaAnimation  = new AlphaAnimation(1.0f,0.0f);
+            Animation alphaAnimation = new AlphaAnimation(1.0f, 0.0f);
             //设置动画时间
-            alphaAnimation .setDuration(10000);
+            alphaAnimation.setDuration(10000);
             netBtn.startAnimation(alphaAnimation);
             //netBtn.setBackgroundColor(Color.TRANSPARENT);
             netBtn.setVisibility(View.INVISIBLE);
             Ip = net.getLocalIpAddress(MainActivity.this);
         }
-        SharedPreferences IP = getSharedPreferences("IP",MODE_PRIVATE);
+        SharedPreferences IP = getSharedPreferences("IP", MODE_PRIVATE);
         SharedPreferences.Editor ipEditor = IP.edit();
-        ipEditor.putString("IP",Ip);
+        ipEditor.putString("IP", Ip);
         ipEditor.commit();
     }
-//    持仓盈利定时器
-    private void chicangyingliTimeDingshi(){
+
+    //    持仓盈利定时器
+    private void chicangyingliTimeDingshi() {
         final String method = "TransformData";//参数设置
 //        final JSONObject parma = new JSONObject();
         timer.schedule(new TimerTask() {
@@ -278,8 +289,8 @@ public class MainActivity extends Activity {
         }, 1000, 3000);
     }
 
-//  最新行情定时器
-    private void zuixinhangqingtimeDingshi(){
+    //  最新行情定时器
+    private void zuixinhangqingtimeDingshi() {
         final String method = "TransformData";
         timer.schedule(new TimerTask() {
             @Override
@@ -304,16 +315,16 @@ public class MainActivity extends Activity {
 
     }
 
-//获取货币列表
-    Handler HBListhandler = new Handler(){
+    //获取货币列表
+    Handler HBListhandler = new Handler() {
         @Override
-        public void handleMessage(Message message){
+        public void handleMessage(Message message) {
             super.handleMessage(message);
             Bundle bundle = message.getData();
             String string = bundle.getString("HBListkey");
             try {
                 JSONArray jsonArray = new JSONArray(string);
-                for (int i=0;i<jsonArray.length();i++){
+                for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
                     String Bh = jsonObject.getString("Bh");
                     String Name = jsonObject.getString("Name");
@@ -324,10 +335,10 @@ public class MainActivity extends Activity {
                 NAME2 = hblist.get(1);
                 itemName = NAME1;//进入主界面的时候默认刷新美原油
                 //Log.i("qqqqq",NAME1);
-                SharedPreferences name = getSharedPreferences("name",MODE_PRIVATE);
+                SharedPreferences name = getSharedPreferences("name", MODE_PRIVATE);
                 SharedPreferences.Editor editor = name.edit();
-                editor.putString("itemName",itemName);
-                editor.putString("itemName2",NAME2);
+                editor.putString("itemName", itemName);
+                editor.putString("itemName2", NAME2);
                 editor.commit();
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -340,8 +351,8 @@ public class MainActivity extends Activity {
             String method = "TransformData";
 //            JSONObject parma = new JSONObject();
             try {
-                parma.put("TaskGuid","b4026263-704e-4e12-a64d-f79cb42962cc");
-                parma.put("DataType","HBList");
+                parma.put("TaskGuid", "b4026263-704e-4e12-a64d-f79cb42962cc");
+                parma.put("DataType", "HBList");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -349,27 +360,23 @@ public class MainActivity extends Activity {
             String jsonRequest = string.getProperty(0).toString();
             Message message = new Message();
 //            Bundle bundle = new Bundle();
-            bundle.putString("HBListkey",jsonRequest);
+            bundle.putString("HBListkey", jsonRequest);
             message.setData(bundle);
             HBListhandler.sendMessage(message);
         }
     };
 
 
-
-
-
-
-//    主界面根据在仓订单刷新界面
+    //    主界面根据在仓订单刷新界面
     Runnable zaicangRunnable = new Runnable() {
         @Override
         public void run() {
             String method = "TransformData";
             try {
-                parma.put("DriverID",driverId);
-                parma.put("TaskGuid",TaskGuid);
-                parma.put("DataType","ClientOpenTrades");
-                parma.put("LoginAccount",loginStr);
+                parma.put("DriverID", driverId);
+                parma.put("TaskGuid", TaskGuid);
+                parma.put("DataType", "ClientOpenTrades");
+                parma.put("LoginAccount", loginStr);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -382,42 +389,45 @@ public class MainActivity extends Activity {
             zaicanghandler.sendMessage(message);
         }
     };
-    private List getZaicangDingDan(SoapObject soapObject){
+
+    private List getZaicangDingDan(SoapObject soapObject) {
         List list = new ArrayList();
         String s = soapObject.getProperty(0).toString();
-        if (s.equals("[]")){}else{
+        if (s.equals("[]")) {
+        } else {
             try {
                 JSONArray jsonArray = new JSONArray(s);
-                for (int i=0;i<jsonArray.length();i++){
-                    Map<String,Object> map = new HashMap<>();
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    Map<String, Object> map = new HashMap<>();
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    map.put("Symbol",jsonObject.getString("Symbol"));
-                    map.put("TypeName",jsonObject.getString("TypeName"));
-                    map.put("Volume",jsonObject.getInt("Volume"));
-                    profit +=jsonObject.getInt("Profit");
+                    map.put("Symbol", jsonObject.getString("Symbol"));
+                    map.put("TypeName", jsonObject.getString("TypeName"));
+                    map.put("Volume", jsonObject.getInt("Volume"));
+                    profit += jsonObject.getInt("Profit");
                     list.add(map);
                 }
-            }catch (JSONException e){
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
         return list;
     }
-//    根据在仓订单改变主界面显示
-    Handler zaicanghandler = new Handler(){
+
+    //    根据在仓订单改变主界面显示
+    Handler zaicanghandler = new Handler() {
         @Override
-        public void handleMessage(Message message){
+        public void handleMessage(Message message) {
             super.handleMessage(message);
             Bundle bundle = message.getData();
             String string = bundle.getString("zaicangkey");
             int shoushu = 0;
             try {
                 JSONArray jsonArray = new JSONArray(string);
-                if (jsonArray.length()==0){
+                if (jsonArray.length() == 0) {
                     duoOrkongText.setText("");
                     buyMoreButton.setText(BUYMORE);
                     buyLessButton.setText(BUYLESS);
-                }else {
+                } else {
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
                         String sym = jsonObject.getString("Symbol");
@@ -446,9 +456,9 @@ public class MainActivity extends Activity {
                 }
                 mairuduoshaoshouTex.setText(String.valueOf(shoushu));
                 yingliText.setText(String.valueOf(profit));
-                if (profit<0){//根据正负设置颜色
+                if (profit < 0) {//根据正负设置颜色
                     yingliText.setTextColor(Color.parseColor("#0069d5"));
-                }else {
+                } else {
                     yingliText.setTextColor(Color.parseColor("#fe0000"));
                 }
                 profit = 0;//清零，否则会累加
@@ -459,72 +469,75 @@ public class MainActivity extends Activity {
         }
     };
 
-//    界面创建
+    //    界面创建
     private void createButton() {
         //手数和品种
-        shouTxt=(TextView) findViewById(R.id.shoushutextView);
-        nametextView=(TextView) findViewById(R.id.nametextView);
+        shouTxt = (TextView) findViewById(R.id.shoushutextView);
+        nametextView = (TextView) findViewById(R.id.nametextView);
         //设置按钮
-        settingBtn=(ImageButton) findViewById(R.id.setBtn);
+        settingBtn = (ImageButton) findViewById(R.id.setBtn);
         settingBtn.setOnClickListener(settingBtnClick);
         //个人中心按钮
-        userBtn=(ImageButton)findViewById(R.id.usrBtn);
+        userBtn = (ImageButton) findViewById(R.id.usrBtn);
         userBtn.setOnClickListener(userBtnClick);
         //持仓按钮
-        holdButton = (Button)findViewById(R.id.button_hold);
+        holdButton = (Button) findViewById(R.id.button_hold);
         holdButton.setOnClickListener(holdButtonClick);
         // 看多按钮
-        buyMoreButton = (Button)findViewById(R.id.button_buyMore);
+        buyMoreButton = (Button) findViewById(R.id.button_buyMore);
         buyMoreButton.setOnClickListener(buyMoreClick);
 //        看空按钮
-        buyLessButton = (Button)findViewById(R.id.button_buyLess);
+        buyLessButton = (Button) findViewById(R.id.button_buyLess);
         buyLessButton.setOnClickListener(buyLessButtonClick);
 //        全部卖出按钮
-        allSellButton = (Button)findViewById(R.id.button_allSell);
+        allSellButton = (Button) findViewById(R.id.button_allSell);
         allSellButton.setOnClickListener(allSellClick);
         //最新行情数据
-        PriceTxt = (TextView)findViewById(R.id.textView_priceText);
+        PriceTxt = (TextView) findViewById(R.id.textView_priceText);
         //网络button
-        netBtn =(Button)findViewById(R.id.netImgBtn);
+        netBtn = (Button) findViewById(R.id.netImgBtn);
         //主界面盈利的number
-        yingliText = (TextView)findViewById(R.id.textView10);
+        yingliText = (TextView) findViewById(R.id.textView10);
 //        主界面显示买入的是看多买入还是看空买入
-        duoOrkongText = (TextView)findViewById(R.id.textView34);
+        duoOrkongText = (TextView) findViewById(R.id.textView34);
 //        显示买入多少手
-        mairuduoshaoshouTex = (TextView)findViewById(R.id.textView6);
+        mairuduoshaoshouTex = (TextView) findViewById(R.id.textView6);
     }
-//    设置按钮允许点击
-    private void buttonCanClick(){
+
+    //    设置按钮允许点击
+    private void buttonCanClick() {
         allSellButton.setClickable(true);
         buyLessButton.setClickable(true);
         buyMoreButton.setClickable(true);
     }
-//    设置按钮不允许被点击
+
+    //    设置按钮不允许被点击
     private void buttonCanNotClick() {
         allSellButton.setClickable(false);
         buyLessButton.setClickable(false);
         buyMoreButton.setClickable(false);
     }
+
     //
     Handler latestPriceHandler = new Handler() {
         @Override
-        public void handleMessage(Message message){
+        public void handleMessage(Message message) {
             super.handleMessage(message);
             Bundle bundle = message.getData();
             String string = bundle.getString("value");
             Log.v("++++++++++++", string);
-            if (string.equals("连接超时")){}
-            else if (string.equals("@")){}
-            else {
+            if ("连接超时".equals(string)) {
+            } else if ("@".equals(string)) {
+            } else {
                 String[] strArray = null;
                 strArray = string.split(",");
-                if(strArray.length>1) CLF6Price = strArray[2].toString();
-                else  CLF6Price = "0.00";
-                if(strArray.length>4) HKZ5Price = strArray[5].toString();
-                else  HKZ5Price = "0.00";
+                if (strArray.length > 1) CLF6Price = strArray[2].toString();
+                else CLF6Price = "0.00";
+                if (strArray.length > 4) HKZ5Price = strArray[5].toString();
+                else HKZ5Price = "0.00";
                 if (nametextView.getText().toString().equals(nameList.get(0)))
-                      PriceTxt.setText(CLF6Price);
-                else  PriceTxt.setText(HKZ5Price);
+                    PriceTxt.setText(CLF6Price);
+                else PriceTxt.setText(HKZ5Price);
 
             }
         }
@@ -536,19 +549,20 @@ public class MainActivity extends Activity {
         }
     };
     //    持仓按钮点击事件，并传递数据
-    View.OnClickListener holdButtonClick =(new View.OnClickListener() {
+    View.OnClickListener holdButtonClick = (new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             timer.cancel();//进入下一界面关闭定时器
-            Intent intent = new Intent(MainActivity.this,holdActivity.class);
+            Intent intent = new Intent(MainActivity.this, holdActivity.class);
             String name = itemName;
-            intent.putExtra("name",name);//把本界面选择的货币传递给持仓界面
+            intent.putExtra("name", name);//把本界面选择的货币传递给持仓界面
             startActivityForResult(intent, 0);
         }
     });
-//    从第二界面返回的数据在这里
+
+    //    从第二界面返回的数据在这里
     @Override
-    protected void onActivityResult(int requestCode,int resultCode,Intent data){
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         timer = new Timer();//开启定时器
         zuixinhangqingtimeDingshi();
@@ -562,63 +576,61 @@ public class MainActivity extends Activity {
     }
 
 
-
-
     //        跳转个人中心界面
-    View.OnClickListener userBtnClick=(new View.OnClickListener() {
+    View.OnClickListener userBtnClick = (new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Intent intent=new Intent(MainActivity.this,UserActivity.class);
+            Intent intent = new Intent(MainActivity.this, UserActivity.class);
             startActivity(intent);
         }
     });
-        //    跳转设置界面
-     View.OnClickListener settingBtnClick =(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                View outerView = LayoutInflater.from(MainActivity.this).inflate(R.layout.wheel_view, null);
-                wv = (WheelView) outerView.findViewById(R.id.wheel_view_wv);
-                wv.setOffset(2);
-                wv.setItems(Arrays.asList(shoushu));
-                //     保存上次选择的手数
-                wv.setSeletion(number);
-                wv.setOnWheelViewListener(new WheelView.OnWheelViewListener() {
-                    @Override
-                    public void onSelected(int selectedIndex, String item) {
-                        Log.d(TAG, "[Dialog]selectedIndex: " + selectedIndex + ", item: " + item);
-                        shouTxt.setText(item);
-                        number=selectedIndex-2;
-                    }
-                });
-                wv2 = (WheelView) outerView.findViewById(R.id.wheel_view_wv2);
-                wv2.setOffset(2);
-                //wv2.setItems(hblist);
-                wv2.setItems(nameList);
-                wv2.setSeletion(category);
-                wv2.setOnWheelViewListener(new WheelView.OnWheelViewListener() {
-                    @Override
-                    public void onSelected(int selectedIndex, String item1) {
-                        Log.d(TAG, "[Dialog]selectedIndex: " + selectedIndex + ", item: " + item1);
-                        nametextView.setText(item1);
-                        itemName = hblist.get(selectedIndex - 2);
-                        Log.i("wwwww",itemName);
-                        category = selectedIndex - 2;
-                    }
-                });
-                new AlertDialog.Builder(MainActivity.this)
-                        .setTitle("设置您委托的产品类型和手数")
-                        .setView(outerView)
-                        .setCancelable(false)
-                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
+    //    跳转设置界面
+    View.OnClickListener settingBtnClick = (new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            View outerView = LayoutInflater.from(MainActivity.this).inflate(R.layout.wheel_view, null);
+            wv = (WheelView) outerView.findViewById(R.id.wheel_view_wv);
+            wv.setOffset(2);
+            wv.setItems(Arrays.asList(shoushu));
+            //     保存上次选择的手数
+            wv.setSeletion(number);
+            wv.setOnWheelViewListener(new WheelView.OnWheelViewListener() {
+                @Override
+                public void onSelected(int selectedIndex, String item) {
+                    Log.d(TAG, "[Dialog]selectedIndex: " + selectedIndex + ", item: " + item);
+                    shouTxt.setText(item);
+                    number = selectedIndex - 2;
+                }
+            });
+            wv2 = (WheelView) outerView.findViewById(R.id.wheel_view_wv2);
+            wv2.setOffset(2);
+            //wv2.setItems(hblist);
+            wv2.setItems(nameList);
+            wv2.setSeletion(category);
+            wv2.setOnWheelViewListener(new WheelView.OnWheelViewListener() {
+                @Override
+                public void onSelected(int selectedIndex, String item1) {
+                    Log.d(TAG, "[Dialog]selectedIndex: " + selectedIndex + ", item: " + item1);
+                    nametextView.setText(item1);
+                    itemName = hblist.get(selectedIndex - 2);
+                    Log.i("wwwww", itemName);
+                    category = selectedIndex - 2;
+                }
+            });
+            new AlertDialog.Builder(MainActivity.this)
+                    .setTitle("设置您委托的产品类型和手数")
+                    .setView(outerView)
+                    .setCancelable(false)
+                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
 //                                new Thread(genjuzaicangdingdangaibianmairuanniumingziRunnable).start();//选择商品的时候根据在仓订单里面要选择的商品的购买的情况改变按钮的名字
 //                                progressDialog = ProgressDialog.show(MainActivity.this, "", "正在切换中...");
-                            }
-                        })
-                        .show();
-            }
-        });
+                        }
+                    })
+                    .show();
+        }
+    });
 
 //    Runnable genjuzaicangdingdangaibianmairuanniumingziRunnable = new Runnable() {
 //        @Override
@@ -689,7 +701,7 @@ public class MainActivity extends Activity {
 //    };
 
 
-//    全部卖出按钮点击事件
+    //    全部卖出按钮点击事件
     View.OnClickListener allSellClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -708,7 +720,7 @@ public class MainActivity extends Activity {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             new Thread(orderNumbersRunnable).start();
-                            progressDialog = ProgressDialog.show(MainActivity.this,"","全部卖出...");
+                            progressDialog = ProgressDialog.show(MainActivity.this, "", "全部卖出...");
                         }
                     })
                     .show();
@@ -716,20 +728,20 @@ public class MainActivity extends Activity {
     };
 
 
-//    解析订单编号
-    Handler orderHandler = new Handler(){
+    //    解析订单编号
+    Handler orderHandler = new Handler() {
         @Override
         public void handleMessage(Message message) {
             super.handleMessage(message);
             Bundle bundle = message.getData();
             String string = bundle.getString("orderNumber");
-            if (string.equals("null")){
+            if ("null".equals(string)) {
                 Toast.makeText(MainActivity.this, "没有订单", Toast.LENGTH_SHORT).show();
                 buyMoreButton.setText(BUYMORE);
                 buyLessButton.setText(BUYLESS);
                 buttonCanClick();
                 progressDialog.dismiss();
-            }else {
+            } else {
                 new Thread(allSellRunnable).start();
             }
         }
@@ -739,10 +751,10 @@ public class MainActivity extends Activity {
         public void run() {
             String TransformData = "TransformData";
             try {
-                parma.put("DriverID",driverId);
-                parma.put("TaskGuid",TaskGuid);
-                parma.put("DataType","ClientOpenTrades");
-                parma.put("LoginAccount",loginStr);
+                parma.put("DriverID", driverId);
+                parma.put("TaskGuid", TaskGuid);
+                parma.put("DataType", "ClientOpenTrades");
+                parma.put("LoginAccount", loginStr);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -750,20 +762,22 @@ public class MainActivity extends Activity {
             orderNumbersList = getOrderNumberS(soapObject);
             Message message = new Message();
 //            Bundle bundle = new Bundle();
-            if (orderNumbersList.size() == 0){
+            if (orderNumbersList.size() == 0) {
                 bundle.putString("orderNumber", "null");
-            }else {
+            } else {
                 bundle.putString("orderNumber", orderNumbersList.toString());
             }
             message.setData(bundle);
             orderHandler.sendMessage(message);
         }
     };
+
     //    得到订单编号数组
-    private List getOrderNumberS(SoapObject soapObject){
+    private List getOrderNumberS(SoapObject soapObject) {
         List list = new ArrayList();
         String s = soapObject.getProperty(0).toString();
-        if (s.equals("[]")){}else {
+        if (s.equals("[]")) {
+        } else {
             try {
                 JSONArray jsonArray = new JSONArray(s);
                 for (int i = 0; i < jsonArray.length(); i++) {
@@ -777,59 +791,60 @@ public class MainActivity extends Activity {
         }
         return list;
     }
-    Handler sellHandler = new Handler(){
+
+    Handler sellHandler = new Handler() {
         @Override
-        public void handleMessage(Message message){
+        public void handleMessage(Message message) {
             super.handleMessage(message);
             Bundle bundle = message.getData();
             String string = bundle.getString("sellKey");
-            if (string.equals("True")){
+            if ("True".equals(string)) {
                 buyMoreButton.setText(BUYMORE);
                 buyLessButton.setText(BUYLESS);
                 Toast.makeText(MainActivity.this, "卖出成功", Toast.LENGTH_SHORT).show();
 
-            }else {
+            } else {
                 Toast.makeText(MainActivity.this, "卖出失败", Toast.LENGTH_SHORT).show();
             }
             buttonCanClick();
             progressDialog.dismiss();
         }
     };
-//    全部卖出数据请求
+    //    全部卖出数据请求
     Runnable allSellRunnable = new Runnable() {
         @Override
         public void run() {
             String SetData = "SetData";
 //            JSONObject allSellParma = new JSONObject();
             String s = "";
-                for (int i = 0; i < orderNumbersList.size(); i++) {
-                    s += "," + orderNumbersList.get(i);
-                }
-                try {
-                    parma.put( "DriverID",driverId);
-                    parma.put("TaskGuid", TaskGuid);
-                    parma.put("DataType", "CloseOrderS");
-                    parma.put("OrderNumberS", s.substring(1));
-                    parma.put("LoginAccount", loginStr);
-                    parma.put("Ip",Ip);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-//                request request = new request();
-                SoapObject soapObject = request.getResult(SetData, parma.toString());
-                Message message =new Message();
-//                Bundle bundle = new Bundle();
-                if (soapObject.getProperty(0).toString().equals("True")){
-                    bundle.putString("sellKey", "True");
-                }else {
-                    bundle.putString("sellKey", "Fals");
-                }
-                message.setData(bundle);
-                sellHandler.sendMessage(message);
+            for (int i = 0; i < orderNumbersList.size(); i++) {
+                s += "," + orderNumbersList.get(i);
             }
+            try {
+                parma.put("DriverID", driverId);
+                parma.put("TaskGuid", TaskGuid);
+                parma.put("DataType", "CloseOrderS");
+                parma.put("OrderNumberS", s.substring(1));
+                parma.put("LoginAccount", loginStr);
+                parma.put("Ip", Ip);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+//                request request = new request();
+            SoapObject soapObject = request.getResult(SetData, parma.toString());
+            Message message = new Message();
+//                Bundle bundle = new Bundle();
+            if (soapObject.getProperty(0).toString().equals("True")) {
+                bundle.putString("sellKey", "True");
+            } else {
+                bundle.putString("sellKey", "Fals");
+            }
+            message.setData(bundle);
+            sellHandler.sendMessage(message);
+        }
     };
 
-//    看多按钮点击事件
+    //    看多按钮点击事件
     View.OnClickListener buyMoreClick = new View.OnClickListener() {
 
         @Override
@@ -838,45 +853,45 @@ public class MainActivity extends Activity {
             new Thread(yuerunnable).start();//请求余额线程
         }
     };
-       //请求余额线程
-       Runnable yuerunnable = new Runnable() {
-           @Override
-           public void run() {
-               String method = "TransformData";
-               try{
-                   parma.put("TaskGuid",TaskGuid);
-                   parma.put("DataType","ClientRecord");
-                   parma.put("LoginAccount",loginStr);
-               }catch (JSONException e){
-                   e.printStackTrace();
-               }
-               try{
-                   String str_json=parma.toString();
-                   SoapObject string = request.getResult(method, str_json);
-                   String jsonRequest = string.getProperty(0).toString();
-                   Message message = new Message();
-                   Bundle bundle = new Bundle();
-                   bundle.putString("value", jsonRequest);
-                   message.setData(bundle);
-                   handler.sendMessage(message);
-               }catch (Exception e){
-                   e.printStackTrace();
-               }
-           }
-       };
+    //请求余额线程
+    Runnable yuerunnable = new Runnable() {
+        @Override
+        public void run() {
+            String method = "TransformData";
+            try {
+                parma.put("TaskGuid", TaskGuid);
+                parma.put("DataType", "ClientRecord");
+                parma.put("LoginAccount", loginStr);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            try {
+                String str_json = parma.toString();
+                SoapObject string = request.getResult(method, str_json);
+                String jsonRequest = string.getProperty(0).toString();
+                Message message = new Message();
+                Bundle bundle = new Bundle();
+                bundle.putString("value", jsonRequest);
+                message.setData(bundle);
+                handler.sendMessage(message);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    };
 
     //请求余额保证金处理
     Handler handler = new Handler() {
         @Override
-        public void handleMessage(Message message){
+        public void handleMessage(Message message) {
             super.handleMessage(message);
             Bundle bundle = message.getData();
             String string = bundle.getString("value");
             try {
                 JSONObject jsonObject = new JSONObject(string);
                 LowestMoney = jsonObject.getInt("Balance");
-                if (panduanshi.equals(BUYMORE)){
-                    if (LowestMoney>500) {
+                if (panduanshi.equals(BUYMORE)) {
+                    if (LowestMoney > 500) {
                         if (buyMoreButton.getText().toString().equals(BUYMORE)) {
                             buyMoreButtonClick();
                         } else if (buyMoreButton.getText().toString().equals(BUYONCE)) {
@@ -884,10 +899,10 @@ public class MainActivity extends Activity {
                         } else if (buyMoreButton.getText().toString().equals(FANXIANG)) {
                             buyMoreButtonReverse();
                         }
-                    }else {
+                    } else {
                         Toast.makeText(MainActivity.this, "余额不足", Toast.LENGTH_SHORT).show();
                     }
-                }else if (panduanshi.equals(BUYLESS)){
+                } else if (panduanshi.equals(BUYLESS)) {
                     if (LowestMoney > 500) {
                         if (buyLessButton.getText().toString().equals(BUYLESS)) {
                             buyLessButtonClick();
@@ -907,9 +922,9 @@ public class MainActivity extends Activity {
         }
     };
 
-//    看多买入
+    //    看多买入
     private void buyMoreButtonClick() {
-        if (sysUser==true) {
+        if (sysUser) {
             getNowTime();//现在的时间
             if (itemName.equals(NAME2)) {//判断选择的是不是恒生指数
                 if (NowHour >= 9 && NowHour <= 12) {//判断是不是在交易时间
@@ -941,52 +956,53 @@ public class MainActivity extends Activity {
                 progressDialog = ProgressDialog.show(MainActivity.this, "", "下单中...");
                 buttonCanNotClick();
             }
-        }else if (sysUser==false){
-            Toast.makeText(MainActivity.this,"下单失败",Toast.LENGTH_SHORT).show();
+        } else if (!sysUser) {
+            Toast.makeText(MainActivity.this, "下单失败", Toast.LENGTH_SHORT).show();
         }
     }
-//    根据返回，判断是否买入成功
-    Handler buyMoreHandler = new Handler(){
+
+    //    根据返回，判断是否买入成功
+    Handler buyMoreHandler = new Handler() {
         @Override
-        public void handleMessage(Message message){
+        public void handleMessage(Message message) {
             super.handleMessage(message);
             Bundle bundle = message.getData();
             String string = bundle.getString("buyMore");
-            if (string.startsWith("{\"Comment\"")) {
+            if ("{\"Comment\"".startsWith(string)) {
                 buyMoreButton.setText(BUYONCE);
                 buyLessButton.setText(FANXIANG);
-                Toast.makeText(MainActivity.this,"买入成功",Toast.LENGTH_SHORT).show();
-            }else {
+                Toast.makeText(MainActivity.this, "买入成功", Toast.LENGTH_SHORT).show();
+            } else {
                 try {
                     JSONObject jsonObject = new JSONObject(string);
-                    Toast.makeText(MainActivity.this,jsonObject.getString("ErrMessage"),Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, jsonObject.getString("ErrMessage"), Toast.LENGTH_SHORT).show();
 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                Toast.makeText(MainActivity.this,"下单失败",Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, "下单失败", Toast.LENGTH_LONG).show();
             }
             progressDialog.dismiss();
             buttonCanClick();
         }
     };
-//    看多数据请求
+    //    看多数据请求
     Runnable kanduoRunnable = new Runnable() {
         @Override
         public void run() {
             String SetData = "SetData";
             try {
-                parma.put("DriverID",driverId);
-                parma.put("TaskGuid",TaskGuid);
-                parma.put("DataType","OpenBuy-New");
-                parma.put("LoginAccount",loginStr);
-                parma.put("Symbol",itemName);
-                Log.i("aaaa",itemName);
-                parma.put("Volume",shouTxt.getText().toString());
-                parma.put("StopLoss","0");
-                parma.put("TakeProfit","0");
-                parma.put("Comment","Android");
-                parma.put("Ip",Ip);
+                parma.put("DriverID", driverId);
+                parma.put("TaskGuid", TaskGuid);
+                parma.put("DataType", "OpenBuy-New");
+                parma.put("LoginAccount", loginStr);
+                parma.put("Symbol", itemName);
+                Log.i("aaaa", itemName);
+                parma.put("Volume", shouTxt.getText().toString());
+                parma.put("StopLoss", "0");
+                parma.put("TakeProfit", "0");
+                parma.put("Comment", "Android");
+                parma.put("Ip", Ip);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -1001,19 +1017,19 @@ public class MainActivity extends Activity {
     };
 
 
-
-//    看多反向开仓
-    private void buyMoreButtonReverse(){
-        if (sysUser==true) {
+    //    看多反向开仓
+    private void buyMoreButtonReverse() {
+        if (sysUser) {
             Log.i(">>>>>>", "看多反向开仓");
             kanduoOrkankong = OpenBuy_New;
             new Thread(fanxiangOrderNumRunnable).start();
             progressDialog = ProgressDialog.show(MainActivity.this, "", "下单中...");
-        }else if (sysUser==false){
-            Toast.makeText(MainActivity.this,"下单失败",Toast.LENGTH_SHORT).show();
+        } else if (!sysUser) {
+            Toast.makeText(MainActivity.this, "下单失败", Toast.LENGTH_SHORT).show();
         }
     }
-    Handler fanxiangOrderNumHandler = new Handler(){
+
+    Handler fanxiangOrderNumHandler = new Handler() {
         @Override
         public void handleMessage(Message message) {
             super.handleMessage(message);
@@ -1022,7 +1038,7 @@ public class MainActivity extends Activity {
             try {
                 JSONArray jsonArray = new JSONArray(s);
                 int shoushu = 0;
-                for (int i=0;i<jsonArray.length();i++){
+                for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
                     shoushu += jsonObject.getInt("shoushu");
                     String order = jsonObject.getString("order");
@@ -1030,7 +1046,7 @@ public class MainActivity extends Activity {
                 }
                 fanxianggoumaishoushu = String.valueOf(shoushu);
                 new Thread(kanduoallSellRunnable).start();
-            }catch (JSONException e){
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
@@ -1041,10 +1057,10 @@ public class MainActivity extends Activity {
             String TransformData = "TransformData";
 //            JSONObject zaicang = new JSONObject();
             try {
-                parma.put("DriverID",driverId);
-                parma.put("TaskGuid",TaskGuid);
-                parma.put("DataType","ClientOpenTrades");
-                parma.put("LoginAccount",loginStr);
+                parma.put("DriverID", driverId);
+                parma.put("TaskGuid", TaskGuid);
+                parma.put("DataType", "ClientOpenTrades");
+                parma.put("LoginAccount", loginStr);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -1058,20 +1074,22 @@ public class MainActivity extends Activity {
             fanxiangOrderNumHandler.sendMessage(message);
         }
     };
-    private List getxiangtongdeOrderNums(SoapObject soapObject){
+
+    private List getxiangtongdeOrderNums(SoapObject soapObject) {
         List list = new ArrayList();
         String s = soapObject.getProperty(0).toString();
-        if (s.equals("[]")){}else {
+        if (s.equals("[]")) {
+        } else {
             try {
                 JSONArray jsonArray = new JSONArray(s);
                 for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    Map<String,Object> map = new HashMap<>();
+                    Map<String, Object> map = new HashMap<>();
                     String name = jsonObject.getString("Symbol");
-                    if (name.equals(itemName)){
-                        Log.i("名称",name);
+                    if (name.equals(itemName)) {
+                        Log.i("名称", name);
                         map.put("order", jsonObject.getString("OrderNumber"));
-                        map.put("shoushu",jsonObject.getString("Volume"));
+                        map.put("shoushu", jsonObject.getString("Volume"));
                         list.add(map);
                     }
                 }
@@ -1082,15 +1100,15 @@ public class MainActivity extends Activity {
         return list;
     }
 
-    Handler kanduosellHandler = new Handler(){
+    Handler kanduosellHandler = new Handler() {
         @Override
-        public void handleMessage(Message message){
+        public void handleMessage(Message message) {
             super.handleMessage(message);
             Bundle bundle = message.getData();
             String string = bundle.getString("sellKey");
-            if (string.equals("True")){
+            if ("True".equals(string)) {
                 new Thread(fanxiangmairuRunnable).start();
-            }else {
+            } else {
                 Toast.makeText(MainActivity.this, "反向开仓失败", Toast.LENGTH_SHORT).show();
                 progressDialog.dismiss();
             }
@@ -1108,47 +1126,47 @@ public class MainActivity extends Activity {
             for (int i = 0; i < SymbolNumberSList.size(); i++) {
                 s += "," + SymbolNumberSList.get(i);
             }
-            Log.i("eeeeee",s);
+            Log.i("eeeeee", s);
             try {
-                parma.put("DriverID",driverId);
+                parma.put("DriverID", driverId);
                 parma.put("TaskGuid", TaskGuid);
                 parma.put("DataType", "CloseOrderS");
                 parma.put("OrderNumberS", s.substring(1));
                 parma.put("LoginAccount", loginStr);
-                parma.put("Ip",Ip);
+                parma.put("Ip", Ip);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
 //            request request = new request();
             SoapObject soapObject = request.getResult(SetData, parma.toString());
-            Message message =new Message();
+            Message message = new Message();
 //            Bundle bundle = new Bundle();
-            if (soapObject.getProperty(0).toString().equals("True")){
-                bundle.putString("sellKey","True");
-            }else {
-                bundle.putString("sellKey","Fals");
+            if (soapObject.getProperty(0).toString().equals("True")) {
+                bundle.putString("sellKey", "True");
+            } else {
+                bundle.putString("sellKey", "Fals");
             }
             message.setData(bundle);
             kanduosellHandler.sendMessage(message);
         }
     };
-//  反向买入请求
+    //  反向买入请求
     Runnable fanxiangmairuRunnable = new Runnable() {
         @Override
         public void run() {
             String SetData = "SetData";
 //            JSONObject parma = new JSONObject();
             try {
-                parma.put("DriverID",driverId);
-                parma.put("TaskGuid",TaskGuid);
-                parma.put("DataType",kanduoOrkankong);
-                parma.put("LoginAccount",loginStr);
-                parma.put("Symbol",itemName);
-                parma.put("Volume",fanxianggoumaishoushu);
-                parma.put("StopLoss","0");
-                parma.put("TakeProfit","0");
-                parma.put("Comment","Android");
-                parma.put("Ip",Ip);
+                parma.put("DriverID", driverId);
+                parma.put("TaskGuid", TaskGuid);
+                parma.put("DataType", kanduoOrkankong);
+                parma.put("LoginAccount", loginStr);
+                parma.put("Symbol", itemName);
+                parma.put("Volume", fanxianggoumaishoushu);
+                parma.put("StopLoss", "0");
+                parma.put("TakeProfit", "0");
+                parma.put("Comment", "Android");
+                parma.put("Ip", Ip);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -1160,26 +1178,26 @@ public class MainActivity extends Activity {
             fanxiangmairuHandler.sendMessage(message);
         }
     };
-    Handler fanxiangmairuHandler = new Handler(){
+    Handler fanxiangmairuHandler = new Handler() {
         @Override
         public void handleMessage(Message message) {
             super.handleMessage(message);
             Bundle bundle = message.getData();
             String s = bundle.getString("kanduofanxiangmairu");
-            if (s.startsWith("{\"Comment\"")) {
+            if ("{\"Comment\"".startsWith(s)) {
                 if (kanduoOrkankong.equals(OpenBuy_New)) {
                     buyMoreButton.setText(BUYONCE);
                     buyLessButton.setText(FANXIANG);
-                }else {
+                } else {
                     buyLessButton.setText(BUYONCE);
                     buyMoreButton.setText(FANXIANG);
                 }
                 buttonCanClick();
-                Toast.makeText(MainActivity.this,"反向开仓成功",Toast.LENGTH_SHORT).show();
-            }else {
+                Toast.makeText(MainActivity.this, "反向开仓成功", Toast.LENGTH_SHORT).show();
+            } else {
                 try {
                     JSONObject jsonObject = new JSONObject(s);
-                    Toast.makeText(MainActivity.this,jsonObject.getString("ErrMessage"),Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, jsonObject.getString("ErrMessage"), Toast.LENGTH_SHORT).show();
                     buttonCanClick();
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -1189,7 +1207,7 @@ public class MainActivity extends Activity {
         }
     };
 
-//  看空按钮点击事件
+    //  看空按钮点击事件
     View.OnClickListener buyLessButtonClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -1197,8 +1215,9 @@ public class MainActivity extends Activity {
             new Thread(yuerunnable).start();//请求余额线程
         }
     };
+
     private void buyLessButtonClick() {
-        if (sysUser==true) {
+        if (sysUser) {
             getNowTime();
             if (itemName.equals(NAME2)) {
                 if (NowHour >= 9 && NowHour <= 12) {
@@ -1228,51 +1247,52 @@ public class MainActivity extends Activity {
                 progressDialog = ProgressDialog.show(MainActivity.this, "", "下单中...");
                 buttonCanNotClick();
             }
-        }else if (sysUser==false){
-            Toast.makeText(MainActivity.this,"下单失败",Toast.LENGTH_SHORT).show();
+        } else if (!sysUser) {
+            Toast.makeText(MainActivity.this, "下单失败", Toast.LENGTH_SHORT).show();
         }
     }
-    Handler kankonghandle = new Handler(){
+
+    Handler kankonghandle = new Handler() {
         @Override
         public void handleMessage(Message message) {
             super.handleMessage(message);
             Bundle bundle = message.getData();
             String string = bundle.getString("buyLess");
-            if (string.startsWith("{\"Comment\"")) {
+            if ("{\"Comment\"".startsWith(string)) {
                 buyLessButton.setText(BUYONCE);
                 buyMoreButton.setText(FANXIANG);
-                Toast.makeText(MainActivity.this,"买入成功",Toast.LENGTH_SHORT).show();
-            }else {
+                Toast.makeText(MainActivity.this, "买入成功", Toast.LENGTH_SHORT).show();
+            } else {
                 try {
                     JSONObject jsonObject = new JSONObject(string);
-                    Toast.makeText(MainActivity.this,jsonObject.getString("ErrMessage"),Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, jsonObject.getString("ErrMessage"), Toast.LENGTH_SHORT).show();
 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                Toast.makeText(MainActivity.this,"下单失败",Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, "下单失败", Toast.LENGTH_LONG).show();
             }
             progressDialog.dismiss();
             buttonCanClick();
         }
     };
- //  看空请求数据
+    //  看空请求数据
     Runnable kankongRunnable = new Runnable() {
         @Override
         public void run() {
             String SetData = "SetData";
 //            JSONObject parma = new JSONObject();
             try {
-                parma.put("DriverID",driverId);
-                parma.put("TaskGuid",TaskGuid);
-                parma.put("DataType","OpenSell-New");
-                parma.put("LoginAccount",loginStr);
-                parma.put("Symbol",itemName);
-                parma.put("Volume",shouTxt.getText().toString());
-                parma.put("StopLoss","0");
-                parma.put("TakeProfit","0");
-                parma.put("Comment","Android");
-                parma.put("Ip",Ip);
+                parma.put("DriverID", driverId);
+                parma.put("TaskGuid", TaskGuid);
+                parma.put("DataType", "OpenSell-New");
+                parma.put("LoginAccount", loginStr);
+                parma.put("Symbol", itemName);
+                parma.put("Volume", shouTxt.getText().toString());
+                parma.put("StopLoss", "0");
+                parma.put("TakeProfit", "0");
+                parma.put("Comment", "Android");
+                parma.put("Ip", Ip);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -1287,15 +1307,15 @@ public class MainActivity extends Activity {
     };
 
 
-    private void  buyLessButtonReverse() {
-        Log.i(">>>>>>","看空反向开仓");
+    private void buyLessButtonReverse() {
+        Log.i(">>>>>>", "看空反向开仓");
         kanduoOrkankong = OpenSell_New;
         new Thread(fanxiangOrderNumRunnable).start();
-        progressDialog = ProgressDialog.show(MainActivity.this,"","下单中...");
+        progressDialog = ProgressDialog.show(MainActivity.this, "", "下单中...");
     }
 
 
-//左下角返回按钮点击事件
+    //左下角返回按钮点击事件
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
@@ -1318,4 +1338,43 @@ public class MainActivity extends Activity {
         return super.onKeyDown(keyCode, event);
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Main Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app URL is correct.
+                Uri.parse("android-app://com.example.secretwang.myapplication/http/host/path")
+        );
+        AppIndex.AppIndexApi.start(client, viewAction);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Main Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app URL is correct.
+                Uri.parse("android-app://com.example.secretwang.myapplication/http/host/path")
+        );
+        AppIndex.AppIndexApi.end(client, viewAction);
+        client.disconnect();
+    }
 }

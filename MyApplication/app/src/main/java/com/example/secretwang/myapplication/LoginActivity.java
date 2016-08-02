@@ -40,7 +40,7 @@ public class LoginActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //蒲公英上报Crash异常
+    /***    //蒲公英上报Crash异常
         PgyCrashManager.register(this);
         try{}
         catch (Exception e)
@@ -72,7 +72,7 @@ public class LoginActivity extends Activity {
             public void onNoUpdateAvailable() {
                 //Log.v("ok","没有更新");
             }
-        });
+        });***/
        // PgyUpdateManager.register(LoginActivity.this);
         setContentView(R.layout.activity_login);
         userName = (TextView) findViewById(R.id.userName);
@@ -91,7 +91,7 @@ public class LoginActivity extends Activity {
         SharedPreferences.Editor editor = sp.edit();
         editor.putString(login,userName.getText().toString());
         editor.putString(password,passWord.getText().toString());
-        editor.commit();
+        editor.apply();
         //button点击事件
         //触击登录按钮，执行remenber方法文本框里的信息重新写入SharedPreferences里面覆盖之前的，
         // 去除掉勾选框，触击登录按钮执行remenber方法就将之前保存到SharedPreferences的数据清除了
@@ -111,12 +111,12 @@ public class LoginActivity extends Activity {
             }
         });
         TelephonyManager telephonyManager = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
-        String s = telephonyManager.getDeviceId();
-//        String s = "111";
+//        String s = telephonyManager.getDeviceId();
+        String s = "111";
         SharedPreferences driverId = getSharedPreferences("driverID",MODE_PRIVATE);
         SharedPreferences.Editor drivereditor = driverId.edit();
         drivereditor.putString("driver",s);
-        drivereditor.commit();
+        drivereditor.apply();
     }
     // remenber方法用于判断是否记住密码，checkBox1选中时，提取出EditText里面的内容，
     // 放到SharedPreferences里面的login和password中
@@ -126,12 +126,12 @@ public class LoginActivity extends Activity {
             editor.putString("login",userName.getText().toString());
             editor.putString("password",passWord.getText().toString());
             editor.putString("isMemory",YES);
-            editor.commit();
+            editor.apply();
         }else if (!checkBox.isChecked()){
             sp=getSharedPreferences(FILE,MODE_PRIVATE);
             SharedPreferences.Editor editor = sp.edit();
             editor.putString("isMemory",NO);
-            editor.commit();
+            editor.apply();
         }
     }
     Handler handler = new Handler() {
@@ -140,17 +140,16 @@ public class LoginActivity extends Activity {
             super.handleMessage(message);
             Bundle bundle = message.getData();
             String string = bundle.getString("value");
-            //Log.v("login",string);
             progressDialog.dismiss(); //关闭进度条
-            if (string.equals("True")) {
+            if ("True".equals(string)) {
                 Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 startActivity(intent);
-            } else if (string.equals("输入字符串的格式不正确。")) {
+            } else if ("输入字符串的格式不正确。".equals(string)) {
                 Toast.makeText(LoginActivity.this, "用户名和密码不能为空", Toast.LENGTH_SHORT).show();
-            } else if (string.equals("{\"ErrMessage\":\"用户名或密码错误\"}")) {
+            } else if ("{\"ErrMessage\":\"用户名或密码错误\"}".equals(string)) {
                 Toast.makeText(LoginActivity.this, "用户名或密码错误", Toast.LENGTH_SHORT).show();
-            } else if (string.equals("连接超时")) {
+            } else if ("连接超时".equals(string)) {
                 Toast.makeText(LoginActivity.this, "请求超时", Toast.LENGTH_SHORT).show();
             }
             btn.setText("登录");
@@ -167,7 +166,7 @@ public class LoginActivity extends Activity {
                 param.put("TaskGuid", "ab8495db-3a4a-4f70-bb81-8518f60ec8bf");
                 param.put("DataType", "Query");
                 param.put("LoginAccount", userName.getText().toString());
-                param.put("Password", passWord.getText().toString());
+                param.put("Password", "ZS"+passWord.getText().toString()+"ZS");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
