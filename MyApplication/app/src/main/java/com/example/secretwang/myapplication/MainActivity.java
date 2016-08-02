@@ -53,6 +53,11 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 
+import java.net.Socket;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
+
 public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getSimpleName();
     private String[] shoushu = new String[]{"1", "2", "3", "4",
@@ -135,6 +140,30 @@ public class MainActivity extends Activity {
         chicangyingliTimeDingshi();//定时刷新盈利
         getNowTime();
 
+
+        new Thread()
+        {
+            @Override
+            public void run()
+            {
+                try {
+                    //建立连接到远程服务器的Socket
+                    Socket socket = new Socket();
+
+                    //将Socket对应的输入流包装成BufferedReader
+                    BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    //进行普通的I/O操作
+                    String line = br.readLine();
+                    Log.d("sssss",line);
+                    br.close();
+                    socket.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+
+
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
@@ -180,10 +209,8 @@ public class MainActivity extends Activity {
             for (int i = 0; i < jsonArray.length(); i++) {
                 Map<String, Object> map = new HashMap<>();
                 JSONObject js = jsonArray.getJSONObject(i);
-                map.put("Volume", js.getInt("Volume"));
                 map.put("SysUser", js.getBoolean("SysUser"));
                 list.add(map);
-
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -334,7 +361,6 @@ public class MainActivity extends Activity {
                 NAME1 = hblist.get(0);
                 NAME2 = hblist.get(1);
                 itemName = NAME1;//进入主界面的时候默认刷新美原油
-                //Log.i("qqqqq",NAME1);
                 SharedPreferences name = getSharedPreferences("name", MODE_PRIVATE);
                 SharedPreferences.Editor editor = name.edit();
                 editor.putString("itemName", itemName);
@@ -349,7 +375,6 @@ public class MainActivity extends Activity {
         @Override
         public void run() {
             String method = "TransformData";
-//            JSONObject parma = new JSONObject();
             try {
                 parma.put("TaskGuid", "b4026263-704e-4e12-a64d-f79cb42962cc");
                 parma.put("DataType", "HBList");
@@ -359,7 +384,6 @@ public class MainActivity extends Activity {
             SoapObject string = request.getResult(method, parma.toString());
             String jsonRequest = string.getProperty(0).toString();
             Message message = new Message();
-//            Bundle bundle = new Bundle();
             bundle.putString("HBListkey", jsonRequest);
             message.setData(bundle);
             HBListhandler.sendMessage(message);
@@ -924,6 +948,7 @@ public class MainActivity extends Activity {
 
     //    看多买入
     private void buyMoreButtonClick() {
+        Log.d("sysuser",sysUser.toString());
         if (sysUser) {
             getNowTime();//现在的时间
             if (itemName.equals(NAME2)) {//判断选择的是不是恒生指数
@@ -968,7 +993,8 @@ public class MainActivity extends Activity {
             super.handleMessage(message);
             Bundle bundle = message.getData();
             String string = bundle.getString("buyMore");
-            if ("{\"Comment\"".startsWith(string)) {
+            Log.d("string",string);
+            if (string.startsWith("{\"Comment\"")) {
                 buyMoreButton.setText(BUYONCE);
                 buyLessButton.setText(FANXIANG);
                 Toast.makeText(MainActivity.this, "买入成功", Toast.LENGTH_SHORT).show();
@@ -1126,7 +1152,6 @@ public class MainActivity extends Activity {
             for (int i = 0; i < SymbolNumberSList.size(); i++) {
                 s += "," + SymbolNumberSList.get(i);
             }
-            Log.i("eeeeee", s);
             try {
                 parma.put("DriverID", driverId);
                 parma.put("TaskGuid", TaskGuid);
@@ -1184,7 +1209,7 @@ public class MainActivity extends Activity {
             super.handleMessage(message);
             Bundle bundle = message.getData();
             String s = bundle.getString("kanduofanxiangmairu");
-            if ("{\"Comment\"".startsWith(s)) {
+            if (s.startsWith("{\"Comment\"")) {
                 if (kanduoOrkankong.equals(OpenBuy_New)) {
                     buyMoreButton.setText(BUYONCE);
                     buyLessButton.setText(FANXIANG);
@@ -1258,7 +1283,7 @@ public class MainActivity extends Activity {
             super.handleMessage(message);
             Bundle bundle = message.getData();
             String string = bundle.getString("buyLess");
-            if ("{\"Comment\"".startsWith(string)) {
+            if (string.startsWith("{\"Comment\"")) {
                 buyLessButton.setText(BUYONCE);
                 buyMoreButton.setText(FANXIANG);
                 Toast.makeText(MainActivity.this, "买入成功", Toast.LENGTH_SHORT).show();

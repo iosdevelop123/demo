@@ -18,7 +18,7 @@ public class request {
     public SoapObject getResult(String method,String parpm) {
         String nameSpace = "http://tempuri.org/";
         String methodName = method;
-        String requestUrl = "http://139.196.32.138:10011/WebService.asmx";
+        String requestUrl = "http://139.196.207.149:10011/WebService.asmx";
         String soapAction = nameSpace + methodName;
 
         HttpTransportSE httpTransportSE = new HttpTransportSE(requestUrl);
@@ -40,7 +40,6 @@ public class request {
             e.printStackTrace();
         }
         String string = soapObject1.toString();
-//        Log.i("```````",string);
         if (string.equals("{}"))
         {
             soapObject1.addProperty("ErrMessage","连接超时");
