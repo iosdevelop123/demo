@@ -41,6 +41,14 @@ import org.json.JSONObject;
 import org.ksoap2.serialization.SoapObject;
 
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -51,11 +59,6 @@ import java.util.ArrayList;
 
 import java.util.Timer;
 import java.util.TimerTask;
-
-
-import java.net.Socket;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 
 
 public class MainActivity extends Activity {
@@ -112,6 +115,10 @@ public class MainActivity extends Activity {
 
     private String panduanshi;//判断是看空买入还是看多买入
     private Boolean sysUser;//判断是否可以下单
+
+    private static final String HOST = "139.196.207.149";
+    private static final int PORT = 2012;
+    String line;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -141,26 +148,20 @@ public class MainActivity extends Activity {
         getNowTime();
 
 
-        new Thread()
-        {
-            @Override
-            public void run()
-            {
-                try {
-                    //建立连接到远程服务器的Socket
-                    Socket socket = new Socket();
-
-                    //将Socket对应的输入流包装成BufferedReader
-                    BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                    //进行普通的I/O操作
-                    String line = br.readLine();
-                    Log.d("sssss",line);
-                    br.close();
-                    socket.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
+        new Thread(){
+            @Override public void run() {
+                    try {
+                        Socket socket = new Socket(HOST, PORT);
+                        BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                        line = br.readLine();
+                        br.close();
+                    } catch (UnknownHostException e) {
+                        Log.i("PDA","----->"+ e);
+                    } catch (IOException e) {
+                        Log.i("PDA","----->"+ e);
+                    }
+                    shandler.sendEmptyMessage(0);
                 }
-            }
         }.start();
 
 
@@ -168,6 +169,18 @@ public class MainActivity extends Activity {
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
+
+    // 定义Handler对象
+    private Handler shandler = new Handler() {
+        @Override
+        // 当有消息发送出来的时候就执行Handler的这个方法
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+
+            // 处理UI
+            Log.i("PDA", "----->" + line);
+        }
+    };
 
     //得到能下单的最大手数，和是否能下单
 //    Runnable
@@ -197,9 +210,7 @@ public class MainActivity extends Activity {
                 getBiggestVolumeAndSysUserHandler.handleMessage(mes);
             }
         }, 1000, 60000);
-    }
-
-    ;
+    };
 
     private List getBiggestVolumeAndSysUser(SoapObject soapObject) {
         List list = new ArrayList();
@@ -215,7 +226,6 @@ public class MainActivity extends Activity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
         return list;
     }
 
@@ -229,21 +239,12 @@ public class MainActivity extends Activity {
                 JSONArray js = new JSONArray(s);
                 for (int i = 0; i < js.length(); i++) {
                     JSONObject json = js.getJSONObject(i);
-//                    int Volume = json.getInt("Volume");
                     sysUser = json.getBoolean("SysUser");
-//                    if (Integer.parseInt(shoushu[shoushu.length - 1]) <= 20 && Volume <= 20) {
-//                        String[] b = new String[Volume];
-//                        for (int j = 0; j < Volume; j++) {
-//                            System.arraycopy(shoushu, 0, b, 0, Volume);
-//                        }
-//                        shoushu = b;
-//                    }
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
-
     };
 
 
@@ -253,7 +254,6 @@ public class MainActivity extends Activity {
         String s = simpleDateFormat.format(new Date());
         NowHour = Integer.parseInt(s.substring(0, 2));
         NowMinute = Integer.parseInt(s.substring(3, 5));//截取字符串
-
     }
 
     //网络判断
@@ -339,7 +339,6 @@ public class MainActivity extends Activity {
                 latestPriceHandler.sendMessage(message);
             }
         }, 1000, 1000);
-
     }
 
     //获取货币列表
@@ -549,7 +548,6 @@ public class MainActivity extends Activity {
             super.handleMessage(message);
             Bundle bundle = message.getData();
             String string = bundle.getString("value");
-            Log.v("++++++++++++", string);
             if ("连接超时".equals(string)) {
             } else if ("@".equals(string)) {
             } else {
