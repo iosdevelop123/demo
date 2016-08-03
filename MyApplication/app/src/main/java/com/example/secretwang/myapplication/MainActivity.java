@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
@@ -118,7 +119,7 @@ public class MainActivity extends Activity {
 
     private static final String HOST = "139.196.207.149";
     private static final int PORT = 2012;
-    String line;
+    Socket socket;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -151,16 +152,17 @@ public class MainActivity extends Activity {
         new Thread(){
             @Override public void run() {
                     try {
-                        Socket socket = new Socket(HOST, PORT);
-                        BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                        line = br.readLine();
-                        br.close();
-                    } catch (UnknownHostException e) {
-                        Log.i("PDA","----->"+ e);
+                        socket = new Socket();
+                        socket.connect(new InetSocketAddress(HOST,PORT),2000);
+                        BufferedReader bff = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                        String s = bff.readLine();
+                        Message msg = new Message();
+                        bundle.putString("socket",s);
+                        msg.setData(bundle);
+                        shandler.sendMessage(msg);
                     } catch (IOException e) {
-                        Log.i("PDA","----->"+ e);
+                        Log.i("error","-->" + e);
                     }
-                    shandler.sendEmptyMessage(0);
                 }
         }.start();
 
@@ -176,9 +178,10 @@ public class MainActivity extends Activity {
         // 当有消息发送出来的时候就执行Handler的这个方法
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-
             // 处理UI
-            Log.i("PDA", "----->" + line);
+            Bundle bundle = msg.getData();
+            String s = bundle.getString("socket");
+            Log.i("PDA", "----->" + s);
         }
     };
 
