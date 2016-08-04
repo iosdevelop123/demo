@@ -188,8 +188,6 @@ public class MainActivity extends Activity {
     //得到能下单的最大手数，和是否能下单
 //    Runnable
     private void getBiggestVolumeAndSysUserRunnable() {
-//            = new Runnable() {
-        final String method = "TransformData";
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -205,7 +203,7 @@ public class MainActivity extends Activity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                SoapObject soapObject = request.getResult(method, parma.toString());
+                SoapObject soapObject = request.getResult("TransformData", parma.toString());
                 List list = getBiggestVolumeAndSysUser(soapObject);
                 Message mes = new Message();
                 bundle.putString("SysUserYesOrNo", list.toString());
@@ -295,8 +293,6 @@ public class MainActivity extends Activity {
 
     //    持仓盈利定时器
     private void chicangyingliTimeDingshi() {
-        final String method = "TransformData";//参数设置
-//        final JSONObject parma = new JSONObject();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -308,7 +304,7 @@ public class MainActivity extends Activity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                SoapObject soapObject = request.getResult(method, parma.toString());//请求网络，返回的值是soapObject类型
+                SoapObject soapObject = request.getResult("TransformData", parma.toString());//请求网络，返回的值是soapObject类型
                 List list = getZaicangDingDan(soapObject);//解析返回的值
                 Message message = new Message();
 //                Bundle bundle = new Bundle();
@@ -317,31 +313,6 @@ public class MainActivity extends Activity {
                 zaicanghandler.sendMessage(message);
             }
         }, 1000, 3000);
-    }
-
-    //  最新行情定时器
-    private void zuixinhangqingtimeDingshi() {
-        final String method = "TransformData";
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                try {
-                    parma.put("TaskGuid", TaskGuid);
-                    parma.put("DataType", "MT4Data");
-                    parma.put("DriverID", driverId);
-                    parma.put("Type", NAME1 + "," + NAME2);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                SoapObject string = request.getResult(method, parma.toString());
-                String jsonRequest = string.getProperty(0).toString();
-                Message message = new Message();
-//                Bundle bundle = new Bundle();
-                bundle.putString("value", jsonRequest);
-                message.setData(bundle);
-                latestPriceHandler.sendMessage(message);
-            }
-        }, 1000, 1000);
     }
 
     //获取货币列表
@@ -376,14 +347,13 @@ public class MainActivity extends Activity {
     Runnable HBListRunnable = new Runnable() {
         @Override
         public void run() {
-            String method = "TransformData";
             try {
                 parma.put("TaskGuid", "b4026263-704e-4e12-a64d-f79cb42962cc");
                 parma.put("DataType", "HBList");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            SoapObject string = request.getResult(method, parma.toString());
+            SoapObject string = request.getResult("TransformData", parma.toString());
             String jsonRequest = string.getProperty(0).toString();
             Message message = new Message();
             bundle.putString("HBListkey", jsonRequest);
@@ -409,7 +379,6 @@ public class MainActivity extends Activity {
             SoapObject soapObject = request.getResult(method, parma.toString());
             List list = getZaicangDingDan(soapObject);
             Message message = new Message();
-//            Bundle bundle = new Bundle();
             bundle.putString("zaicangkey", list.toString());
             message.setData(bundle);
             zaicanghandler.sendMessage(message);
@@ -544,13 +513,14 @@ public class MainActivity extends Activity {
         buyMoreButton.setClickable(false);
     }
 
-    //
+    //最新行情
     Handler latestPriceHandler = new Handler() {
         @Override
         public void handleMessage(Message message) {
             super.handleMessage(message);
             Bundle bundle = message.getData();
             String string = bundle.getString("value");
+            Log.i("--->",string);
             if ("连接超时".equals(string)) {
             } else if ("@".equals(string)) {
             } else {
@@ -563,7 +533,6 @@ public class MainActivity extends Activity {
                 if (nametextView.getText().toString().equals(nameList.get(0)))
                     PriceTxt.setText(CLF6Price);
                 else PriceTxt.setText(HKZ5Price);
-
             }
         }
     };
@@ -573,6 +542,32 @@ public class MainActivity extends Activity {
             zuixinhangqingtimeDingshi();
         }
     };
+
+    //  最新行情定时器
+    private void zuixinhangqingtimeDingshi() {
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    parma.put("TaskGuid", TaskGuid);
+                    parma.put("DataType", "MT4Data");
+                    parma.put("DriverID", driverId);
+                    parma.put("Type", NAME1 + "," + NAME2);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                SoapObject string = request.getResult("TransformData", parma.toString());
+                String jsonRequest = string.getProperty(0).toString();
+                Message message = new Message();
+                bundle.putString("value", jsonRequest);
+                message.setData(bundle);
+                latestPriceHandler.sendMessage(message);
+            }
+        }, 1000, 1000);
+    }
+
+
+
     //    持仓按钮点击事件，并传递数据
     View.OnClickListener holdButtonClick = (new View.OnClickListener() {
         @Override
@@ -592,12 +587,6 @@ public class MainActivity extends Activity {
         timer = new Timer();//开启定时器
         zuixinhangqingtimeDingshi();
         chicangyingliTimeDingshi();
-//        String s = data.getStringExtra("change");
-//        判断持仓是否把这个货币平仓，如果全部平仓则刷新买入按钮
-//        if(s.equals("true")){
-//            buyLessButton.setText(BUYLESS);
-//            buyMoreButton.setText(BUYMORE);
-//        }
     }
 
 
