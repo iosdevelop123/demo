@@ -144,7 +144,7 @@ public class MainActivity extends Activity {
         new Thread(HBListRunnable).start();//获取货币列表
         //网络判断动画
         netAnimation();
-        new Thread(latestPriceRunnable).start();//获取最新行情数据
+//        new Thread(latestPriceRunnable).start();//获取最新行情数据
         chicangyingliTimeDingshi();//定时刷新盈利
         getNowTime();
 
@@ -160,15 +160,14 @@ public class MainActivity extends Activity {
                         bundle.putString("socket",s);
                         msg.setData(bundle);
                         shandler.sendMessage(msg);
+                        ReceiveThread mReceiveThread = new ReceiveThread();
+                        mReceiveThread.start();
                     } catch (IOException e) {
                         Log.i("error","-->" + e);
                     }
                 }
         }.start();
 
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
@@ -182,8 +181,43 @@ public class MainActivity extends Activity {
             Bundle bundle = msg.getData();
             String s = bundle.getString("socket");
             Log.i("PDA", "----->" + s);
+            String[] strArray = null;
+            strArray = s.split(",");
+            if (strArray[2].equals(hblist.get(0)) && nametextView.getText().toString().equals(nameList.get(0))){
+                 PriceTxt.setText(strArray[3]);
+            }else if (strArray[2].equals(hblist.get(1)) && nametextView.getText().toString().equals(nameList.get(1))){
+                 PriceTxt.setText(strArray[3]);
+            }
         }
     };
+    // socket长链接
+    public class ReceiveThread extends Thread{
+        @Override
+        public void run(){
+            while (true){
+                try {
+                    if (socket != null && socket.isConnected()){
+                        if (!socket.isInputShutdown()){
+                            BufferedReader inStream = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                            String content = inStream.readLine();
+                            if (content == null){
+                                continue;
+                            }
+                            Message msg = new Message();
+                            bundle.putString("socket",content);
+                            msg.setData(bundle);
+                            shandler.sendMessage(msg);
+                        }
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+
+
 
     //得到能下单的最大手数，和是否能下单
 //    Runnable
@@ -520,7 +554,6 @@ public class MainActivity extends Activity {
             super.handleMessage(message);
             Bundle bundle = message.getData();
             String string = bundle.getString("value");
-            Log.i("--->",string);
             if ("连接超时".equals(string)) {
             } else if ("@".equals(string)) {
             } else {
@@ -638,81 +671,13 @@ public class MainActivity extends Activity {
                     .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-//                                new Thread(genjuzaicangdingdangaibianmairuanniumingziRunnable).start();//选择商品的时候根据在仓订单里面要选择的商品的购买的情况改变按钮的名字
-//                                progressDialog = ProgressDialog.show(MainActivity.this, "", "正在切换中...");
+
                         }
                     })
                     .show();
         }
     });
 
-//    Runnable genjuzaicangdingdangaibianmairuanniumingziRunnable = new Runnable() {
-//        @Override
-//        public void run() {
-//            String TransformData = "TransformData";
-//            JSONObject zaicang = new JSONObject();
-//            try {
-//                zaicang.put("DriverID",driverId);
-//                zaicang.put("TaskGuid",TaskGuid);
-//                zaicang.put("DataType","ClientOpenTrades");
-//                zaicang.put("LoginAccount",loginStr);
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
-//            request request = new request();
-//            SoapObject soapObject = request.getResult(TransformData, zaicang.toString());
-//            String duokong = genjuzaicangChangeButton(soapObject);
-//            Message message = new Message();
-//            Bundle bundle = new Bundle();
-//            bundle.putString("duokong",duokong);
-//            message.setData(bundle);
-//            duokongHandler.sendMessage(message);
-//        }
-//    };
-//    private String genjuzaicangChangeButton(SoapObject soapObject){
-//        String s = soapObject.getProperty(0).toString();
-//        String duoOrkong = "";
-//        if (s.equals("[]")){}else if (s.equals("连接超时")){duoOrkong = "连接超时";}else {
-//            try {
-//                JSONArray jsonArray = new JSONArray(s);
-//                for (int i = 0; i < jsonArray.length(); i++) {
-//                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-//                    String name = jsonObject.getString("Symbol");
-//                    if (name.equals(itemName)){
-//                        duoOrkong = jsonObject.getString("TypeName");
-//                        break;
-//                    }
-//                }
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        return duoOrkong;
-//    }
-//    Handler duokongHandler = new Handler(){
-//        @Override
-//        public void handleMessage(Message message) {
-//            super.handleMessage(message);
-//            Bundle bundle = message.getData();
-//            String s = bundle.getString("duokong");
-//            if (s.equals("")){
-//                nametextView.setText(chinaName);
-//                buyLessButton.setText(BUYLESS);
-//                buyMoreButton.setText(BUYMORE);
-//            }else if (s.equals("空")){
-//                nametextView.setText(chinaName);
-//                buyMoreButton.setText(FANXIANG);
-//                buyLessButton.setText(BUYONCE);
-//            }else if (s.equals("多")){
-//                nametextView.setText(chinaName);
-//                buyMoreButton.setText(BUYONCE);
-//                buyLessButton.setText(FANXIANG);
-//            }else{
-//                Toast.makeText(MainActivity.this,"切换失败",Toast.LENGTH_SHORT).show();
-//            }
-//            progressDialog.dismiss();
-//        }
-//    };
 
 
     //    全部卖出按钮点击事件
@@ -1342,6 +1307,11 @@ public class MainActivity extends Activity {
                             //退出登录
                             timer.cancel();
 //                            finish();
+                            try {
+                                socket.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                             onBackPressed();
                         }
                     })
