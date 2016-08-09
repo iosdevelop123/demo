@@ -144,7 +144,6 @@ public class MainActivity extends Activity {
         new Thread(HBListRunnable).start();//获取货币列表
         //网络判断动画
         netAnimation();
-//        new Thread(latestPriceRunnable).start();//获取最新行情数据
         chicangyingliTimeDingshi();//定时刷新盈利
         getNowTime();
 
@@ -211,6 +210,13 @@ public class MainActivity extends Activity {
                     }
                 }catch (Exception e){
                     e.printStackTrace();
+                    if (!e.toString().equals("Socket closed")){
+                        try {
+                            socket.connect(new InetSocketAddress(HOST,PORT),2000);
+                        } catch (IOException e1) {
+                            e1.printStackTrace();
+                        }
+                    }
                 }
             }
         }
