@@ -162,7 +162,7 @@ public class MainActivity extends Activity {
                         ReceiveThread mReceiveThread = new ReceiveThread();
                         mReceiveThread.start();
                     } catch (IOException e) {
-                        Log.i("error","-->" + e);
+                        Log.i("error",e.getMessage());
                     }
                 }
         }.start();
@@ -179,9 +179,8 @@ public class MainActivity extends Activity {
             // 处理UI
             Bundle bundle = msg.getData();
             String s = bundle.getString("socket");
-            Log.i("PDA", "----->" + s);
             String[] strArray = null;
-            strArray = s.split(",");
+            strArray = ",".split(s);
             if (strArray[2].equals(hblist.get(0)) && nametextView.getText().toString().equals(nameList.get(0))){
                  PriceTxt.setText(strArray[3]);
             }else if (strArray[2].equals(hblist.get(1)) && nametextView.getText().toString().equals(nameList.get(1))){
@@ -193,26 +192,25 @@ public class MainActivity extends Activity {
     public class ReceiveThread extends Thread{
         @Override
         public void run(){
-            while (true){
+            while (true) {
                 try {
-                    if (socket != null && socket.isConnected()){
-                        if (!socket.isInputShutdown()){
+                    if (socket != null && socket.isConnected()) {
+                        if (!socket.isInputShutdown()) {
                             BufferedReader inStream = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                             String content = inStream.readLine();
-                            if (content == null){
+                            if (content == null) {
                                 continue;
                             }
                             Message msg = new Message();
-                            bundle.putString("socket",content);
+                            bundle.putString("socket", content);
                             msg.setData(bundle);
                             shandler.sendMessage(msg);
                         }
                     }
-                }catch (Exception e){
-                    e.printStackTrace();
-                    if (!e.toString().equals("Socket closed")){
+                } catch (Exception e) {
+                    if (!e.getMessage().equals("Socket closed")) {
                         try {
-                            socket.connect(new InetSocketAddress(HOST,PORT),2000);
+                            socket.connect(new InetSocketAddress(HOST, PORT), 2000);
                         } catch (IOException e1) {
                             e1.printStackTrace();
                         }
@@ -663,10 +661,8 @@ public class MainActivity extends Activity {
             wv2.setOnWheelViewListener(new WheelView.OnWheelViewListener() {
                 @Override
                 public void onSelected(int selectedIndex, String item1) {
-                    Log.d(TAG, "[Dialog]selectedIndex: " + selectedIndex + ", item: " + item1);
                     nametextView.setText(item1);
                     itemName = hblist.get(selectedIndex - 2);
-                    Log.i("wwwww", itemName);
                     category = selectedIndex - 2;
                 }
             });
