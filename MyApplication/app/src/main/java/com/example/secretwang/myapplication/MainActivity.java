@@ -117,8 +117,10 @@ public class MainActivity extends Activity {
     private String panduanshi;//判断是看空买入还是看多买入
     private Boolean sysUser;//判断是否可以下单
 
-    private static final String HOST = "139.196.207.149";
-    private static final int PORT = 2012;
+    private static final String HOST = "139.196.207.149";//socket请求地址
+    private static final int PORT = 2012;//socket
+    private static final String SETDATA = "SetData";//web请求方法
+    private static final String TRANSFORMDATA = "TransformData";//web请求方法
     Socket socket;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -221,8 +223,6 @@ public class MainActivity extends Activity {
     }
 
 
-
-
     //得到能下单的最大手数，和是否能下单
 //    Runnable
     private void getBiggestVolumeAndSysUserRunnable() {
@@ -241,7 +241,7 @@ public class MainActivity extends Activity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                SoapObject soapObject = request.getResult("TransformData", parma.toString());
+                SoapObject soapObject = request.getResult(TRANSFORMDATA, parma.toString());
                 List list = getBiggestVolumeAndSysUser(soapObject);
                 Message mes = new Message();
                 bundle.putString("SysUserYesOrNo", list.toString());
@@ -342,7 +342,7 @@ public class MainActivity extends Activity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                SoapObject soapObject = request.getResult("TransformData", parma.toString());//请求网络，返回的值是soapObject类型
+                SoapObject soapObject = request.getResult(TRANSFORMDATA, parma.toString());//请求网络，返回的值是soapObject类型
                 List list = getZaicangDingDan(soapObject);//解析返回的值
                 Message message = new Message();
 //                Bundle bundle = new Bundle();
@@ -391,7 +391,7 @@ public class MainActivity extends Activity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            SoapObject string = request.getResult("TransformData", parma.toString());
+            SoapObject string = request.getResult(TRANSFORMDATA, parma.toString());
             String jsonRequest = string.getProperty(0).toString();
             Message message = new Message();
             bundle.putString("HBListkey", jsonRequest);
@@ -405,7 +405,6 @@ public class MainActivity extends Activity {
     Runnable zaicangRunnable = new Runnable() {
         @Override
         public void run() {
-            String method = "TransformData";
             try {
                 parma.put("DriverID", driverId);
                 parma.put("TaskGuid", TaskGuid);
@@ -414,7 +413,7 @@ public class MainActivity extends Activity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            SoapObject soapObject = request.getResult(method, parma.toString());
+            SoapObject soapObject = request.getResult(TRANSFORMDATA, parma.toString());
             List list = getZaicangDingDan(soapObject);
             Message message = new Message();
             bundle.putString("zaicangkey", list.toString());
@@ -551,59 +550,6 @@ public class MainActivity extends Activity {
         buyMoreButton.setClickable(false);
     }
 
-    //最新行情
-    Handler latestPriceHandler = new Handler() {
-        @Override
-        public void handleMessage(Message message) {
-            super.handleMessage(message);
-            Bundle bundle = message.getData();
-            String string = bundle.getString("value");
-            if ("连接超时".equals(string)) {
-            } else if ("@".equals(string)) {
-            } else {
-                String[] strArray = null;
-                strArray = string.split(",");
-                if (strArray.length > 1) CLF6Price = strArray[2].toString();
-                else CLF6Price = "0.00";
-                if (strArray.length > 4) HKZ5Price = strArray[5].toString();
-                else HKZ5Price = "0.00";
-                if (nametextView.getText().toString().equals(nameList.get(0)))
-                    PriceTxt.setText(CLF6Price);
-                else PriceTxt.setText(HKZ5Price);
-            }
-        }
-    };
-    Runnable latestPriceRunnable = new Runnable() {
-        @Override
-        public void run() {
-            zuixinhangqingtimeDingshi();
-        }
-    };
-
-    //  最新行情定时器
-    private void zuixinhangqingtimeDingshi() {
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                try {
-                    parma.put("TaskGuid", TaskGuid);
-                    parma.put("DataType", "MT4Data");
-                    parma.put("DriverID", driverId);
-                    parma.put("Type", NAME1 + "," + NAME2);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                SoapObject string = request.getResult("TransformData", parma.toString());
-                String jsonRequest = string.getProperty(0).toString();
-                Message message = new Message();
-                bundle.putString("value", jsonRequest);
-                message.setData(bundle);
-                latestPriceHandler.sendMessage(message);
-            }
-        }, 1000, 1000);
-    }
-
-
 
     //    持仓按钮点击事件，并传递数据
     View.OnClickListener holdButtonClick = (new View.OnClickListener() {
@@ -622,7 +568,6 @@ public class MainActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         timer = new Timer();//开启定时器
-        zuixinhangqingtimeDingshi();
         chicangyingliTimeDingshi();
     }
 
@@ -686,7 +631,6 @@ public class MainActivity extends Activity {
     View.OnClickListener allSellClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Log.i(">>>>>", "全部卖出");
             buttonCanNotClick();
             new AlertDialog.Builder(MainActivity.this)
                     .setTitle("是否全部卖出")
@@ -730,7 +674,6 @@ public class MainActivity extends Activity {
     Runnable orderNumbersRunnable = new Runnable() {
         @Override
         public void run() {
-            String TransformData = "TransformData";
             try {
                 parma.put("DriverID", driverId);
                 parma.put("TaskGuid", TaskGuid);
@@ -739,10 +682,9 @@ public class MainActivity extends Activity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            SoapObject soapObject = request.getResult(TransformData, parma.toString());
+            SoapObject soapObject = request.getResult(TRANSFORMDATA, parma.toString());
             orderNumbersList = getOrderNumberS(soapObject);
             Message message = new Message();
-//            Bundle bundle = new Bundle();
             if (orderNumbersList.size() == 0) {
                 bundle.putString("orderNumber", "null");
             } else {
@@ -765,6 +707,7 @@ public class MainActivity extends Activity {
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
                     String OrderNumber = jsonObject.getString("OrderNumber");
                     list.add(OrderNumber);
+
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -795,8 +738,6 @@ public class MainActivity extends Activity {
     Runnable allSellRunnable = new Runnable() {
         @Override
         public void run() {
-            String SetData = "SetData";
-//            JSONObject allSellParma = new JSONObject();
             String s = "";
             for (int i = 0; i < orderNumbersList.size(); i++) {
                 s += "," + orderNumbersList.get(i);
@@ -811,10 +752,8 @@ public class MainActivity extends Activity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-//                request request = new request();
-            SoapObject soapObject = request.getResult(SetData, parma.toString());
+            SoapObject soapObject = request.getResult(SETDATA, parma.toString());
             Message message = new Message();
-//                Bundle bundle = new Bundle();
             if (soapObject.getProperty(0).toString().equals("True")) {
                 bundle.putString("sellKey", "True");
             } else {
@@ -838,7 +777,6 @@ public class MainActivity extends Activity {
     Runnable yuerunnable = new Runnable() {
         @Override
         public void run() {
-            String method = "TransformData";
             try {
                 parma.put("TaskGuid", TaskGuid);
                 parma.put("DataType", "ClientRecord");
@@ -848,7 +786,7 @@ public class MainActivity extends Activity {
             }
             try {
                 String str_json = parma.toString();
-                SoapObject string = request.getResult(method, str_json);
+                SoapObject string = request.getResult(TRANSFORMDATA, str_json);
                 String jsonRequest = string.getProperty(0).toString();
                 Message message = new Message();
                 Bundle bundle = new Bundle();
@@ -905,7 +843,6 @@ public class MainActivity extends Activity {
 
     //    看多买入
     private void buyMoreButtonClick() {
-        Log.d("sysuser",sysUser.toString());
         if (sysUser) {
             getNowTime();//现在的时间
             if (itemName.equals(NAME2)) {//判断选择的是不是恒生指数
@@ -973,7 +910,6 @@ public class MainActivity extends Activity {
     Runnable kanduoRunnable = new Runnable() {
         @Override
         public void run() {
-            String SetData = "SetData";
             try {
                 parma.put("DriverID", driverId);
                 parma.put("TaskGuid", TaskGuid);
@@ -990,7 +926,7 @@ public class MainActivity extends Activity {
                 e.printStackTrace();
             }
 //            request request = new request();
-            SoapObject soapObject = request.getResult(SetData, parma.toString());
+            SoapObject soapObject = request.getResult(SETDATA, parma.toString());
             Message message = new Message();
 //            Bundle bundle = new Bundle();
             bundle.putString("buyMore", soapObject.getProperty(0).toString());
@@ -1037,8 +973,6 @@ public class MainActivity extends Activity {
     Runnable fanxiangOrderNumRunnable = new Runnable() {
         @Override
         public void run() {
-            String TransformData = "TransformData";
-//            JSONObject zaicang = new JSONObject();
             try {
                 parma.put("DriverID", driverId);
                 parma.put("TaskGuid", TaskGuid);
@@ -1047,11 +981,9 @@ public class MainActivity extends Activity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-//            request request = new request();
-            SoapObject soapObject = request.getResult(TransformData, parma.toString());
+            SoapObject soapObject = request.getResult(TRANSFORMDATA, parma.toString());
             List list = getxiangtongdeOrderNums(soapObject);
             Message message = new Message();
-//            Bundle bundle = new Bundle();
             bundle.putString("kanduofanxiangOrderNum", list.toString());
             message.setData(bundle);
             fanxiangOrderNumHandler.sendMessage(message);
@@ -1103,8 +1035,6 @@ public class MainActivity extends Activity {
     Runnable kanduoallSellRunnable = new Runnable() {
         @Override
         public void run() {
-            String SetData = "SetData";
-//            JSONObject allSellParma = new JSONObject();
             String s = "";
             for (int i = 0; i < SymbolNumberSList.size(); i++) {
                 s += "," + SymbolNumberSList.get(i);
@@ -1119,10 +1049,8 @@ public class MainActivity extends Activity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-//            request request = new request();
-            SoapObject soapObject = request.getResult(SetData, parma.toString());
+            SoapObject soapObject = request.getResult(SETDATA, parma.toString());
             Message message = new Message();
-//            Bundle bundle = new Bundle();
             if (soapObject.getProperty(0).toString().equals("True")) {
                 bundle.putString("sellKey", "True");
             } else {
@@ -1136,8 +1064,6 @@ public class MainActivity extends Activity {
     Runnable fanxiangmairuRunnable = new Runnable() {
         @Override
         public void run() {
-            String SetData = "SetData";
-//            JSONObject parma = new JSONObject();
             try {
                 parma.put("DriverID", driverId);
                 parma.put("TaskGuid", TaskGuid);
@@ -1152,8 +1078,7 @@ public class MainActivity extends Activity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-//            request request = new request();
-            SoapObject soapObject = request.getResult(SetData, parma.toString());
+            SoapObject soapObject = request.getResult(SETDATA, parma.toString());
             Message message = new Message();
             bundle.putString("kanduofanxiangmairu", soapObject.getProperty(0).toString());
             message.setData(bundle);
@@ -1262,8 +1187,6 @@ public class MainActivity extends Activity {
     Runnable kankongRunnable = new Runnable() {
         @Override
         public void run() {
-            String SetData = "SetData";
-//            JSONObject parma = new JSONObject();
             try {
                 parma.put("DriverID", driverId);
                 parma.put("TaskGuid", TaskGuid);
@@ -1278,10 +1201,8 @@ public class MainActivity extends Activity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-//            request request = new request();
-            SoapObject soapObject = request.getResult(SetData, parma.toString());
+            SoapObject soapObject = request.getResult(SETDATA, parma.toString());
             Message message = new Message();
-//            Bundle bundle = new Bundle();
             bundle.putString("buyLess", soapObject.getProperty(0).toString());
             message.setData(bundle);
             kankonghandle.sendMessage(message);
