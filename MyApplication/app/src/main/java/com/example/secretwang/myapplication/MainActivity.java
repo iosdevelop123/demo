@@ -87,13 +87,9 @@ public class MainActivity extends Activity {
     private TextView PriceTxt;//最新行情
     private String fanxianggoumaishoushu;//反向开仓时，统计持仓的手数
     private String kanduoOrkankong;//在反向开仓的时候，给个值，判断是看多反向还是看空反向
-    private static String OpenSell_New = "OpenSell-New";//宏定义
-    private static String OpenBuy_New = "OpenBuy-New";
     private Timer timer;//定时器
     private String itemName;//储存切换货币时要切换的货币的名字
     private ProgressDialog progressDialog;//刷新提示框
-    private String CLF6Price;//美原油
-    private String HKZ5Price;//恒生指数
     public List orderNumbersList = new ArrayList();//订单编号数组
     private List SymbolNumberSList = new ArrayList();//选中货币的订单编号数组
     private String loginStr;
@@ -121,6 +117,8 @@ public class MainActivity extends Activity {
     private static final int PORT = 2012;//socket
     private static final String SETDATA = "SetData";//web请求方法
     private static final String TRANSFORMDATA = "TransformData";//web请求方法
+    private static final String OpenSell_New = "OpenSell-New";//宏定义
+    private static final String OpenBuy_New = "OpenBuy-New";
     Socket socket;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -154,9 +152,10 @@ public class MainActivity extends Activity {
             @Override public void run() {
                     try {
                         socket = new Socket();
-                        socket.connect(new InetSocketAddress(HOST,PORT),2000);
+                        socket.connect(new InetSocketAddress(HOST,PORT),10000);
                         BufferedReader bff = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                         String s = bff.readLine();
+                        Log.i("--->",s);
                         Message msg = new Message();
                         bundle.putString("socket",s);
                         msg.setData(bundle);
@@ -181,8 +180,9 @@ public class MainActivity extends Activity {
             // 处理UI
             Bundle bundle = msg.getData();
             String s = bundle.getString("socket");
+            Log.i("--->",s);
             String[] strArray = null;
-            strArray = ",".split(s);
+            strArray = s.split("[,]");
             if (strArray[2].equals(hblist.get(0)) && nametextView.getText().toString().equals(nameList.get(0))){
                  PriceTxt.setText(strArray[3]);
             }else if (strArray[2].equals(hblist.get(1)) && nametextView.getText().toString().equals(nameList.get(1))){
@@ -194,6 +194,7 @@ public class MainActivity extends Activity {
     public class ReceiveThread extends Thread{
         @Override
         public void run(){
+
             while (true) {
                 try {
                     if (socket != null && socket.isConnected()) {
@@ -212,7 +213,7 @@ public class MainActivity extends Activity {
                 } catch (Exception e) {
                     if (!e.getMessage().equals("Socket closed")) {
                         try {
-                            socket.connect(new InetSocketAddress(HOST, PORT), 2000);
+                            socket.connect(new InetSocketAddress(HOST, PORT), 10000);
                         } catch (IOException e1) {
                             e1.printStackTrace();
                         }
@@ -593,14 +594,12 @@ public class MainActivity extends Activity {
             wv.setOnWheelViewListener(new WheelView.OnWheelViewListener() {
                 @Override
                 public void onSelected(int selectedIndex, String item) {
-                    Log.d(TAG, "[Dialog]selectedIndex: " + selectedIndex + ", item: " + item);
                     shouTxt.setText(item);
                     number = selectedIndex - 2;
                 }
             });
             wv2 = (WheelView) outerView.findViewById(R.id.wheel_view_wv2);
             wv2.setOffset(2);
-            //wv2.setItems(hblist);
             wv2.setItems(nameList);
             wv2.setSeletion(category);
             wv2.setOnWheelViewListener(new WheelView.OnWheelViewListener() {
@@ -609,8 +608,10 @@ public class MainActivity extends Activity {
                     nametextView.setText(item1);
                     itemName = hblist.get(selectedIndex - 2);
                     category = selectedIndex - 2;
+                    PriceTxt.setText("0.00");
                 }
             });
+
             new AlertDialog.Builder(MainActivity.this)
                     .setTitle("设置您委托的产品类型和手数")
                     .setView(outerView)
@@ -1229,11 +1230,10 @@ public class MainActivity extends Activity {
                         public void onClick(DialogInterface dialog, int which) {
                             //退出登录
                             timer.cancel();
-//                            finish();
                             try {
                                 socket.close();
                             } catch (IOException e) {
-                                e.printStackTrace();
+                                Log.i("tuichu",e.getMessage());
                             }
                             onBackPressed();
                         }
