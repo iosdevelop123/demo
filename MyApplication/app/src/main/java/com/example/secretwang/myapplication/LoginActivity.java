@@ -40,41 +40,8 @@ public class LoginActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    /***    //蒲公英上报Crash异常
-        PgyCrashManager.register(this);
-        try{}
-        catch (Exception e)
-        {
-            PgyCrashManager.reportCaughtException(LoginActivity.this,e);
-        }
-        //蒲公英检查版本更新
-        PgyUpdateManager.register(LoginActivity.this,new UpdateManagerListener() {
-            @Override
-            public void onUpdateAvailable(String s) {
-                //将新版本信息封装到AppBean中
-                final AppBean appBean = getAppBeanFromString(s);
-                new AlertDialog.Builder(LoginActivity.this)
-                        .setTitle("提示")
-                        .setMessage("软件有新的版本，立即更新？")
-                        //确定按钮监听事件
-                        .setNegativeButton("确定", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                startDownloadTask(LoginActivity.this, appBean.getDownloadURL());
-                            }
-                        })
-                        //弹窗点击取消键才消失
-                        .setCancelable(false)
-                        .setPositiveButton("取消",null)
-                        .show();
-            }
-                        @Override
-            public void onNoUpdateAvailable() {
-                //Log.v("ok","没有更新");
-            }
-        });***/
-       // PgyUpdateManager.register(LoginActivity.this);
         setContentView(R.layout.activity_login);
+
         userName = (TextView) findViewById(R.id.userName);
         passWord = (TextView) findViewById(R.id.passWord);
         checkBox = (CheckBox) findViewById(R.id.checkBox);

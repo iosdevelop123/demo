@@ -48,8 +48,6 @@ public class NetWorkUtils {
                     InetAddress inetAddress = enumIpAddr.nextElement();
                     if (!inetAddress.isLoopbackAddress()
                             && inetAddress instanceof Inet4Address) {
-                        // if (!inetAddress.isLoopbackAddress() && inetAddress
-                        // instanceof Inet6Address) {
                         return inetAddress.getHostAddress().toString();
                     }
                 }

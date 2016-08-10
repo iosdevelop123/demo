@@ -4,21 +4,22 @@ import android.app.Activity;
 import android.app.AlertDialog;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 
 import android.content.SharedPreferences;
 import android.graphics.Color;
+
+
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
-import android.os.Handler;
-import android.os.Message;
+
+
 import android.util.Log;
-import android.util.TimeUtils;
+
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,7 +29,7 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.SimpleAdapter;
+
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,14 +43,14 @@ import org.ksoap2.serialization.SoapObject;
 
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+
+
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
+
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -60,6 +61,7 @@ import java.util.ArrayList;
 
 import java.util.Timer;
 import java.util.TimerTask;
+
 
 
 public class MainActivity extends Activity {
@@ -98,7 +100,6 @@ public class MainActivity extends Activity {
     private String BUYONCE = "追单";
     private String FANXIANG = "反向开仓";
     private Button netBtn;
-    private int LowestMoney;//保证金
     private String NAME1;//宏定义
     private String NAME2 = "";
     private String Ip;//手机ip地址
@@ -110,7 +111,6 @@ public class MainActivity extends Activity {
     private Bundle bundle = new Bundle();
     private JSONObject parma = new JSONObject();//请求数据要传入的参数
 
-    private String panduanshi;//判断是看空买入还是看多买入
     private Boolean sysUser;//判断是否可以下单
 
     private static final String HOST = "139.196.207.149";//socket请求地址
@@ -120,6 +120,7 @@ public class MainActivity extends Activity {
     private static final String OpenSell_New = "OpenSell-New";//宏定义
     private static final String OpenBuy_New = "OpenBuy-New";
     Socket socket;
+
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -146,29 +147,35 @@ public class MainActivity extends Activity {
         netAnimation();
         chicangyingliTimeDingshi();//定时刷新盈利
         getNowTime();
-
-
-        new Thread(){
-            @Override public void run() {
-                    try {
-                        socket = new Socket();
-                        socket.connect(new InetSocketAddress(HOST,PORT),10000);
-                        BufferedReader bff = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                        String s = bff.readLine();
-                        Log.i("--->",s);
-                        Message msg = new Message();
-                        bundle.putString("socket",s);
-                        msg.setData(bundle);
-                        shandler.sendMessage(msg);
-                        ReceiveThread mReceiveThread = new ReceiveThread();
-                        mReceiveThread.start();
-                    } catch (IOException e) {
-                        Log.i("error",e.getMessage());
-                    }
-                }
-        }.start();
+        socketOnline();//socket连接
 
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+    }
+
+
+    /**
+     * socket连接
+     */
+    private void socketOnline(){
+        new Thread(){
+            @Override public void run() {
+                try {
+                    socket = new Socket();
+                    socket.connect(new InetSocketAddress(HOST,PORT),10000);
+                    BufferedReader bff = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    String s = bff.readLine();
+                    Log.i("--->",s);
+                    Message msg = new Message();
+                    bundle.putString("socket",s);
+                    msg.setData(bundle);
+                    shandler.sendMessage(msg);
+                    ReceiveThread mReceiveThread = new ReceiveThread();
+                    mReceiveThread.start();
+                } catch (IOException e) {
+                    Log.i("error",e.getMessage());
+                }
+            }
+        }.start();
     }
 
     // 定义Handler对象
@@ -190,7 +197,10 @@ public class MainActivity extends Activity {
             }
         }
     };
-    // socket长链接
+
+    /**
+     * socket长连接
+     */
     public class ReceiveThread extends Thread{
         @Override
         public void run(){
@@ -223,9 +233,9 @@ public class MainActivity extends Activity {
         }
     }
 
-
-    //得到能下单的最大手数，和是否能下单
-//    Runnable
+    /**
+     * 得到能下单的最大手数，和是否能下单
+     */
     private void getBiggestVolumeAndSysUserRunnable() {
         timer.schedule(new TimerTask() {
             @Override
@@ -287,8 +297,9 @@ public class MainActivity extends Activity {
         }
     };
 
-
-    //    获取当前时间
+    /**
+     *  获取当前时间
+     */
     private void getNowTime() {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
         String s = simpleDateFormat.format(new Date());
@@ -296,7 +307,9 @@ public class MainActivity extends Activity {
         NowMinute = Integer.parseInt(s.substring(3, 5));//截取字符串
     }
 
-    //网络判断
+    /**
+     * 网络判断
+     */
     private void netAnimation() {
         NetWorkUtils net = new NetWorkUtils();
         int type = net.getAPNType(MainActivity.this);
@@ -330,7 +343,9 @@ public class MainActivity extends Activity {
         ipEditor.commit();
     }
 
-    //    持仓盈利定时器
+    /**
+     * 持仓盈利定时器
+     */
     private void chicangyingliTimeDingshi() {
         timer.schedule(new TimerTask() {
             @Override
@@ -354,7 +369,10 @@ public class MainActivity extends Activity {
         }, 1000, 3000);
     }
 
-    //获取货币列表
+
+    /**
+     * 获取货币列表
+     */
     Handler HBListhandler = new Handler() {
         @Override
         public void handleMessage(Message message) {
@@ -401,8 +419,9 @@ public class MainActivity extends Activity {
         }
     };
 
-
-    //    主界面根据在仓订单刷新界面
+    /**
+     * 主界面根据在仓订单刷新界面
+     */
     Runnable zaicangRunnable = new Runnable() {
         @Override
         public void run() {
@@ -446,7 +465,10 @@ public class MainActivity extends Activity {
         return list;
     }
 
-    //    根据在仓订单改变主界面显示
+
+    /**
+     * 根据在仓订单改变主界面显示
+     */
     Handler zaicanghandler = new Handler() {
         @Override
         public void handleMessage(Message message) {
@@ -502,7 +524,10 @@ public class MainActivity extends Activity {
         }
     };
 
-    //    界面创建
+
+    /**
+     * 界面创建
+     */
     private void createButton() {
         //手数和品种
         shouTxt = (TextView) findViewById(R.id.shoushutextView);
@@ -537,14 +562,20 @@ public class MainActivity extends Activity {
         mairuduoshaoshouTex = (TextView) findViewById(R.id.textView6);
     }
 
-    //    设置按钮允许点击
+
+    /**
+     * 设置按钮允许点击
+     */
     private void buttonCanClick() {
         allSellButton.setClickable(true);
         buyLessButton.setClickable(true);
         buyMoreButton.setClickable(true);
     }
 
-    //    设置按钮不允许被点击
+
+    /**
+     *  设置按钮不允许被点击
+     */
     private void buttonCanNotClick() {
         allSellButton.setClickable(false);
         buyLessButton.setClickable(false);
@@ -552,7 +583,9 @@ public class MainActivity extends Activity {
     }
 
 
-    //    持仓按钮点击事件，并传递数据
+    /**
+     *  持仓按钮点击事件，并传递数据
+     */
     View.OnClickListener holdButtonClick = (new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -564,7 +597,13 @@ public class MainActivity extends Activity {
         }
     });
 
-    //    从第二界面返回的数据在这里
+
+    /**
+     * 从第二界面返回的数据在这里
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -572,8 +611,9 @@ public class MainActivity extends Activity {
         chicangyingliTimeDingshi();
     }
 
-
-    //        跳转个人中心界面
+    /**
+     * 跳转个人中心界面
+     */
     View.OnClickListener userBtnClick = (new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -581,7 +621,10 @@ public class MainActivity extends Activity {
             startActivity(intent);
         }
     });
-    //    跳转设置界面
+
+    /**
+     * 跳转设置界面
+     */
     View.OnClickListener settingBtnClick = (new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -627,8 +670,9 @@ public class MainActivity extends Activity {
     });
 
 
-
-    //    全部卖出按钮点击事件
+    /**
+     * 全部卖出按钮点击事件
+     */
     View.OnClickListener allSellClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -654,7 +698,9 @@ public class MainActivity extends Activity {
     };
 
 
-    //    解析订单编号
+    /**
+     *   解析订单编号
+     */
     Handler orderHandler = new Handler() {
         @Override
         public void handleMessage(Message message) {
@@ -696,7 +742,11 @@ public class MainActivity extends Activity {
         }
     };
 
-    //    得到订单编号数组
+    /**
+     * 得到订单编号数组
+     * @param soapObject
+     * @return
+     */
     private List getOrderNumberS(SoapObject soapObject) {
         List list = new ArrayList();
         String s = soapObject.getProperty(0).toString();
@@ -735,7 +785,10 @@ public class MainActivity extends Activity {
             progressDialog.dismiss();
         }
     };
-    //    全部卖出数据请求
+
+    /**
+     * 全部卖出数据请求
+     */
     Runnable allSellRunnable = new Runnable() {
         @Override
         public void run() {
@@ -765,16 +818,27 @@ public class MainActivity extends Activity {
         }
     };
 
-    //    看多按钮点击事件
+
+    /**
+     * 看多按钮点击事件
+     */
     View.OnClickListener buyMoreClick = new View.OnClickListener() {
 
         @Override
         public void onClick(View v) {
-            panduanshi = BUYMORE;
-            new Thread(yuerunnable).start();//请求余额线程
+            if (buyMoreButton.getText().toString().equals(BUYMORE)) {
+                buyMoreButtonClick();
+            } else if (buyMoreButton.getText().toString().equals(BUYONCE)) {
+                buyMoreButtonClick();
+            } else if (buyMoreButton.getText().toString().equals(FANXIANG)) {
+                buyMoreButtonReverse();
+            }
         }
     };
-    //请求余额线程
+
+    /**
+     * 请求余额线程
+
     Runnable yuerunnable = new Runnable() {
         @Override
         public void run() {
@@ -841,8 +905,12 @@ public class MainActivity extends Activity {
 
         }
     };
+*/
 
-    //    看多买入
+
+    /**
+     * 看多买入
+     */
     private void buyMoreButtonClick() {
         if (sysUser) {
             getNowTime();//现在的时间
@@ -864,7 +932,6 @@ public class MainActivity extends Activity {
                         new Thread(kanduoRunnable).start();
                         progressDialog = ProgressDialog.show(MainActivity.this, "", "下单中...");
                         buttonCanNotClick();
-                        Log.i("eeee", Integer.toString(NowHour));
                     }
                 } else {
                     Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT).show();
@@ -882,6 +949,37 @@ public class MainActivity extends Activity {
     }
 
     //    根据返回，判断是否买入成功
+
+    //
+    /**
+     * 看多数据请求
+     * Runnable
+     * handler
+     */
+    Runnable kanduoRunnable = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                parma.put("DriverID", driverId);
+                parma.put("TaskGuid", TaskGuid);
+                parma.put("DataType", "OpenBuy-New");
+                parma.put("LoginAccount", loginStr);
+                parma.put("Symbol", itemName);
+                parma.put("Volume", shouTxt.getText().toString());
+                parma.put("StopLoss", "0");
+                parma.put("TakeProfit", "0");
+                parma.put("Comment", "Android");
+                parma.put("Ip", Ip);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            SoapObject soapObject = request.getResult(SETDATA, parma.toString());
+            Message message = new Message();
+            bundle.putString("buyMore", soapObject.getProperty(0).toString());
+            message.setData(bundle);
+            buyMoreHandler.sendMessage(message);
+        }
+    };
     Handler buyMoreHandler = new Handler() {
         @Override
         public void handleMessage(Message message) {
@@ -907,37 +1005,11 @@ public class MainActivity extends Activity {
             buttonCanClick();
         }
     };
-    //    看多数据请求
-    Runnable kanduoRunnable = new Runnable() {
-        @Override
-        public void run() {
-            try {
-                parma.put("DriverID", driverId);
-                parma.put("TaskGuid", TaskGuid);
-                parma.put("DataType", "OpenBuy-New");
-                parma.put("LoginAccount", loginStr);
-                parma.put("Symbol", itemName);
-                Log.i("aaaa", itemName);
-                parma.put("Volume", shouTxt.getText().toString());
-                parma.put("StopLoss", "0");
-                parma.put("TakeProfit", "0");
-                parma.put("Comment", "Android");
-                parma.put("Ip", Ip);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-//            request request = new request();
-            SoapObject soapObject = request.getResult(SETDATA, parma.toString());
-            Message message = new Message();
-//            Bundle bundle = new Bundle();
-            bundle.putString("buyMore", soapObject.getProperty(0).toString());
-            message.setData(bundle);
-            buyMoreHandler.sendMessage(message);
-        }
-    };
 
 
-    //    看多反向开仓
+    /**
+     *  看多反向开仓
+     */
     private void buyMoreButtonReverse() {
         if (sysUser) {
             Log.i(">>>>>>", "看多反向开仓");
@@ -1032,7 +1104,11 @@ public class MainActivity extends Activity {
 
         }
     };
-    //    全部卖出数据请求
+
+    /**
+     * 全部卖出数据请求
+     * runnable
+     */
     Runnable kanduoallSellRunnable = new Runnable() {
         @Override
         public void run() {
@@ -1061,7 +1137,11 @@ public class MainActivity extends Activity {
             kanduosellHandler.sendMessage(message);
         }
     };
-    //  反向买入请求
+
+    /**
+     * 反向买入请求
+     * runnable
+     */
     Runnable fanxiangmairuRunnable = new Runnable() {
         @Override
         public void run() {
@@ -1115,15 +1195,22 @@ public class MainActivity extends Activity {
         }
     };
 
-    //  看空按钮点击事件
+
+    /**
+     * 看空按钮点击事件
+     */
     View.OnClickListener buyLessButtonClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            panduanshi = BUYLESS;
-            new Thread(yuerunnable).start();//请求余额线程
+            if (buyLessButton.getText().toString().equals(BUYLESS)) {
+                buyLessButtonClick();
+            } else if (buyLessButton.getText().toString().equals(BUYONCE)) {
+                buyLessButtonClick();
+            } else if (buyLessButton.getText().toString().equals(FANXIANG)) {
+                buyLessButtonReverse();
+            }
         }
     };
-
     private void buyLessButtonClick() {
         if (sysUser) {
             getNowTime();
@@ -1160,31 +1247,12 @@ public class MainActivity extends Activity {
         }
     }
 
-    Handler kankonghandle = new Handler() {
-        @Override
-        public void handleMessage(Message message) {
-            super.handleMessage(message);
-            Bundle bundle = message.getData();
-            String string = bundle.getString("buyLess");
-            if (string.startsWith("{\"Comment\"")) {
-                buyLessButton.setText(BUYONCE);
-                buyMoreButton.setText(FANXIANG);
-                Toast.makeText(MainActivity.this, "买入成功", Toast.LENGTH_SHORT).show();
-            } else {
-                try {
-                    JSONObject jsonObject = new JSONObject(string);
-                    Toast.makeText(MainActivity.this, jsonObject.getString("ErrMessage"), Toast.LENGTH_SHORT).show();
 
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                Toast.makeText(MainActivity.this, "下单失败", Toast.LENGTH_LONG).show();
-            }
-            progressDialog.dismiss();
-            buttonCanClick();
-        }
-    };
-    //  看空请求数据
+    /**
+     * 看空请求数据
+     * runnable
+     * handler
+     */
     Runnable kankongRunnable = new Runnable() {
         @Override
         public void run() {
@@ -1209,17 +1277,47 @@ public class MainActivity extends Activity {
             kankonghandle.sendMessage(message);
         }
     };
+    Handler kankonghandle = new Handler() {
+        @Override
+        public void handleMessage(Message message) {
+            super.handleMessage(message);
+            Bundle bundle = message.getData();
+            String string = bundle.getString("buyLess");
+            if (string.startsWith("{\"Comment\"")) {
+                buyLessButton.setText(BUYONCE);
+                buyMoreButton.setText(FANXIANG);
+                Toast.makeText(MainActivity.this, "买入成功", Toast.LENGTH_SHORT).show();
+            } else {
+                try {
+                    JSONObject jsonObject = new JSONObject(string);
+                    Toast.makeText(MainActivity.this, jsonObject.getString("ErrMessage"), Toast.LENGTH_SHORT).show();
 
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                Toast.makeText(MainActivity.this, "下单失败", Toast.LENGTH_LONG).show();
+            }
+            progressDialog.dismiss();
+            buttonCanClick();
+        }
+    };
 
+    /**
+     * 看空反向开仓
+     */
     private void buyLessButtonReverse() {
-        Log.i(">>>>>>", "看空反向开仓");
         kanduoOrkankong = OpenSell_New;
         new Thread(fanxiangOrderNumRunnable).start();
         progressDialog = ProgressDialog.show(MainActivity.this, "", "下单中...");
     }
 
 
-    //左下角返回按钮点击事件
+    /**
+     * 左下角返回按钮点击事件
+     * @param keyCode
+     * @param event
+     * @return
+     */
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
@@ -1286,3 +1384,4 @@ public class MainActivity extends Activity {
         client.disconnect();
     }
 }
+
