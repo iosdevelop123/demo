@@ -95,12 +95,9 @@ public class MainActivity extends Activity {
     public List orderNumbersList = new ArrayList();//订单编号数组
     private List SymbolNumberSList = new ArrayList();//选中货币的订单编号数组
     private String loginStr;
-    private String BUYMORE = "看多";//宏定义
-    private String BUYLESS = "看空";
-    private String BUYONCE = "追单";
-    private String FANXIANG = "反向开仓";
+
     private Button netBtn;
-    private String NAME1;//宏定义
+    private String NAME1;//商品名称。
     private String NAME2 = "";
     private String Ip;//手机ip地址
     private int NowHour;//当前时间
@@ -112,6 +109,11 @@ public class MainActivity extends Activity {
     private JSONObject parma = new JSONObject();//请求数据要传入的参数
 
     private Boolean sysUser;//判断是否可以下单
+
+    private static final String BUYMORE = "看多";//宏定义
+    private static final String BUYLESS = "看空";
+    private static final String BUYONCE = "追单";
+    private static final String FANXIANG = "反向开仓";
 
     private static final String HOST = "139.196.207.149";//socket请求地址
     private static final int PORT = 2012;//socket
@@ -187,7 +189,6 @@ public class MainActivity extends Activity {
             // 处理UI
             Bundle bundle = msg.getData();
             String s = bundle.getString("socket");
-            Log.i("--->",s);
             String[] strArray = null;
             strArray = s.split("[,]");
             if (strArray[2].equals(hblist.get(0)) && nametextView.getText().toString().equals(nameList.get(0))){
