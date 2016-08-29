@@ -15,7 +15,7 @@ import java.util.Date;
  * Created by Secret Wang on 2015/12/15.
  */
 public class request {
-    public SoapObject getResult(String method,String parpm) {
+    public static SoapObject getResult(String method, String parpm) {
         String nameSpace = "http://tempuri.org/";
         String methodName = method;
         String requestUrl = "http://139.196.207.149:10011/WebService.asmx";
