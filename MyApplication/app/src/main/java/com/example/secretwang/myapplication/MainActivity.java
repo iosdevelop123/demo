@@ -41,12 +41,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.ksoap2.serialization.SoapObject;
 
-
 import java.io.BufferedReader;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-
 
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
@@ -98,12 +96,9 @@ public class MainActivity extends Activity {
     public List orderNumbersList = new ArrayList();//订单编号数组
     private List SymbolNumberSList = new ArrayList();//选中货币的订单编号数组
     private String loginStr;
-    private String BUYMORE = "看多";//宏定义
-    private String BUYLESS = "看空";
-    private String BUYONCE = "追单";
-    private String FANXIANG = "反向开仓";
+
     private Button netBtn;
-    private String NAME1;//宏定义
+    private String NAME1;//商品名称。
     private String NAME2 = "";
     private String Ip;//手机ip地址
     private int NowHour;//当前时间
@@ -118,6 +113,11 @@ public class MainActivity extends Activity {
     private String dingdanString;
     private List pricesList = new ArrayList();//参数数组
     private int price;//计算获利时乘的参数
+
+    private static final String BUYMORE = "看多";//宏定义
+    private static final String BUYLESS = "看空";
+    private static final String BUYONCE = "追单";
+    private static final String FANXIANG = "反向开仓";
 
     private static final String HOST = "139.196.207.149";//socket请求地址
     private static final int PORT = 2012;//socket
@@ -201,7 +201,6 @@ public class MainActivity extends Activity {
             // 处理UI
             Bundle bundle = msg.getData();
             String s = bundle.getString("socket");
-            Log.i("--->",s);
             String[] strArray = null;
             strArray = s.split("[,]");
             socketDataArray = strArray;
