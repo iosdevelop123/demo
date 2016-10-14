@@ -251,23 +251,12 @@ public class LoginActivity extends Activity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-            new AlertDialog.Builder(LoginActivity.this)
-                    .setTitle("您确定退出e操盘吗？")
-                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            //退出程序
-                            // finish();
-                            // 返回桌面操作
-                             Intent home = new Intent(Intent.ACTION_MAIN);
-                             home.addCategory(Intent.CATEGORY_HOME);
-                             startActivity(home);
-//                             onBackPressed();
-                        }
-                    })
-                    .setNegativeButton("取消", null)
-                    .setCancelable(false)
-                    .show();
+            //退出程序
+            finish();
+            // 返回桌面操作
+            Intent home = new Intent(Intent.ACTION_MAIN);
+            home.addCategory(Intent.CATEGORY_HOME);
+            startActivity(home);
             return true;
         }
         return super.onKeyDown(keyCode, event);
