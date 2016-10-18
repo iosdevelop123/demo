@@ -1,10 +1,8 @@
 
 package com.example.secretwang.myapplication;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -23,12 +21,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.ksoap2.serialization.SoapObject;
-import com.pgyersdk.crash.PgyCrashManager;
-import com.pgyersdk.javabean.AppBean;
-import com.pgyersdk.update.PgyUpdateManager;
-import com.pgyersdk.update.UpdateManagerListener;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,8 +54,7 @@ public class LoginActivity extends Activity {
          * id
          */
         TelephonyManager telephonyManager = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
-//        String s = telephonyManager.getDeviceId();
-        String s = "111";
+        String s = telephonyManager.getDeviceId();
         SharedPreferences driverId = getSharedPreferences("driverID",MODE_PRIVATE);
         SharedPreferences.Editor drivereditor = driverId.edit();
         drivereditor.putString("driver",s);
@@ -161,10 +153,10 @@ public class LoginActivity extends Activity {
                 startActivity(intent);
             } else if ("输入字符串的格式不正确。".equals(string)) {
                 Toast.makeText(LoginActivity.this, "用户名和密码不能为空", Toast.LENGTH_SHORT).show();
-            } else if ("{\"ErrMessage\":\"用户名或密码错误\"}".equals(string)) {
-                Toast.makeText(LoginActivity.this, "用户名或密码错误", Toast.LENGTH_SHORT).show();
-            } else if ("连接超时".equals(string)) {
+            }  else if ("连接超时".equals(string)) {
                 Toast.makeText(LoginActivity.this, "请求超时", Toast.LENGTH_SHORT).show();
+            }else  {
+                Toast.makeText(LoginActivity.this, "用户名或密码错误", Toast.LENGTH_SHORT).show();
             }
             loginButton.setText("登录");
             loginButton.setClickable(true);
