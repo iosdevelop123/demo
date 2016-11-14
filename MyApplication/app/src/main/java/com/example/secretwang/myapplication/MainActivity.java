@@ -31,6 +31,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -48,7 +49,6 @@ import java.math.BigDecimal;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -60,6 +60,12 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 
 
 public class MainActivity extends Activity {
@@ -78,7 +84,7 @@ public class MainActivity extends Activity {
     private WheelView wv;
     private WheelView wv2;
     private int number;
-    private int category;
+    private int category;//选择货币编号
     private ImageButton settingBtn;
     private TextView shouTxt;//设置委托手数
     private TextView nametextView;//名称
@@ -110,6 +116,7 @@ public class MainActivity extends Activity {
     private String dingdanString;
     private List pricesList = new ArrayList();//参数数组
     private int price;//计算获利时乘的参数
+    private List onTimeList = new ArrayList();//可交易时间
 
     private static final String BUYMORE = "看多";//宏定义
     private static final String BUYLESS = "看空";
@@ -124,6 +131,9 @@ public class MainActivity extends Activity {
     private static final String OpenBuy_New = "OpenBuy-New";
     private Socket socket;
 
+    private LineChart mChart;
+    private int shownum=200;//设置每页显示的数据值个数
+//    private LineDataSet dataSet;
     /**
      *
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -137,20 +147,104 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
+
         createButton();
+        createLineChart();
+
         new Thread(HBListRunnable).start();//获取货币列表
         timer = new Timer();//定时器
         getBiggestVolumeAndSysUserRunnable();
         getLoginIdAndHuobiCanshu();
         new Thread(zaicangRunnable).start();//进入主界面根据在仓订单刷新按钮名字
-
+        new Thread(getOnTimeRunnable).start();
         //网络判断动画
         netAnimation();
-        getNowTime();
         socketOnline();//socket连接
 
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
+
+
+    /**
+     * 创建lineChart
+     * setLineChart
+     */
+    private void createLineChart(){
+        mChart = (LineChart) findViewById(R.id.spread_line_chart);
+        mChart.getLegend().setEnabled(false);
+        mChart.setNoDataText("没有数据!");
+        mChart.setTouchEnabled(false);
+        //mChart.animateX(8000);
+        mChart.setDrawBorders(false);
+        //mChart.setBorderWidth(2);
+
+        setLineChart(mChart);
+
+        YAxis yAxis = mChart.getAxisLeft();
+        yAxis.setStartAtZero(false);
+        yAxis.resetAxisMaxValue();
+        yAxis.resetAxisMinValue();
+
+
+        XAxis xAxis = mChart.getXAxis();
+        xAxis.setEnabled(false);
+        xAxis.setDrawGridLines(true);
+    }
+    private void setLineChart(LineChart chart) {
+        chart.setDrawGridBackground(false);
+        chart.setDescription("");
+        //chart.setVisibleXRangeMaximum(9);
+        //chart.setVisibleYRangeMaximum(150, YAxis.AxisDependency.LEFT);
+
+        // 为chart添加空数据
+        chart.setData(new LineData());
+
+        // 设置x轴
+        XAxis xAxis = chart.getXAxis();
+        xAxis.setEnabled(true);
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setDrawGridLines(true);
+        xAxis.setSpaceBetweenLabels(4);
+
+        // 设置左侧坐标轴
+        YAxis leftAxis = chart.getAxisLeft();
+        leftAxis.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
+        //leftAxis.setShowOnlyMinMax(true);
+        leftAxis.setEnabled(true);
+        leftAxis.setTextColor(Color.parseColor("#eac281"));
+
+
+
+        // 设置右侧坐标轴
+        YAxis rightAxis = chart.getAxisRight();
+        rightAxis.setEnabled(false);
+    }
+    /**
+     * 获取最后一个LineDataSet的索引
+     */
+    private int getLastDataSetIndex(LineData lineData) {
+        int dataSetCount = lineData.getDataSetCount();
+        return dataSetCount > 0 ? (dataSetCount - 1) : 0;
+    }
+
+
+    private LineDataSet createLineDataSet() {
+
+
+
+
+        LineDataSet dataSet = new LineDataSet(null, "DataSet 1");
+
+
+        dataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
+        dataSet.setDrawCircles(false);
+        dataSet.setColor(Color.YELLOW);
+        dataSet.setDrawValues(false);
+        return dataSet;
+    }
+
+
+
     /**
      * 获取登录名
      * driverId
@@ -188,7 +282,7 @@ public class MainActivity extends Activity {
             }
         }.start();
     }
-
+    private int ic=0;
     // 定义Handler对象
     private Handler shandler = new Handler() {
         @Override
@@ -198,17 +292,94 @@ public class MainActivity extends Activity {
             // 处理UI
             Bundle bundle = msg.getData();
             String s = bundle.getString("socket");
-            String[] strArray = null;
+//            Log.i(">>>>>>",s);
+            String[] strArray;
             strArray = s.split("[,]");
             socketDataArray = strArray;
+            String[] lineArray ;
+            if (strArray[2].equals(hblist.get(category))){
+                lineArray = strArray;
+                lineChartData(lineArray);
+            }
             yinglijisuan(strArray);
+
             if (strArray[2].equals(hblist.get(0)) && nametextView.getText().toString().equals(nameList.get(0))){
                  PriceTxt.setText(strArray[3]);
             }else if (strArray[2].equals(hblist.get(1)) && nametextView.getText().toString().equals(nameList.get(1))){
                  PriceTxt.setText(strArray[3]);
+            }else if (strArray[2].equals(hblist.get(2)) && nametextView.getText().toString().equals(nameList.get(2))){
+                PriceTxt.setText(strArray[3]);
             }
+
         }
     };
+    private void lineChartData(String[] lineArray){
+        LineData lineData = mChart.getData();
+
+        if (lineData != null) {
+            int indexLast = getLastDataSetIndex(lineData);
+            LineDataSet lastSet = lineData.getDataSetByIndex(indexLast);
+            // set.addEntry(...); // can be called as well
+//                            lastSet.setColor(Color.rgb(104,241,175));
+
+
+            if (lastSet == null) {
+                lastSet = createLineDataSet();
+                lineData.addDataSet(lastSet);
+            }
+
+            // 这里要注意，x轴的index是从零开始的
+            // 假设index=2，那么getEntryCount()就等于3了
+            int count = lastSet.getEntryCount();
+            // add a new x-value first 这行代码不能少
+
+            lineData.addXValue(count + "");
+//                            float yValues = (float) (Math.random() * 100);
+            float yValues = Float.parseFloat(lineArray[3]);
+            // 位最后一个DataSet添加entry
+
+            mChart.setVisibleXRangeMaximum(shownum-1);//设置区域显示的最大点个数
+
+//            lineData.removeXValue();
+
+            lineData.addEntry(new Entry(yValues, ic), indexLast);
+            ic = ic + 1;
+            mChart.notifyDataSetChanged();
+            mChart.invalidate();
+            //mChart.setPivotX(10);
+            if(ic>shownum){
+                mChart.resetViewPortOffsets();
+                mChart.moveViewToX(ic-(shownum));//设置x向左边移动到那个xindex,shownum=10
+//                mChart.notifyDataSetChanged();
+                mChart.invalidate();
+//                lineData.removeEntry(0,indexLast);
+//                lastSet.removeFirst();
+                mChart.notifyDataSetChanged();
+
+
+                // mChart.fitScreen();
+            }
+            // */
+        }
+    }
+
+    public void removeLastDataSet() {
+        mChart.clearValues();
+        if (ic>=shownum && ic<=shownum*2){
+            ic = ic+shownum;
+        }
+        if (ic>shownum){
+            ic = ic - shownum;
+        }else
+            ic = 0;
+        mChart.setVisibleXRangeMaximum(ic + shownum-1);//设置区域显示的最大点个数
+        mChart.resetViewPortOffsets();
+        mChart.notifyDataSetChanged();
+        mChart.invalidate();
+
+    }
+
+
 
     /**
      * socket长连接
@@ -309,15 +480,7 @@ public class MainActivity extends Activity {
         }
     };
 
-    /**
-     *  获取当前时间
-     */
-    private void getNowTime() {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
-        String s = simpleDateFormat.format(new Date());
-        NowHour = Integer.parseInt(s.substring(0, 2));
-        NowMinute = Integer.parseInt(s.substring(3, 5));//截取字符串
-    }
+
 
     /**
      * 网络判断
@@ -374,6 +537,7 @@ public class MainActivity extends Activity {
                     hblist.add(Bh);//协议名字
                     nameList.add(Name);//汉语名字
                 }
+                Log.i(">>>>>",hblist.toString());
                 NAME1 = hblist.get(0);
                 NAME2 = hblist.get(1);
                 itemName = NAME1;//进入主界面的时候默认刷新美原油
@@ -382,6 +546,7 @@ public class MainActivity extends Activity {
                 editor.putString("itemName", itemName);
                 editor.putString("itemName2", NAME2);
                 editor.commit();
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -412,6 +577,7 @@ public class MainActivity extends Activity {
         try {
             JSONArray jsonArray = new JSONArray(dingdanString);
             int yingli = 0;
+            price = (int) pricesList.get(category);
             if (socketDataArray != null && socketDataArray[2].equals(itemName)) {
                 for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -431,6 +597,7 @@ public class MainActivity extends Activity {
                             int p = (int) (f1 * jsonObject.getInt("Volume") * price);
                             yingli = p + yingli;
                         }
+
                     }
                 }
                 yingliText.setText(String.valueOf(yingli));
@@ -665,7 +832,7 @@ public class MainActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         timer = new Timer();//开启定时器
-//        chicangyingliTimeDingshi();
+        new Thread(zaicangRunnable).start();//进入主界面根据在仓订单刷新按钮名字
     }
 
     /**
@@ -706,22 +873,28 @@ public class MainActivity extends Activity {
             wv2.setOnWheelViewListener(new WheelView.OnWheelViewListener() {
                 @Override
                 public void onSelected(int selectedIndex, String item1) {
-                    nametextView.setText(item1);
-                    itemName = hblist.get(selectedIndex - 2);
                     category = selectedIndex - 2;
-                    price = (int) pricesList.get(selectedIndex - 2);
-                    PriceTxt.setText("0.00");
+
                 }
             });
 
             new AlertDialog.Builder(MainActivity.this)
                     .setTitle("设置您委托的产品类型和手数")
                     .setView(outerView)
-                    .setCancelable(false)
+                    .setCancelable(true)
                     .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             new Thread(zaicangRunnable).start();
+
+
+                            removeLastDataSet();
+
+                            nametextView.setText(nameList.get(category));
+                            itemName = hblist.get(category);
+//                            price = (int) pricesList.get(category);
+                            PriceTxt.setText("0.00");
+
                         }
                     })
                     .show();
@@ -908,36 +1081,14 @@ public class MainActivity extends Activity {
      */
     private void buyMoreButtonClick() {
         if (sysUser) {
-            getNowTime();//现在的时间
-            if (itemName.equals(NAME2)) {//判断选择的是不是恒生指数
-                if (NowHour >= 9 && NowHour <= 12) {//判断是不是在交易时间
-                    if (NowHour == 9 && NowMinute <= 15) {
-                        Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Log.i(">>>>>>>>>>>>>>>", "看多买入");
-                        new Thread(kanduoRunnable).start();
-                        progressDialog = ProgressDialog.show(MainActivity.this, "", "下单中...");
-                        buttonCanNotClick();
-                    }
-                } else if (NowHour >= 13 && NowHour <= 16) {
-                    if (NowHour == 16 && NowMinute >= 10) {
-                        Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Log.i(">>>>>>>>>>>>>>>", "看多买入");
-                        new Thread(kanduoRunnable).start();
-                        progressDialog = ProgressDialog.show(MainActivity.this, "", "下单中...");
-                        buttonCanNotClick();
-                    }
-                } else {
-                    Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT).show();
-                }
-
-            } else {
+            boolean ontime = getNowTime();//现在的时间
+            if (ontime){
                 Log.i(">>>>>>>>>>>>>>>", "看多买入");
                 new Thread(kanduoRunnable).start();
                 progressDialog = ProgressDialog.show(MainActivity.this, "", "下单中...");
                 buttonCanNotClick();
-            }
+            }else
+                Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT).show();
         } else if (!sysUser) {
             Toast.makeText(MainActivity.this, "下单失败", Toast.LENGTH_SHORT).show();
         }
@@ -981,20 +1132,21 @@ public class MainActivity extends Activity {
             super.handleMessage(message);
             Bundle bundle = message.getData();
             String string = bundle.getString("buyMore");
+            Log.i(">>>",string);
             if (string.startsWith("{\"Comment\"")) {
                 new Thread(zaicangRunnable).start();
                 buyMoreButton.setText(BUYONCE);
                 buyLessButton.setText(FANXIANG);
                 Toast.makeText(MainActivity.this, "买入成功", Toast.LENGTH_SHORT).show();
             } else {
-                try {
-                    JSONObject jsonObject = new JSONObject(string);
-                    Toast.makeText(MainActivity.this, jsonObject.getString("ErrMessage"), Toast.LENGTH_SHORT).show();
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                Toast.makeText(MainActivity.this, "下单失败", Toast.LENGTH_LONG).show();
+//                try {
+//                    JSONObject jsonObject = new JSONObject(string);
+//                    Toast.makeText(MainActivity.this, jsonObject.getString("ErrMessage"), Toast.LENGTH_SHORT).show();
+//
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+                Toast.makeText(MainActivity.this, string, Toast.LENGTH_LONG).show();
             }
             progressDialog.dismiss();
             buttonCanClick();
@@ -1208,35 +1360,14 @@ public class MainActivity extends Activity {
     };
     private void buyLessButtonClick() {
         if (sysUser) {
-            getNowTime();
-            if (itemName.equals(NAME2)) {
-                if (NowHour >= 9 && NowHour <= 12) {
-                    if (NowHour == 9 && NowMinute <= 15) {
-                        Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Log.i(">>>>>", "看空买入");
-                        new Thread(kankongRunnable).start();
-                        progressDialog = ProgressDialog.show(MainActivity.this, "", "下单中...");
-                        buttonCanNotClick();
-                    }
-                } else if (NowHour >= 13 && NowHour <= 16) {
-                    if (NowHour == 16 && NowMinute >= 10) {
-                        Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Log.i(">>>>>", "看空买入");
-                        new Thread(kankongRunnable).start();
-                        progressDialog = ProgressDialog.show(MainActivity.this, "", "下单中...");
-                        buttonCanNotClick();
-                    }
-                } else {
-                    Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT).show();
-                }
-            } else {
+            boolean ontime = getNowTime();
+            if (ontime){
                 Log.i(">>>>>", "看空买入");
                 new Thread(kankongRunnable).start();
                 progressDialog = ProgressDialog.show(MainActivity.this, "", "下单中...");
                 buttonCanNotClick();
-            }
+            }else
+                Toast.makeText(MainActivity.this, "不在交易时间", Toast.LENGTH_SHORT).show();
         } else if (!sysUser) {
             Toast.makeText(MainActivity.this, "下单失败", Toast.LENGTH_SHORT).show();
         }
@@ -1278,20 +1409,14 @@ public class MainActivity extends Activity {
             super.handleMessage(message);
             Bundle bundle = message.getData();
             String string = bundle.getString("buyLess");
+            Log.i("qqqq",string);
             if (string.startsWith("{\"Comment\"")) {
                 buyLessButton.setText(BUYONCE);
                 buyMoreButton.setText(FANXIANG);
                 new Thread(zaicangRunnable).start();
                 Toast.makeText(MainActivity.this, "买入成功", Toast.LENGTH_SHORT).show();
             } else {
-                try {
-                    JSONObject jsonObject = new JSONObject(string);
-                    Toast.makeText(MainActivity.this, jsonObject.getString("ErrMessage"), Toast.LENGTH_SHORT).show();
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                Toast.makeText(MainActivity.this, "下单失败", Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, string, Toast.LENGTH_LONG).show();
             }
             progressDialog.dismiss();
             buttonCanClick();
@@ -1307,6 +1432,98 @@ public class MainActivity extends Activity {
         progressDialog = ProgressDialog.show(MainActivity.this, "", "下单中...");
     }
 
+
+    /**
+     * 获取货币交易时间
+     * runnable
+     * handler
+     */
+    Runnable getOnTimeRunnable = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                parma.put("TaskGuid", "b4026263-704e-4e12-a64d-f79cb42962cc");
+                parma.put("DataType", "HBWorkTime");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            SoapObject soapObject = request.getResult("GetData", parma.toString());
+            Message message = new Message();
+            bundle.putString("OnTime", soapObject.getProperty(0).toString());
+            message.setData(bundle);
+            onTimeHandler.sendMessage(message);
+        }
+    };
+    Handler onTimeHandler = new Handler(){
+        @Override
+        public void handleMessage(Message message) {
+            super.handleMessage(message);
+            Bundle bundle = message.getData();
+            String string = bundle.getString("OnTime");
+            try {
+                JSONArray jsonArray = new JSONArray(string);
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    Map<String,Object> map = new HashMap();
+                    JSONObject jb = jsonArray.getJSONObject(i);
+
+                    map.put("HB",jb.getString("HB"));
+                    map.put("Start_Time",jb.getString("Start_Time"));
+                    map.put("End_Time",jb.getString("End_Time"));
+                    onTimeList.add(map);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    };
+
+
+    /**
+     *  获取当前时间
+     */
+    private boolean getNowTime() {
+        boolean onTime = false;
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
+        String s = simpleDateFormat.format(new Date());
+        NowHour = Integer.parseInt(s.substring(0, 2));
+        NowMinute = Integer.parseInt(s.substring(3, 5));//截取字符串
+        for (int i = 0; i < hblist.size(); i++) {
+            String HB;
+            JSONArray js = new JSONArray(onTimeList);
+            for (int k = 0; k < js.length(); k++) {
+                try {
+                    JSONObject jb = js.getJSONObject(k);
+                    HB = jb.getString("HB");
+                    if (hblist.get(i).equals(HB)){
+                        if (hblist.get(i).equals(hblist.get(category))){
+                            String StartTime = jb.getString("Start_Time");
+                            String EndTime = jb.getString("End_Time");
+                            int startHour = Integer.parseInt(StartTime.substring(0,2));
+                            int startMin = Integer.parseInt(StartTime.substring(3,5));
+                            int endHour = Integer.parseInt(EndTime.substring(0,2));
+                            int endMin = Integer.parseInt(EndTime.substring(3,5));
+                            Log.i("Start_Time",StartTime);
+                            Log.i("NowHour", EndTime);
+                            if (startHour <= NowHour && endHour >= NowHour){
+                                if (startHour == NowHour || endHour == NowHour){
+                                    if (NowMinute >= startMin || NowMinute <= endMin){
+                                        onTime = true;
+                                        break;
+                                    }
+                                }else {
+                                    onTime = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return onTime;
+    }
 
     /**
      * 左下角返回按钮点击事件
@@ -1339,6 +1556,7 @@ public class MainActivity extends Activity {
         }
         return super.onKeyDown(keyCode, event);
     }
+
 
 
     @Override

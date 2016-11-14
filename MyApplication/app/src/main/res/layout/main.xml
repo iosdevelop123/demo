@@ -87,7 +87,6 @@
         android:id="@+id/textView5"
         android:layout_marginLeft="13dp"
         android:layout_marginStart="18dp"
-        android:layout_above="@+id/textView7"
         android:layout_alignParentStart="true" />
 
     <TextView
@@ -111,23 +110,6 @@
         android:layout_alignEnd="@+id/nametextView"
         android:background="@drawable/jinse" />
 
-    <ImageButton
-        android:layout_width="22dp"
-        android:layout_height="22dp"
-        android:id="@+id/setBtn"
-        android:background="@mipmap/setting"
-        android:layout_below="@+id/textView5"
-        android:layout_alignStart="@+id/textView5" />
-
-    <ImageButton
-        android:layout_width="22dp"
-        android:layout_height="22dp"
-        android:id="@+id/usrBtn"
-        android:background="@mipmap/user"
-        android:layout_below="@+id/textView5"
-        android:layout_alignEnd="@+id/button_buyLess"
-        android:layout_marginEnd="20dp" />
-
     <Button
         style="?android:attr/buttonStyleSmall"
         android:layout_width="60dp"
@@ -138,6 +120,16 @@
         android:layout_alignTop="@+id/button_hold"
         android:layout_alignLeft="@+id/nametextView"
         android:layout_alignStart="@+id/nametextView" />
+
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/spread_line_chart"
+        android:layout_width="match_parent"
+        android:layout_height="620dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/textView_priceText"
+        android:background="@android:color/background_dark"
+        android:layout_above="@+id/textView32" />
 
     <Button
         android:layout_width="wrap_content"
@@ -160,8 +152,9 @@
         android:textColor="#ffffff"
         android:textSize="20sp"
         android:layout_alignTop="@+id/button_allSell"
-        android:layout_alignEnd="@+id/linearLayout"
-        android:layout_toEndOf="@+id/button_hold" />
+        android:layout_alignEnd="@+id/textView3"
+        android:layout_toEndOf="@+id/nametextView"
+        android:elevation="0dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -182,12 +175,13 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
         android:background="@drawable/jinse"
-        android:layout_below="@+id/textView4"
         android:id="@+id/linearLayout2"
+        android:layout_marginRight="15dp"
         android:layout_alignStart="@+id/button_buyMore"
-        android:layout_marginRight="15dp">
+        android:layout_alignEnd="@+id/button_allSell"
+        android:layout_alignParentBottom="true"
+        android:layout_height="50dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -199,21 +193,22 @@
                 android:text="@string/yingkui"
                 android:id="@+id/textView8"
                 android:textColor="#030014"
-                android:textSize="30sp"
-                android:layout_marginTop="15dp"
-                android:layout_marginLeft="15dp"/>
+                android:textSize="24sp"
+                android:layout_marginLeft="15dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginStart="15dp" />
 
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="70dp"
                 android:text="@string/_1234567890"
                 android:id="@+id/textView10"
                 android:textColor="#030014"
                 android:textSize="30sp"
                 android:layout_gravity="right"
-                android:layout_toStartOf="@+id/textView9"
-                android:layout_alignBottom="@+id/textView9"
-                android:layout_alignTop="@+id/textView8" />
+                android:layout_height="35dp"
+                android:layout_centerVertical="true"
+                android:layout_toStartOf="@+id/textView9" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -223,37 +218,44 @@
                 android:textSize="20sp"
                 android:textColor="#474748"
                 android:layout_marginRight="10dp"
-                android:layout_alignBottom="@+id/textView8"
+                android:layout_marginEnd="8dp"
+                android:layout_centerVertical="true"
                 android:layout_alignParentEnd="true" />
         </RelativeLayout>
 
     </LinearLayout>
 
+    <ImageButton
+        android:id="@+id/setBtn"
+        android:background="@mipmap/setting"
+        android:layout_width="33dp"
+        android:layout_height="33dp"
+        android:layout_below="@+id/textView5"
+        android:layout_alignStart="@+id/textView5" />
+
+    <ImageButton
+        android:id="@+id/usrBtn"
+        android:background="@mipmap/user"
+        android:layout_marginEnd="7dp"
+        android:layout_width="33dp"
+        android:layout_height="33dp"
+        android:layout_below="@+id/textView5"
+        android:layout_alignParentEnd="true" />
+
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
         android:background="@drawable/jinse"
         android:weightSum="1"
         android:id="@+id/linearLayout"
-        android:layout_below="@+id/netImgBtn"
-        android:layout_alignStart="@+id/linearLayout2"
-        android:layout_alignEnd="@+id/linearLayout2">
+        android:layout_height="50dp"
+        android:layout_alignBottom="@+id/netImgBtn"
+        android:layout_alignEnd="@+id/button_buyLess"
+        android:layout_alignStart="@+id/button_buyLess">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/textView34"
-                android:textColor="#030014"
-                android:textSize="30sp"
-                android:layout_marginLeft="15dp"
-                android:layout_centerVertical="true"
-                android:layout_alignParentStart="true"
-                android:layout_marginStart="19dp" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -262,7 +264,7 @@
                 android:id="@+id/textView6"
                 android:textColor="#030014"
                 android:textSize="30sp"
-                android:layout_alignBottom="@+id/textView7"
+                android:layout_centerVertical="true"
                 android:layout_toStartOf="@+id/textView7" />
 
             <TextView
@@ -272,9 +274,20 @@
                 android:id="@+id/textView7"
                 android:textSize="20sp"
                 android:textColor="#494848"
-                android:layout_alignBottom="@+id/textView34"
-                android:layout_alignParentEnd="true"
-                android:layout_marginEnd="19dp" />
+                android:layout_marginEnd="14dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true" />
+
+            <TextView
+                android:layout_height="wrap_content"
+                android:id="@+id/textView34"
+                android:textColor="#030014"
+                android:textSize="24sp"
+                android:layout_marginLeft="15dp"
+                android:layout_width="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginStart="15dp" />
         </RelativeLayout>
     </LinearLayout>
 

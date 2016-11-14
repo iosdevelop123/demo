@@ -17,8 +17,8 @@
     <string name="yingkui">盈亏</string>
     <string name="$">$</string>
     <string name="chicang">持仓</string>
-    <string name="_1234567890">1234567890</string>
-    <string name="_11111">1234</string>
+    <string name="_1234567890">0</string>
+    <string name="_11111">0</string>
     <string name="shou">手</string>
     <string name="buy">买入</string>
 </resources>
